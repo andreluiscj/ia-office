@@ -1,0 +1,33 @@
+{
+  "name": "ia-office",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Escritório virtual em pixel art que mostra seus agentes do Claude Code trabalhando, com dashboard, skills, Graphify e uma equipe de agentes pronta.",
+  "scripts": {
+    "start": "bun server/index.ts",
+    "import": "bun scripts/import-transcripts.ts",
+    "check": "bun scripts/check.ts",
+    "hooks:install": "bun scripts/install-hooks.ts install",
+    "hooks:uninstall": "bun scripts/install-hooks.ts uninstall",
+    "empresa:install": "bun scripts/install-company.ts install",
+    "empresa:uninstall": "bun scripts/install-company.ts uninstall",
+    "setup": "bun scripts/install-hooks.ts install && bun scripts/install-company.ts install && bun scripts/install-cli.ts install",
+    "demo:server": "bun server/index.ts --demo",
+    "demo": "bun scripts/demo.ts",
+    "skills:install": "bun scripts/install-skills.ts",
+    "skills:install:opcionais": "bun scripts/install-skills.ts --opcionais",
+    "office:autostart": "bun scripts/autostart.ts install",
+    "office:autostart:remover": "bun scripts/autostart.ts uninstall",
+    "office:ligar": "bun scripts/autostart.ts start",
+    "office:parar": "bun scripts/autostart.ts stop",
+    "office:status": "bun scripts/autostart.ts status",
+    "office:comando": "bun scripts/install-cli.ts install",
+    "office:comando:remover": "bun scripts/install-cli.ts uninstall",
+    "graphify:instalar": "uv tool install --upgrade graphifyy",
+    "agentes": "bun scripts/agentes.ts",
+    "agentes:aplicar": "bun scripts/agentes.ts --aplicar",
+    "desinstalar": "bun scripts/install-cli.ts uninstall && bun scripts/install-company.ts uninstall && bun scripts/install-hooks.ts uninstall"
+  },
+  "license": "MIT"
+}

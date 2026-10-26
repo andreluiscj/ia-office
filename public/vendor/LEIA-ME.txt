@@ -1,0 +1,2 @@
+vis-network 9.1.6 (https://github.com/visjs/vis-network), licença Apache-2.0 OU MIT.
+Cópia local usada pelo graph.html do Graphify para abrir sem internet.

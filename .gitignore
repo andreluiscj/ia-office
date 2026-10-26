@@ -1,0 +1,16 @@
+node_modules/
+
+# bancos e dados locais
+*.db
+*.db-wal
+*.db-shm
+
+# segredos
+.env
+.env.*
+!.env.example
+
+# sistema
+.DS_Store
+Thumbs.db
+graphify-out/

@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Office · Dashboard</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="favicon.png" sizes="32x32">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;500;600&family=Silkscreen&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css?v=9">
+</head>
+<body>
+  <header class="topbar three">
+    <div class="tb-left">
+      <div class="brand">OFFICE</div>
+      <nav class="nav"><a href="/">Escritório</a><a href="/dashboard" class="on">Dashboard</a><a href="/skills">Skills</a><a href="/graphify">Graphify</a></nav>
+    </div>
+    <div class="usage" id="usage" title="Limites de uso do seu plano do Claude, os mesmos de Configurações › Uso"></div>
+    <div class="tb-right">
+      <div class="conn off" id="conn">conectando</div>
+    </div>
+  </header>
+  <main class="dash">
+    <div class="filters">
+      <label>Período</label>
+      <div class="seg" id="range">
+        <button data-r="1">Hoje</button><button data-r="7" class="on">7 dias</button><button data-r="30">30 dias</button><button data-r="0">Tudo</button>
+      </div>
+      <label for="project">Projeto (opcional)</label>
+      <select id="project"><option value="">Todos</option></select>
+    </div>
+    <section class="cards" id="cards"></section>
+    <section class="box">
+      <h2>Equipe</h2>
+      <div class="sub">Quem está trabalhando agora, em qual projeto e no quê.</div>
+      <div class="tbl-wrap" id="team"></div>
+    </section>
+    <section class="box">
+      <h2>Skills e ferramentas por funcionário</h2>
+      <div class="sub">O que cada um mais usou no período.</div>
+      <div class="agent-grid" id="byAgent"></div>
+    </section>
+    <div class="grid2">
+      <section class="box"><h2>Skills mais usadas</h2><div class="sub">Total no período e em quantos agentes.</div><div class="bars" id="topSkills"></div></section>
+      <section class="box"><h2>Ferramentas mais usadas</h2><div class="sub">Read, Edit, Bash, MCPs e afins.</div><div class="bars" id="topTools"></div></section>
+    </div>
+    <section class="box"><h2>Uso de skills por dia</h2><div class="sub" id="dailySub"></div><div id="daily"></div></section>
+  </main>
+  <script type="module" src="dashboard.js?v=7"></script>
+</body>
+</html>

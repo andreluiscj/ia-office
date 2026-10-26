@@ -1,0 +1,9 @@
+{
+  "empresa": "Office",
+  "usuario": "",
+  "setores": [
+    { "id": "produto", "nome": "Arquitetura" },
+    { "id": "engenharia", "nome": "Engenharia" },
+    { "id": "qualidade", "nome": "Qualidade e Segurança" }
+  ]
+}

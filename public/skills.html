@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Office · Skills</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="favicon.png" sizes="32x32">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;500;600&family=Silkscreen&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css?v=9">
+</head>
+<body>
+  <header class="topbar three">
+    <div class="tb-left">
+      <div class="brand">OFFICE</div>
+      <nav class="nav"><a href="/">Escritório</a><a href="/dashboard">Dashboard</a><a href="/skills" class="on">Skills</a><a href="/graphify">Graphify</a></nav>
+    </div>
+    <div class="usage" id="usage" title="Limites de uso do seu plano do Claude, os mesmos de Configurações › Uso"></div>
+    <div class="tb-right">
+    </div>
+  </header>
+  <main class="dash">
+    <div class="filters">
+      <input id="q" class="search" type="search" placeholder="Buscar skill pelo nome ou pelo que ela faz" autocomplete="off">
+      <label for="source">Origem</label>
+      <select id="source"><option value="">Todas</option></select>
+      <label class="check"><input type="checkbox" id="used"> só as que já usei</label>
+    </div>
+    <section class="cards" id="cards"></section>
+    <div class="skills-layout">
+      <section class="box skill-list-box">
+        <h2>Skills instaladas</h2>
+        <div class="sub" id="count"></div>
+        <div id="list" class="skill-list"></div>
+      </section>
+      <section class="box skill-detail" id="detail">
+        <p class="muted">Clique numa skill para ver o que ela faz.</p>
+      </section>
+    </div>
+  </main>
+  <script type="module" src="skills.js?v=7"></script>
+</body>
+</html>
