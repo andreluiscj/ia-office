@@ -260,16 +260,29 @@ Arraste para mover, use a roda do mouse para zoom e ⤢ para ver o andar inteiro
 
 ## Dashboard, Skills e Graphify
 
+### Dashboard (`/dashboard`)
+
+Agentes ativos, projetos, tarefas por funcionário, divisão de modelos e ranking de skills e ferramentas. Toda sessão principal conta como o Líder; cada subagente conta para o funcionário correspondente.
+
 ![Dashboard](docs/dashboard.png)
 
-- **Dashboard** (`/dashboard`): agentes ativos, projetos, tarefas por funcionário, divisão de modelos e ranking de skills e ferramentas. Toda sessão principal conta como o Líder; cada subagente conta para o funcionário correspondente.
-- **Skills** (`/skills`): todas as skills de `~/.claude/skills`, `~/.agents/skills`, dos plugins (`~/.claude/plugins`), os comandos (`~/.claude/commands`) e as pastas `.claude/` dos projetos onde o Claude Code já rodou. Conta como uso cada chamada da ferramenta `Skill` e cada comando com barra digitado (comandos internos como `/model` não contam).
-- **Graphify** (`/graphify`): roda o [Graphify](https://github.com/Graphify-Labs/graphify) nos seus projetos.
-  - Os projetos onde o Claude Code já trabalhou aparecem sozinhos; dá para adicionar outras pastas e **ocultar** as que não interessam.
-  - **Gerar grafo** roda `graphify update` e cria `graphify-out/` dentro do projeto (grafo interativo, relatório e `graph.json`).
-  - **Perguntar** usa os comandos do Graphify (`query`, `explain`, `path`, `affected`, `god-nodes`).
-  - **Ativar /graphify no Claude Code** instala a skill do Graphify em `~/.claude/skills/graphify` e adiciona uma seção ao seu `~/.claude/CLAUDE.md`, para os agentes também usarem o grafo.
-  - Dica: coloque `graphify-out/` no `.gitignore` dos seus projetos.
+### Skills (`/skills`)
+
+Todas as skills de `~/.claude/skills`, `~/.agents/skills`, dos plugins (`~/.claude/plugins`), os comandos (`~/.claude/commands`) e as pastas `.claude/` dos projetos onde o Claude Code já rodou. Dá para buscar, filtrar pela origem e abrir as instruções completas de cada uma. Conta como uso cada chamada da ferramenta `Skill` e cada comando com barra digitado (comandos internos como `/model` não contam).
+
+![Skills](docs/skills.png)
+
+### Graphify (`/graphify`)
+
+Roda o [Graphify](https://github.com/Graphify-Labs/graphify) nos seus projetos.
+
+- Os projetos onde o Claude Code já trabalhou aparecem sozinhos; dá para adicionar outras pastas e **ocultar** as que não interessam.
+- **Gerar grafo** roda `graphify update` e cria `graphify-out/` dentro do projeto (grafo interativo, relatório e `graph.json`).
+- **Perguntar** usa os comandos do Graphify (`query`, `explain`, `path`, `affected`, `god-nodes`).
+- **Ativar /graphify no Claude Code** instala a skill do Graphify em `~/.claude/skills/graphify` e adiciona uma seção ao seu `~/.claude/CLAUDE.md`, para os agentes também usarem o grafo.
+- Dica: coloque `graphify-out/` no `.gitignore` dos seus projetos.
+
+![Graphify](docs/graphify.png)
 
 ---
 
