@@ -73,6 +73,12 @@ if (mode === "install") {
   const guardTarget = join(hooksDir, `${MARK}-guarda-lider.ts`);
   writeFileSync(guardTarget, readFileSync(join(import.meta.dir, "..", "hooks", "guard-lider.ts"), "utf8"));
   settings.hooks.PreToolUse.push({ matcher: "Edit|Write|NotebookEdit|MultiEdit", hooks: [{ type: "command", command: `"${bun}" "${guardTarget.replace(/\\/g, "/")}"`, timeout: 5 }] });
+  // Regra nº 1 do Office: agente da equipe não encerra tarefa sem ter chamado uma skill.
+  const skillTarget = join(hooksDir, `${MARK}-exigir-skill.ts`);
+  writeFileSync(skillTarget, readFileSync(join(import.meta.dir, "..", "hooks", "exigir-skill.ts"), "utf8"));
+  const skillCmd = `"${bun}" "${skillTarget.replace(/\\/g, "/")}"`;
+  for (const ev of ["Stop", "SubagentStop"]) (settings.hooks[ev] ??= []).push({ hooks: [{ type: "command", command: skillCmd, timeout: 10 }] });
+  console.log("Trava de skills instalada (agente sem skill não encerra a tarefa).");
   console.log(`Hooks instalados para: ${EVENTS.join(", ")}`);
   console.log(`Comando: ${command}`);
 } else {
@@ -80,7 +86,7 @@ if (mode === "install") {
   if (oursSl(settings.statusLine)) {
     if (existsSync(prevSl)) settings.statusLine = JSON.parse(readFileSync(prevSl, "utf8")); else delete settings.statusLine;
   }
-  for (const f of [target, slTarget, join(hooksDir, `${MARK}-guarda-lider.ts`)]) rmSync(f, { force: true });
+  for (const f of [target, slTarget, join(hooksDir, `${MARK}-guarda-lider.ts`), join(hooksDir, `${MARK}-exigir-skill.ts`)]) rmSync(f, { force: true });
   console.log("Hooks do Escritório Virtual removidos.");
 }
 
