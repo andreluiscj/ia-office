@@ -20,7 +20,7 @@ const COLORS = { working: "#5ee07a", waiting: "#ffcc4d", idle: "#7aa2c8", done: 
 const LABEL = { working: "Trabalhando", waiting: "Esperando você", idle: "Disponível", done: "Concluiu" };
 const FLOOR_BY_SETOR = {
   diretoria: ["#8c5a46", "#80523f"], produto: ["#c8a06a", "#bf9762"], engenharia: ["#8fa3b8", "#879bb0"],
-  qualidade: ["#b98a8a", "#b08282"], operacoes: ["#9fb08a", "#97a882"], reuniao: ["#8b8da0", "#83859a"],
+  qualidade: ["#b98a8a", "#b08282"], comercial: ["#c98aa3", "#c0829b"], operacoes: ["#9fb08a", "#97a882"], reuniao: ["#8b8da0", "#83859a"],
 };
 
 // Mapa de bloqueios: 0 livre, 1 parede, 2 móvel, 3 vidro
@@ -72,7 +72,7 @@ block(31, 1); rect(38, 1, 38, 3); // planta e quadro branco
 const CLUSTERS = [
   { key: "eng", label: "Engenharia e Testes", xs: [4, 6], top: 9, color: "#4a90e2",
     owners: ["empresa-backend", "empresa-frontend", "empresa-qa", null] },
-  { key: "prod", label: "Mesas livres", xs: [11, 13], top: 9, color: "#9aa0b4", owners: [null, null, null, null] },
+  { key: "prod", label: "Marketing e mesas livres", xs: [11, 13], top: 9, color: "#e0568a", owners: ["empresa-marketing", null, null, null] },
   { key: "hot", label: "Terceirizados", xs: [18, 20], top: 9, color: "#9aa0b4", owners: [null, null, null, null] },
 ];
 for (const c of CLUSTERS) {
