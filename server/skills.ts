@@ -47,7 +47,7 @@ function walk(dir: string, depth: number, found: string[], match: (name: string,
   let entries;
   try { entries = readdirSync(dir, { withFileTypes: true }); } catch { return; }
   for (const e of entries) {
-    if (e.name === "node_modules" || e.name === ".git") continue;
+    if (e.name === "node_modules" || e.name === ".git" || e.name === ".openclaw") continue;   // .openclaw repete as skills do plugin
     const full = join(dir, e.name);
     let isDir = e.isDirectory(), isFile = e.isFile();
     if (e.isSymbolicLink() || (!isDir && !isFile)) {
@@ -123,14 +123,22 @@ export function listSkills(): Skill[] {
     roots.push({ path: dir, exists: existsSync(dir), files: found.length, added: byKey.size - before });
   };
   // pessoais
-  scan(join(CLAUDE, "skills"), 4, isSkillFile, p => add(p, "skill", "Pessoal", null));
-  scan(join(homedir(), ".agents", "skills"), 4, isSkillFile, p => add(p, "skill", "Pessoal", null));
+  scan(join(CLAUDE, "skills"), 4, isSkillFile, p => add(p, "skill", "Personal", null));
+  scan(join(homedir(), ".agents", "skills"), 4, isSkillFile, p => add(p, "skill", "Personal", null));
   // de plugins
-  scan(join(CLAUDE, "plugins"), 9, (n, f) => isSkillFile(n) && f.includes(`${sep}skills${sep}`), p => {
-    const pl = pluginOf(p); add(p, "skill", pl ? `Plugin ${pl}` : "Plugin", pl);
-  });
+  // só plugins realmente instalados e ligados (não os clones de marketplace nem versões antigas do cache)
+  const pluginDirs = [join(CLAUDE, "plugins", "synced")];
+  try {
+    const inst = JSON.parse(readFileSync(join(CLAUDE, "plugins", "installed_plugins.json"), "utf8"));
+    for (const [key, list] of Object.entries<any[]>(inst.plugins ?? {}))
+      if (!off.has(key.split("@")[0])) for (const x of list) if (x.installPath) pluginDirs.push(x.installPath);
+  } catch {}
+  for (const d of new Set(pluginDirs))
+    scan(d, 9, (n, f) => isSkillFile(n) && f.includes(`${sep}skills${sep}`), p => {
+      const pl = pluginOf(p); add(p, "skill", pl ? `Plugin ${pl}` : "Plugin", pl);
+    });
   // comandos personalizados (/comando)
-  scan(join(CLAUDE, "commands"), 3, n => n.endsWith(".md"), p => add(p, "comando", "Comando pessoal", null));
+  scan(join(CLAUDE, "commands"), 3, n => n.endsWith(".md"), p => add(p, "comando", "Personal command", null));
   // skills e comandos dos projetos onde o Claude Code já rodou
   const cwds = db.query<{ cwd: string }, []>("SELECT cwd, MAX(last_seen) l FROM agents WHERE cwd IS NOT NULL GROUP BY cwd ORDER BY l DESC LIMIT 60").all();
   for (const { cwd } of cwds) {
@@ -139,7 +147,7 @@ export function listSkills(): Skill[] {
       const dir = join(cwd, ".claude", sub);
       if (!existsSync(dir)) continue;
       scan(dir, kind === "skill" ? 4 : 3, kind === "skill" ? isSkillFile : (n: string) => n.endsWith(".md"),
-        p => add(p, kind, `Projeto ${proj}`, null));
+        p => add(p, kind, `Project ${proj}`, null));
     }
   }
 

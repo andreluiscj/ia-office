@@ -1,4 +1,7 @@
-﻿# Instala as skills novas do Office (lista Pasta1.xlsx de 2026-10-29) + Google Maps Scraper Kit.
+﻿# DESATIVADO em 2026-11-12: lista de skills antigas, removidas de propósito. Veja os plugins atuais no README.
+Write-Host "Instalador desativado: use claude plugin install (agent-skills, mattpocock-skills, skill-creator, claude-security)." -ForegroundColor Yellow
+exit 0
+# Instala as skills novas do Office (lista Pasta1.xlsx de 2026-10-29) + Google Maps Scraper Kit.
 #
 # Uso (PowerShell, na pasta C:\Projetos\ia-office):
 #   powershell -ExecutionPolicy Bypass -File scripts\instalar-skills.ps1            # instala
@@ -21,6 +24,11 @@ $Lista = @(
   @('https://github.com/anthropics/skills', 'ca45fc496a3436251f191354091d557da31c15b5', 'skills/skill-creator',          'skill-creator',          'Todos'),
   @('https://github.com/anthropics/skills', 'ca45fc496a3436251f191354091d557da31c15b5', 'skills/web-artifacts-builder',  'web-artifacts-builder',  'Todos'),
   @('https://github.com/anthropics/skills', 'ca45fc496a3436251f191354091d557da31c15b5', 'skills/theme-factory',          'theme-factory',          'Leonardo'),
+  @('https://github.com/anthropics/skills', 'ca45fc496a3436251f191354091d557da31c15b5', 'skills/frontend-design',        'frontend-design',        'Leonardo'),
+  @('https://github.com/anthropics/skills', 'ca45fc496a3436251f191354091d557da31c15b5', 'skills/webapp-testing',         'webapp-testing',         'Leonardo, Luis Felipe'),
+  @('https://github.com/getsentry/skills', 'd12f250460ffd961f549dbebf7eeb0cf4afd4c2e', 'skills/security-review', 'security-review', 'Igor, Pedro'),
+  @('https://github.com/getsentry/skills', 'd12f250460ffd961f549dbebf7eeb0cf4afd4c2e', 'skills/find-bugs',       'find-bugs',       'Luis Felipe, Lucas'),
+  @('https://github.com/getsentry/skills', 'd12f250460ffd961f549dbebf7eeb0cf4afd4c2e', 'skills/skill-scanner',   'skill-scanner',   'Pedro (auditar skills de terceiros)'),
   @('https://github.com/obra/superpowers', '2ce8aa15d05bd57213e6f746f953aafb7ded7a8b', 'skills/using-superpowers',            'using-superpowers',            'Todos'),
   @('https://github.com/obra/superpowers', '2ce8aa15d05bd57213e6f746f953aafb7ded7a8b', 'skills/verification-before-completion','verification-before-completion','Todos'),
   @('https://github.com/obra/superpowers', '2ce8aa15d05bd57213e6f746f953aafb7ded7a8b', 'skills/brainstorming',                'brainstorming',                'Joaquim'),

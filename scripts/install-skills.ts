@@ -1,3 +1,6 @@
+// DESATIVADO em 2026-11-12: a lista abaixo é das skills antigas. As skills do Office agora vêm de plugins
+// (agent-skills, mattpocock-skills, skill-creator, frontend-design, claude-security) + Context7, 21st.dev e Graphify.
+console.log("Este instalador foi desativado: as skills antigas foram removidas de propósito. Use `claude plugin install`."); process.exit(0);
 // Instala as skills recomendadas para a equipe do Office (globais, para o Claude Code).
 // Usa o CLI "skills" (skills.sh) via npx. Uso: bun scripts/install-skills.ts [--opcionais]
 const BASE: [string, string, string][] = [
