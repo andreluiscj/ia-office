@@ -4,14 +4,11 @@ Cada agente do Office é **um arquivo só**, em `company/agents/`. Tudo sobre el
 
 | Arquivo | Papel |
 |---|---|
-| `agents/empresa-lider.md` | Líder (sessão principal do `claude --office`) |
-| `agents/empresa-arquiteto.md` | Arquiteto e pesquisador |
-| `agents/empresa-backend.md` | Backend e dados |
-| `agents/empresa-frontend.md` | Frontend e UX |
-| `agents/empresa-qa.md` | QA e testes |
-| `agents/empresa-seguranca.md` | Segurança |
-| `agents/empresa-revisor.md` | Code review |
-| `agents/empresa-marketing.md` | Marketing e prospecção de leads (PMEs) |
+| `agents/office-ceo.md` | Líder (sessão principal do `claude --office`) |
+| `agents/office-architect.md` | Arquiteto e pesquisador |
+| `agents/office-dev.md` | Desenvolvedor front-end e back-end |
+| `agents/office-security.md` | Segurança e testes |
+| `agents/office-reviewer.md` | Code review e auditoria final (Claude Security) |
 
 Configuração geral em `empresa.json`: nome da empresa, **seu nome** (`usuario`; se ficar vazio, usa o `user.name` do Git) e os setores.
 
@@ -30,7 +27,7 @@ O Office mostra o nome novo na hora; o Claude Code passa a usar as instruções 
 
 Nos textos você pode escrever marcadores que viram o nome atual de cada um:
 
-`{{usuario}}` `{{empresa}}` `{{lider}}` `{{arquiteto}}` `{{backend}}` `{{frontend}}` `{{qa}}` `{{seguranca}}` `{{revisor}}` `{{marketing}}`
+`{{usuario}}` `{{empresa}}` `{{lider}}` `{{arquiteto}}` `{{dev}}` `{{seguranca}}` `{{revisor}}`
 
 Assim, se você trocar o nome do Arquiteto de "Joaquim" para "Marina" no arquivo dele, todos os outros agentes passam a chamá-la de Marina, sem precisar editar mais nada.
 

@@ -12,33 +12,28 @@ const PROJECTS = [
 ];
 // O fluxo do Líder: cada fase roda em paralelo (no máximo 5 agentes ativos).
 const PIPELINE = [
-  ["empresa-arquiteto"],
-  ["empresa-backend", "empresa-frontend"],
-  ["empresa-qa", "empresa-seguranca"],
-  ["empresa-revisor"],
+  ["office-architect"],
+  ["office-dev"],
+  ["office-security"],
+  ["office-reviewer"],
 ];
 const TASKS: Record<string, string[]> = {
-  "empresa-arquiteto": ["Desenhar API de pagamentos", "Definir camadas do módulo"],
-  "empresa-backend": ["Endpoints de cobrança", "Migração da tabela de faturas"],
-  "empresa-frontend": ["Tela de checkout", "Componente de agenda"],
-  "empresa-qa": ["Testes E2E do checkout", "Testes de integração da API"],
-  "empresa-seguranca": ["Auditoria OWASP do pagamento", "Revisar segredos e LGPD"],
-  "empresa-revisor": ["Revisar diff do módulo", "Revisar mudança de cobrança"],
+  "office-architect": ["Desenhar API de pagamentos", "Definir camadas do módulo"],
+  "office-dev": ["Endpoints de cobrança", "Tela de checkout"],
+  "office-security": ["Auditoria OWASP do pagamento", "Testes E2E do checkout"],
+  "office-reviewer": ["Revisar diff do módulo", "Revisar mudança de cobrança"],
 };
 const SKILLS: Record<string, string[]> = {
-  "empresa-arquiteto": ["mcp-builder", "database-schema-designer"],
-  "empresa-backend": ["prisma-cli", "claude-api"],
-  "empresa-frontend": ["frontend-design", "vercel-react-best-practices", "web-design-guidelines"],
-  "empresa-qa": ["playwright", "webapp-testing"],
-  "empresa-seguranca": ["security-reviewer", "vulnerability-scanning"],
-  "empresa-revisor": ["code-review-and-quality"],
+  "office-architect": ["mcp-builder", "database-schema-designer"],
+  "office-dev": ["frontend-design", "test-driven-development"],
+  "office-security": ["security-and-hardening", "test-driven-development"],
+  "office-reviewer": ["code-review-and-quality"],
 };
 const TOOLS: Record<string, string[]> = {
   default: ["Read", "Grep", "Glob", "Bash"],
-  "empresa-arquiteto": ["Read", "WebFetch", "Write"],
-  "empresa-backend": ["Read", "Edit", "Write", "Bash", "Grep"],
-  "empresa-frontend": ["Read", "Edit", "Write", "Bash"],
-  "empresa-qa": ["Write", "Bash", "Read", "Edit"],
+  "office-architect": ["Read", "WebFetch", "Write"],
+  "office-dev": ["Read", "Edit", "Write", "Bash", "Grep"],
+  "office-security": ["Write", "Bash", "Read", "Edit"],
 };
 
 const pick = <T,>(a: T[]): T => a[Math.floor(Math.random() * a.length)];

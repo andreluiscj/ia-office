@@ -44,7 +44,7 @@ function claude {
     & "${bun}" "${join(root, "scripts", "office-mode.ts")}"
     $antes = $env:CLAUDE_OFFICE
     $env:CLAUDE_OFFICE = '1'
-    try { & $real.Source --agent empresa-lider @rest } finally { $env:CLAUDE_OFFICE = $antes }
+    try { & $real.Source --agent office-ceo @rest } finally { $env:CLAUDE_OFFICE = $antes }
   } else {
     & $real.Source @args
   }
@@ -59,7 +59,7 @@ claude() {
   for a in "$@"; do if [ "$a" = "--office" ]; then office=1; else rest+=("$a"); fi; done
   if [ "$office" = 1 ]; then
     "${posix(bun)}" "${posix(join(root, "scripts", "office-mode.ts"))}"
-    CLAUDE_OFFICE=1 command claude --agent empresa-lider "\${rest[@]}"
+    CLAUDE_OFFICE=1 command claude --agent office-ceo "\${rest[@]}"
   else
     command claude "$@"
   fi

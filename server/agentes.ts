@@ -1,9 +1,9 @@
 // A equipe do Office vem de arquivos fáceis de editar:
 //  - company/empresa.json         nome da empresa, seu nome e os setores
 //  - company/agents/<id>.md       um arquivo por agente: nome, cargo, aparência e todo o conhecimento (prompt)
-// Nos textos dá para usar {{usuario}}, {{empresa}}, {{lider}}, {{arquiteto}}, {{backend}}, {{frontend}},
-// {{qa}}, {{seguranca}} e {{revisor}}: viram o nome atual de cada um ao instalar no Claude Code.
-import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
+// Nos textos dá para usar {{usuario}}, {{empresa}}, {{lider}}, {{arquiteto}}, {{dev}},
+// {{seguranca}} e {{revisor}}: viram o nome atual de cada um ao instalar no Claude Code.
+import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { join } from "node:path";
 
@@ -56,7 +56,7 @@ export function empresa(): Empresa {
 
 export function agentDocs(): AgentDoc[] {
   if (!existsSync(AGENTS_SRC)) return [];
-  const ORDER = ["empresa-lider", "empresa-arquiteto", "empresa-backend", "empresa-frontend", "empresa-qa", "empresa-seguranca", "empresa-revisor"];
+  const ORDER = ["office-ceo", "office-architect", "office-dev", "office-security", "office-reviewer"];
   const rank = (f: string) => { const i = ORDER.indexOf(f.slice(0, -3)); return i < 0 ? 99 : i; };
   return readdirSync(AGENTS_SRC).filter(f => f.endsWith(".md")).sort((a, b) => rank(a) - rank(b) || a.localeCompare(b)).map(f => {
     const file = join(AGENTS_SRC, f);
@@ -65,11 +65,13 @@ export function agentDocs(): AgentDoc[] {
   });
 }
 
-/** Valores dos {{marcadores}}: {{arquiteto}} = nome do agente empresa-arquiteto, e assim por diante. */
+/** Valores dos {{marcadores}}: {{arquiteto}} = nome do agente office-architect, e assim por diante. */
 export function variables(docs = agentDocs(), e = empresa()) {
   const vars: Record<string, string> = { usuario: e.usuario, empresa: e.empresa };
-  for (const d of docs) vars[d.id.replace(/^empresa-/, "")] = d.meta.nome || d.id;
-  for (const d of docs) vars[d.id.replace(/^empresa-/, "")] = fill(vars[d.id.replace(/^empresa-/, "")], vars);
+  const ALIAS: Record<string, string> = { ceo: "lider", architect: "arquiteto", dev: "dev", security: "seguranca", reviewer: "revisor" };   // {{lider}} = office-ceo etc.
+  const key = (id: string) => { const k = id.replace(/^(empresa|office)-/, ""); return ALIAS[k] ?? k; };
+  for (const d of docs) vars[key(d.id)] = d.meta.nome || d.id;
+  for (const d of docs) vars[key(d.id)] = fill(vars[key(d.id)], vars);
   return vars;
 }
 
@@ -94,5 +96,8 @@ export function syncAgents() {
   const docs = agentDocs(), vars = variables(docs);
   mkdirSync(AGENTS_DEST, { recursive: true });
   for (const d of docs) writeFileSync(join(AGENTS_DEST, `${d.id}.md`), renderForClaude(d, vars));
+  // agentes antigos do Office (empresa-* / office-*) que não existem mais em company/agents saem do Claude Code
+  const ids = new Set(docs.map(d => d.id));
+  for (const f of readdirSync(AGENTS_DEST)) if (/^(empresa|office)-.*\.md$/.test(f) && !ids.has(f.slice(0, -3))) rmSync(join(AGENTS_DEST, f));
   return docs.map(d => d.id);
 }

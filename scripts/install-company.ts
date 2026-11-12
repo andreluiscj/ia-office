@@ -94,7 +94,7 @@ if (mode === "install") {
   s.env[TEAMS_ENV] = "1";
   s.teammateMode ??= "in-process";
   // O Líder NÃO é mais o agente padrão: "claude" abre o Claude normal e "claude --office" abre o Líder.
-  if (s.agent === "empresa-lider") delete s.agent;
+  if (s.agent === "office-ceo") delete s.agent;
   s.permissions ??= {};
   // Menos interrupções: edições de arquivo e comandos de leitura/teste passam sem confirmação.
   // git commit/push continuam bloqueados; outros comandos ainda pedem confirmação. Para manter as confirmações: --com-confirmacoes
@@ -117,7 +117,7 @@ if (mode === "install") {
   const s = readSettings();
   if (s.env) { delete s.env[TEAMS_ENV]; if (!Object.keys(s.env).length) delete s.env; }
   if (s.teammateMode === "in-process") delete s.teammateMode;
-  if (s.agent === "empresa-lider") delete s.agent;
+  if (s.agent === "office-ceo") delete s.agent;
   if (s.permissions?.defaultMode === "acceptEdits") delete s.permissions.defaultMode;
   if (s.permissions?.allow) {
     s.permissions.allow = s.permissions.allow.filter((r: string) => !AUTO_ALLOW.includes(r));

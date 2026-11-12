@@ -32,19 +32,19 @@ try {
   const p = JSON.parse(await Bun.stdin.text());
   if (p.stop_hook_active) process.exit(0);
   const tipo = String(p.agent_type ?? "");
-  if (!tipo.startsWith("empresa-")) process.exit(0);
+  if (!tipo.startsWith("empresa-") && !tipo.startsWith("office-")) process.exit(0);
 
   let usadas: string[];
   if (p.hook_event_name === "SubagentStop") usadas = skillsChamadas(p.agent_transcript_path, false);
-  else if (!p.agent_id && tipo === "empresa-lider") usadas = skillsChamadas(p.transcript_path, true);
+  else if (!p.agent_id && tipo === "office-ceo") usadas = skillsChamadas(p.transcript_path, true);
   else process.exit(0);
 
   if (usadas.length) process.exit(0);
   console.log(JSON.stringify({
     decision: "block",
     reason: `Regra nº 1 do Office: toda tarefa usa skill. Você não chamou nenhuma skill nesta tarefa. Chame agora, com a ferramenta Skill, `
-      + `a skill da sua função (lista no seu arquivo) e "verification-before-completion", aplique o que elas pedirem `
-      + `e só então entregue, com a linha SKILLS INVOCADAS no relatório. ECONOMIZAR TOKEN. UTILIZAR AS SKILLS.`,
+      + `a skill do gatilho que se aplica (tabela no seu arquivo), aplique o que ela pedir `
+      + `e só então entregue, com a linha SKILLS INVOKED / SKILLS INVOCADAS no relatório. ECONOMIZAR TOKEN. UTILIZAR AS SKILLS.`,
   }));
 } catch {}
 process.exit(0);

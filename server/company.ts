@@ -16,8 +16,8 @@ export function roster(): Roster {
     cor: d.meta.cor || "#888888", cabelo: d.meta.cabelo || "#333333", pele: d.meta.pele || "#d9a57b",
     resumo: fill(d.meta.resumo || d.meta.description || "", vars),
   });
-  const lider = docs.find(d => d.id === "empresa-lider");
-  const diretor = lider ? toMember(lider) : { id: "empresa-lider", nome: e.usuario, cargo: "Líder", setor: "diretoria", cor: "#d97757", cabelo: "#3b2a20", pele: "#f1c7a5", resumo: "" };
+  const lider = docs.find(d => d.id === "office-ceo");
+  const diretor = lider ? toMember(lider) : { id: "office-ceo", nome: e.usuario, cargo: "Líder", setor: "diretoria", cor: "#d97757", cabelo: "#3b2a20", pele: "#f1c7a5", resumo: "" };
   return { empresa: e.empresa, diretor, setores: e.setores, funcionarios: docs.filter(d => d !== lider).map(toMember) };
 }
 
@@ -61,15 +61,15 @@ function modelShare(agentFilter: string, args: any[]) {
 
 const norm = (t: string) => t.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
 
-/** Para quem foi a mensagem: "joaquim", "empresa-arquiteto", "arquiteto", "main"... -> id do membro ou "diretor". */
+/** Para quem foi a mensagem: "joaquim", "office-architect", "arquiteto", "main"... -> id do membro ou "diretor". */
 function resolveRecipient(to: string, sessionId: string, r: Roster): string | null {
   const n = norm(to);
   if (!n) return null;
-  if (["main", "lead", "team lead", "leader", "lider", "diretor", "empresa lider"].includes(n) || n === norm(r.diretor.nome)) return "diretor";
+  if (["main", "lead", "team lead", "leader", "lider", "diretor", "empresa lider", "office ceo", "ceo", "office-ceo"].includes(n) || n === norm(r.diretor.nome)) return "diretor";
   const byAlias = db.query<Agent, [string]>("SELECT * FROM agents WHERE session_id=? AND alias IS NOT NULL ORDER BY started_at DESC").all(sessionId)
     .find(a => norm(a.alias ?? "") === n);
   if (byAlias) return memberFor(byAlias.name, r)?.id ?? null;
-  const m = r.funcionarios.find(f => norm(f.id) === n || norm(f.id.replace(/^empresa-/, "")) === n || norm(f.nome) === n
+  const m = r.funcionarios.find(f => norm(f.id) === n || norm(f.id.replace(/^(empresa|office)-/, "")) === n || norm(f.nome) === n
     || n.startsWith(norm(f.nome)) || norm(f.cargo).split(" ").includes(n));
   return m?.id ?? null;
 }

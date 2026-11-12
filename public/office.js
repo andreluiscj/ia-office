@@ -35,9 +35,9 @@ rect(0, 0, 0, MH - 1, 1); rect(MW - 1, 0, MW - 1, MH - 1, 1);
 // fileira de salas no fundo (y 1..5) com frente de vidro em y 6
 const ROOMS = [
   { owner: "diretor", x0: 1, x1: 8, door: 6 },
-  { owner: "empresa-arquiteto", x0: 10, x1: 15, door: 13 },
-  { owner: "empresa-seguranca", x0: 17, x1: 22, door: 20 },
-  { owner: "empresa-revisor", x0: 24, x1: 29, door: 27 },
+  { owner: "office-architect", x0: 10, x1: 15, door: 13 },
+  { owner: "office-security", x0: 17, x1: 22, door: 20 },
+  { owner: "office-reviewer", x0: 24, x1: 29, door: 27 },
   { owner: "reuniao", x0: 31, x1: 38, door: 34, meeting: true },
 ];
 rect(1, 6, MW - 2, 6, 3);
@@ -71,8 +71,8 @@ block(31, 1); rect(38, 1, 38, 3); // planta e quadro branco
 // salão aberto: ilhas de 4 mesas (2 de frente para 2) com divisória
 const CLUSTERS = [
   { key: "eng", label: "Engenharia e Testes", xs: [4, 6], top: 9, color: "#4a90e2",
-    owners: ["empresa-backend", "empresa-frontend", "empresa-qa", null] },
-  { key: "prod", label: "Marketing e mesas livres", xs: [11, 13], top: 9, color: "#e0568a", owners: ["empresa-marketing", null, null, null] },
+    owners: ["office-dev", null, null, null] },
+  { key: "prod", label: "Mesas livres", xs: [11, 13], top: 9, color: "#e0568a", owners: [null, null, null, null] },
   { key: "hot", label: "Terceirizados", xs: [18, 20], top: 9, color: "#9aa0b4", owners: [null, null, null, null] },
 ];
 for (const c of CLUSTERS) {
