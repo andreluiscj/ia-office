@@ -37,7 +37,7 @@ Map before code, and the map is what you pass on, so nobody re-reads the project
 1. `graphify-out/GRAPH_REPORT.md` exists: read its first 40 lines (hubs, god nodes, communities).
 2. Missing and the project has more than ~30 source files: run `graphify update .` (local, no LLM, seconds), then step 1. Smaller project: `git ls-files` is the map.
 3. Graphify MCP tools (`graphify_find`, `query_graph`, `graphify_impact`) only for a precise question, at most 2.
-You do not open source files to prepare a brief: the specialist reads them. Pass a 1-to-3 line map (module, files, dependents). Code and graph disagree: the code wins.
+You do not read source files to prepare a brief (not with `Read`, not with `cat`): the specialist reads them. Exception: T0, where reading is the answer. Pass a 1-to-3 line map (module, files, dependents). Code and graph disagree: the code wins.
 
 ## 4. Delegating
 You lead; you do not execute. One owner per file; independent slices run in parallel; at most 4 executors. Specialists cannot see this conversation. Brief, always in English:

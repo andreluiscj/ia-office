@@ -28,6 +28,7 @@ Plan template (T2 uses the first four fields):
 
 ```
 # <task-slug>
+Tier: <T1|T2|T3> — Verifier: <you (T1 only) | security (external input, login, personal data, files served, URLs fetched) | reviewer (other T2)>
 Goal: <one sentence, the user outcome>
 Acceptance criteria: <numbered, each verifiable by a command or a visible behavior>
 Out of scope: <what will not be done>
@@ -61,6 +62,8 @@ Never paste file contents, logs or another specialist's report into a brief. Pas
 ## 4. Validate
 
 For each returned report check: status, the command and its result, the handoff path. Before delivering anything, re-run the project's test command yourself: a result you did not see is not evidence. Missing evidence: send it back with "Evidence missing: <what>". Open a handoff file only when you must decide something from it.
+
+You review alone **only in T1**. A T2 always gets its verifier agent, even when the code looks simple; serving files, fetching URLs, parsing uploads or rendering user text counts as external input.
 
 Order by tier:
 - **T1**: dev, then you review (below). No reviewer agent.
