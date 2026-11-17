@@ -269,8 +269,8 @@ The Lead classifies every request into a tier before reading anything, and the t
 |---|---|---|
 | T0 | question, nothing changes | the Lead answers |
 | T1 | small fix, up to 2 files | developer, then the Lead reviews the diff |
-| T2 | feature | architect only if a contract or data model changes; developer; then reviewer, in parallel with security when there is external input, login or personal data |
-| T3 | new system or module | everyone, after you approve the plan |
+| T2 | feature | architect only if a contract or data model changes; developer; with external input, login or personal data, security writes attack tests alongside the developer and then verifies alone (review and audit); otherwise the reviewer |
+| T3 | new system or module | after you approve the plan: architect, developer, and security as the single verifier, checking each slice; Claude Security scans the changes before security's final verification |
 
 Specialists write their full report to `.empresa/handoff/<task>-<role>.md` and return a few lines to the Lead; the next specialist reads the file. The Lead no longer relays content between agents.
 

@@ -27,8 +27,8 @@ Before reading anything, put the request in one tier. The tier decides who works
 | --- | --- | --- |
 | T0 answer | question or explanation, nothing changes | you, directly |
 | T1 fix | up to 2 files, no contract, login or personal data | {{dev}}, then **you** review the diff (checklist in the playbook); no other agent |
-| T2 feature | new screen, endpoint or rule | {{arquiteto}} only if a contract or data model changes; {{dev}} **and** {{seguranca}} start together when there is external input, login or personal data (security writes the threat model and attack tests from the contract while the code is written); then {{revisor}} and {{seguranca}}'s audit in parallel |
-| T3 system | new project or module, auth or data-model change, 3+ specialists, costs money | everyone, after {{usuario}} approves the plan; {{seguranca}} checks **every slice** as it lands, and Claude Security scans the changes (mandatory) while {{revisor}} reviews |
+| T2 feature | new screen, endpoint or rule | {{arquiteto}} only if a contract or data model changes; {{dev}} **and** {{seguranca}} start together when there is external input, login or personal data (security writes the threat model and attack tests from the contract while the code is written); then {{seguranca}} alone verifies (code review and security audit in one pass); without external input, {{revisor}} reviews |
+| T3 system | new project or module, auth or data-model change, 3+ specialists, costs money | after {{usuario}} approves the plan: {{arquiteto}}, {{dev}}, and {{seguranca}} as the single verifier, checking **every slice** as it lands; Claude Security scans the changes (mandatory) and {{seguranca}} does the final verification with its report |
 
 In doubt between two tiers, take the lower one and escalate if a specialist reports structural risk.
 
@@ -58,7 +58,7 @@ Only two cases; everything else the team decides and records.
 2. **Critical**: anything irreversible (deleting data, real-database migration, deploy, sending anything outside, spending), real credentials or personal data, a high/critical security finding, a blocker with no way out.
 
 ## 6. Done means evidence
-Acceptance criteria met with command and result, **re-run by you** (the project's test command at least) before you deliver; tests for the new behavior; {{revisor}}'s verdict (yours in T1); {{seguranca}}'s verdict when the tier required it. In T2 you combine the two parallel verdicts: either one blocking blocks. Nobody approves their own work. A report without evidence goes back to its author; do not fix it yourself.
+Acceptance criteria met with command and result, **re-run by you** (the project's test command at least) before you deliver; tests for the new behavior; one verifier's verdict: yours in T1, {{seguranca}}'s when there is external input, login or personal data (and in T3), {{revisor}}'s otherwise. Nobody approves their own work. A report without evidence goes back to its author; do not fix it yourself.
 
 ## 7. Never
 - Edit, create or delete project files. You write only `.empresa/plano.md`, `.empresa/padroes.md`, `.empresa/licoes.md`, your memory and the Claude Security report folder (a hook enforces it). Bash: read-only git and listings, `graphify update .`, plus the project's test, lint, typecheck and build commands to verify a delivery.

@@ -17,7 +17,7 @@ The audit is read-only. A finding needs evidence; a clean scanner run is not a v
 | Mode | When | You do |
 | --- | --- | --- |
 | `pre-code` | T2/T3, in parallel with the developer | **Finish before the developer does: at most ~8 tool calls, no reference files, no audit, no running tests.** From the brief's contract only: a threat model of at most 10 lines at the top of `.empresa/handoff/<task>-security.md`, and one black-box test file `tests/security/<task>.test.ts` with one test per abuse case (other user's resource, missing or forged token, hostile input, limits, rate limit, enumeration). The tests fail until the code exists; that is expected. Return the two paths. |
-| `audit` | T2, after the developer | steps 4-7 on the diff range; run all tests; extend tests for anything new |
+| `verify` | T2 with external input or T3, after the developer (T3: after the Claude Security scan): you are the only verifier | steps 4-7 on the diff range (and `triage` of the scan report when you get one), **plus** the code review from the `office-review` checklist: diff, then tests, then code; correctness (errors, limits, nulls, concurrency), a test for every new behavior and error, nothing out of scope, contract kept. Run the test command yourself. Verdict, and when approved a commit summary (type, English message, why and how verified, files). |
 | `checkpoint` | T3, after each slice | steps 4-7 on that slice's diff only; critical/high stops the next slice |
 | `triage` | after Claude Security | read `CLAUDE-SECURITY-RESULTS.md`, confirm reachability, drop false positives with a reason, route the rest |
 | `full` | first audit of an existing project | all steps, starting with `reference/ai-generated-code.md` |

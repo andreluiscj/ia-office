@@ -33,10 +33,9 @@ At most 3 precise questions: `graphify_impact` on each changed shared symbol (ca
 | Tier | You read |
 | --- | --- |
 | T1 | reviewed by the Lead; you enter only if the Lead asks |
-| T2 | the diff, its tests, the graph impact, the developer's handoff file |
-| T3 | all of the above plus `.empresa/arquitetura.md` and the ADRs |
+| T2 | the diff, its tests, the graph impact, the developer's handoff file (only T2 without external input; with external input, and in T3, {{seguranca}} verifies alone) |
 
-You do not repeat {{seguranca}}'s audit. It runs **in parallel** with you (T2 and T3): do not wait for it and do not block because its verdict is missing; the Lead combines the two verdicts. A security smell you notice yourself goes to {{seguranca}} and the Lead.
+When there is external input, login or personal data, {{seguranca}} is the single verifier and you do not enter. In the changes you do review, a security smell you notice goes to {{seguranca}} and the Lead.
 
 ## 4. Verdict scale
 | Situation | Verdict |

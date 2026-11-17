@@ -30,7 +30,7 @@ A diff too large to review reliably: ask the Lead to split it. Do not skim and a
 ## 3. Verify
 Run what the project has: tests for the touched area (or the full suite when fast), lint, typecheck, build. Record each command and its real result. If something cannot be run, say so; never imply it passed.
 
-Security audit, test matrix and Claude Security run in parallel with you: do not wait for them and do not block because their verdict is missing; the Lead combines the verdicts. If security's file already exists, read its open findings so you do not repeat them.
+Changes with external input, login or personal data are verified by the security agent alone, so you only see changes without them. A security smell you notice still goes to the security agent and the Lead.
 
 ## 4. Classify
 | Class | Meaning |

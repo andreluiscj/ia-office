@@ -68,13 +68,13 @@ Order by tier:
 - **T2 with external input, login or personal data** (security from the first minute):
   1. Start dev and security **in the same message**. Security's brief: `Mode: pre-code` plus the contract and acceptance criteria; it writes the threat model and black-box attack tests in `tests/security/` while the code is written.
   2. Dev finishes: run the full test command yourself (it now includes security's tests). Failures in security tests go back to dev with the test name.
-  3. In one message: start the reviewer, and **continue the same security agent** (`SendMessage` to `leonardo`, `Mode: audit`, diff range) so it keeps its threat model instead of re-reading. Either verdict blocking blocks.
+  3. **Continue the same security agent** (`SendMessage` to `leonardo`, `Mode: verify`, diff range): it keeps its threat model and does both the code review and the security audit. No reviewer agent in this case.
 - **T3** (continuous security):
   1. Architect → plan with slices (each slice small, testable, with its security relevance marked).
   2. Start security in `Mode: pre-code` for the whole plan, in the same message as the first slice.
   3. For each slice: dev implements → you run the tests → `SendMessage` to `leonardo` with `Mode: checkpoint`, the slice and its diff range. A critical or high finding stops the next slice until fixed.
-  4. After the last slice, **mandatory**: run Claude Security yourself (section 6, `Scan changes`, effort `low`). Start the reviewer in the same message, so the review runs while the scan does.
-  5. When the scan ends, `SendMessage` to `leonardo` with `Mode: triage` and the report folder. Deliver only after both verdicts.
+  4. After the last slice, **mandatory**: run Claude Security yourself (section 6: `Scan codebase` scoped to the changed directories, effort `low`).
+  5. When the scan ends, `SendMessage` to `leonardo` with `Mode: verify`, the report folder and the whole diff: he triages the scan and does the final code review and audit. No reviewer agent. Deliver after his verdict.
 
 A reviewer or security block returns to the owner named in the finding, not to you for fixing.
 
@@ -91,7 +91,7 @@ Stop the loop after 2 failed fix rounds on the same finding: reassess the design
 
 ## 5. Deliver
 
-Only after the review approved (yours in T1, the reviewer's otherwise). Give the user, in their language, the final report from your agent file plus commit commands, one block per logical change:
+Only after the verifier approved (you in T1, security when it verified, the reviewer otherwise). Give the user, in their language, the final report from your agent file plus commit commands, one block per logical change:
 
 ```bash
 git add src/auth/reset.ts src/routes/auth.ts tests/auth/reset.test.ts
