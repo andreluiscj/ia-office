@@ -3,7 +3,7 @@
 //  - company/agents/<id>.md       um arquivo por agente: nome, cargo, aparência e todo o conhecimento (prompt)
 // Nos textos dá para usar {{usuario}}, {{empresa}}, {{lider}}, {{arquiteto}}, {{dev}},
 // {{seguranca}} e {{revisor}}: viram o nome atual de cada um ao instalar no Claude Code.
-import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { cpSync, existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { join } from "node:path";
 
@@ -11,6 +11,8 @@ export const COMPANY_DIR = join(import.meta.dir, "..", "company");
 export const AGENTS_SRC = join(COMPANY_DIR, "agents");
 const CLAUDE = process.env.CLAUDE_CONFIG_DIR ?? join(homedir(), ".claude");
 export const AGENTS_DEST = join(CLAUDE, "agents");
+export const SKILLS_SRC = join(COMPANY_DIR, "skills");
+export const SKILLS_DEST = join(CLAUDE, "skills");
 
 /** Campos usados só pelo Office (o Claude Code não precisa deles). */
 const OFFICE_KEYS = ["nome", "cargo", "setor", "resumo", "cor", "cabelo", "pele"];
@@ -99,5 +101,30 @@ export function syncAgents() {
   // agentes antigos do Office (empresa-* / office-*) que não existem mais em company/agents saem do Claude Code
   const ids = new Set(docs.map(d => d.id));
   for (const f of readdirSync(AGENTS_DEST)) if (/^(empresa|office)-.*\.md$/.test(f) && !ids.has(f.slice(0, -3))) rmSync(join(AGENTS_DEST, f));
+  syncSkills();
   return docs.map(d => d.id);
+}
+
+/** Conectores (MCP) que a equipe usa. Os outros ficam fora das sessões do Office: cada um custa contexto em todo agente. */
+export const OFFICE_MCP = ["graphify", "context7", "21st"];
+export const OFFICE_MCP_FILE = join(homedir(), ".escritorio-virtual", "office-mcp.json");
+
+/** Grava a lista enxuta de conectores, lida do ~/.claude.json, para o `claude --office` usar com --strict-mcp-config. */
+export function writeOfficeMcp() {
+  const all = JSON.parse(readFileSync(join(homedir(), ".claude.json"), "utf8")).mcpServers ?? {};
+  const mcpServers = Object.fromEntries(OFFICE_MCP.filter(k => all[k]).map(k => [k, all[k]]));
+  mkdirSync(join(homedir(), ".escritorio-virtual"), { recursive: true });
+  writeFileSync(OFFICE_MCP_FILE, JSON.stringify({ mcpServers }));
+  return OFFICE_MCP_FILE;
+}
+
+/** Copia os playbooks do Office (company/skills/office-*) para ~/.claude/skills, trocando a versão anterior. */
+export function syncSkills() {
+  if (!existsSync(SKILLS_SRC)) return [];
+  const names = readdirSync(SKILLS_SRC).filter(n => n.startsWith("office-"));
+  for (const n of names) {
+    rmSync(join(SKILLS_DEST, n), { recursive: true, force: true });
+    cpSync(join(SKILLS_SRC, n), join(SKILLS_DEST, n), { recursive: true });
+  }
+  return names;
 }

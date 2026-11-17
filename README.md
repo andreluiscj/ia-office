@@ -40,7 +40,7 @@ Everything runs on your machine: the server only accepts local connections and n
 |---|---|
 | **Office** | Pixel-art floor with rooms, desks, kitchen and lounge. Agents walk, sit, show what they are doing and go back to the lounge when done. |
 | **Agent team** | A Lead and four specialists: architecture and engineering, full-stack development, security and testing, and code review. Opens with `claude --office`. |
-| **Automatic skills** | Every agent has a table of triggers ("a library is involved", "a screen is needed", "a bug shows up") mapped to installed skills, and calls them before doing anything else. A hook blocks an agent that finishes without calling a skill. |
+| **Playbook skills** | Every agent starts each task by calling its own short Office playbook (`office-*` skill), which loads detailed references and third-party skills only when the task needs them. A hook blocks an agent that finishes without calling its playbook. |
 | **Graphify first** | Agents read the project's knowledge graph before opening code, so they understand how a project works quickly and with few tokens. |
 | **Skills that learn you** | When you ask for the same thing the same way twice, the team writes a project skill so the next one is faster and closer to how you work. |
 | **Claude Security audit** | At the end of a project, an audit or attack-attempt request runs the whole [Claude Security](https://code.claude.com/docs/en/claude-security) plugin. |
@@ -135,7 +135,7 @@ Set-ExecutionPolicy -Scope CurrentUser RemoteSigned
 
 ### 5. Install the skill stack
 
-The team is built to use a specific set of skills, plugins and MCP servers. See [Install the skill stack](#install-the-skill-stack) below. Without it the agents still work, but they will report `NO SKILL` for most triggers.
+The team is built to use a specific set of skills, plugins and MCP servers. See [Install the skill stack](#install-the-skill-stack) below. Without it the agents still work, but the playbooks will have no third-party skill to fall back on for specific problems.
 
 ### 6. Start the Office
 
@@ -198,7 +198,7 @@ Everything stays in Claude Code's config folder (`~/.claude`, or the `CLAUDE_CON
 | `settings.json` → `env` and `teammateMode` | `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` and `teammateMode: "in-process"` | Enables Claude Code agent teams (experimental), used by the Lead. |
 | `settings.json` → `permissions` | `defaultMode: "acceptEdits"` and an allowlist of read and test commands (`git status`, `git diff`, `npm test`, `bun test`, `pytest`...) | Fewer confirmation prompts. To keep confirmations, use `bun scripts/install-company.ts install --com-confirmacoes`. |
 | `settings.json` → `permissions.deny` | `git commit`, `git push`, `git merge`, `git rebase` and `git tag` blocked for Claude | Only you commit and push. The team hands you ready commands. |
-| `hooks/` | `escritorio-virtual-send.ts`, `escritorio-virtual-statusline.ts`, `escritorio-virtual-send-guarda-lider.ts` and `escritorio-virtual-send-exigir-skill.ts` | Scripts called by the hooks. The "guard" stops the Lead from editing files (except its own memory): it coordinates, the specialists code. The skill gate blocks an `office-*` agent that tries to finish without calling a skill. |
+| `hooks/` | `escritorio-virtual-send.ts`, `escritorio-virtual-statusline.ts`, `escritorio-virtual-send-guarda-lider.ts` and `escritorio-virtual-send-exigir-skill.ts` | Scripts called by the hooks. The "guard" stops the Lead from editing files (except its own memory): it coordinates, the specialists code. The skill gate blocks an `office-*` agent that tries to finish without calling its playbook skill. |
 | `agents/` | `office-ceo.md`, `office-architect.md`, `office-dev.md`, `office-security.md` and `office-reviewer.md` | The team. Old `empresa-*` and `office-*` agent files that no longer exist in `company/agents` are removed. |
 | Terminal profile | A `claude` function between the `# >>> Office (claude --office) >>>` and `# <<< Office (claude --office) <<<` markers in the PowerShell profile, `~/.bashrc` and `~/.zshrc` | Creates `claude --office`. Without `--office`, `claude` works exactly as before. |
 
@@ -219,7 +219,7 @@ claude                          # plain Claude Code, no team and no Office
 
 Example request: *"build the change-password screen with validation and tests"*.
 
-1. The Lead reads the project graph, triggers the matching skills and shows you the plan: tasks, who does each one, models, risks and acceptance criteria.
+1. The Lead classifies the request, reads the project graph and shows you the plan: tasks, who does each one, models, risks and acceptance criteria.
 2. You approve large plans; small ones it runs on its own.
 3. It assigns the work. Specialists work in parallel (at most 4 at once) and talk to each other.
 4. Review is proportional to risk: the Reviewer always, Security and Testing when there is a user flow, integration, login, data, permissions, dependencies or secrets.
@@ -233,7 +233,7 @@ Example request: *"build the change-password screen with validation and tests"*.
 
 | Agent | Id | What it does | Default model |
 |---|---|---|---|
-| Lead (you) | `office-ceo` | Understands the request, reads the graph, triggers skills, plans, delegates, validates and delivers. Never edits files. | Your choice |
+| Lead (you) | `office-ceo` | Classifies the request, reads the graph, plans, delegates, validates and delivers. Never edits files. | Your choice |
 | Joaquim | `office-architect` | Engineering and architecture: specs, contracts, ADRs, owner of the Graphify graph, writer of the team's skills. | Sonnet |
 | Igor | `office-dev` | Full-stack: APIs, business rules, local-database migrations, screens, components and unit tests, with 21st.dev components for visual work. | Sonnet |
 | Leonardo | `office-security` | Security audit (read-only) and integration, E2E and regression tests. Routes every finding to its owner and confirms the fix. | Sonnet |
@@ -249,24 +249,30 @@ Architecture and decisions are recorded in `.empresa/` inside your project (`pla
 
 Every agent is built around four goals: **efficiency, effectiveness, skill use and token economy**.
 
-### Skills by trigger
+### Playbooks and tiers
 
-Skills are the project's main difference. Each agent has a table of triggers and, **before any other tool**, calls the `Skill` tool for the ones that apply. A few examples from the Lead's table:
+Skills are the project's main difference, and token economy decides how they are used. Each agent file is a short core (role, limits, report format). **Before any other tool**, the agent calls its own playbook, a short skill shipped in `company/skills/` and installed with the team:
 
-| Trigger | Skill |
-|---|---|
-| Vague request, missing who or why | `interview-me` / `grilling` |
-| New system or large change without a spec | `spec-driven-development` |
-| A library, framework, SDK or CLI is involved | Context7 + `source-driven-development` |
-| A screen, site or visual system | `frontend-design` + 21st.dev MCP + `frontend-ui-engineering` |
-| Executing a code task | `incremental-implementation` + `tdd` |
-| A bug or failing test | `debugging-and-error-recovery` / `diagnosing-bugs` |
-| Login, personal data, upload, public API, new dependency | `security-and-hardening` |
-| Reviewing a change | `code-review-and-quality` / `code-review` |
-| Before handing over | `shipping-and-launch` and `pr` |
-| End-of-project audit or attack attempt | Claude Security, mandatory |
+| Agent | Playbook | Detail loaded only when the task touches it |
+|---|---|---|
+| Lead | `office-lead` | plan template, brief examples, commit commands |
+| Architect | `office-architecture` | stack defaults, project structure, ADR and contract templates, writing project skills |
+| Developer | `office-implementation` | back-end standards, front-end standards (states, WCAG 2.2 AA, Core Web Vitals), visual direction |
+| Security and testing | `office-security-audit`, `office-test-matrix` | one reference per audit area: auth and sessions, access control and RLS, input and injection, secrets and config, supply chain, LLM features, LGPD, AI-generated-code failure modes |
+| Reviewer | `office-review`, `office-final-audit` | the Claude Security procedure |
 
-If no skill fits a step, the agent writes `NO SKILL: <step>` in its report. Reports end with `SKILLS INVOKED`, and the Lead and the Reviewer compare that line with the calls the Skills panel recorded. A missing line sends the work back to its author, and a hook blocks the agent from finishing without any skill call.
+The third-party skills (agent-skills, mattpocock-skills, frontend-design, Claude Security) stay installed as a library: a playbook points to one of them for a specific problem, one at a time, preferring the shorter of two equivalents.
+
+The Lead classifies every request into a tier before reading anything, and the tier decides who works:
+
+| Tier | What | Who |
+|---|---|---|
+| T0 | question, nothing changes | the Lead answers |
+| T1 | small fix, up to 2 files | developer, then the Lead reviews the diff |
+| T2 | feature | architect only if a contract or data model changes; developer; then reviewer, in parallel with security when there is external input, login or personal data |
+| T3 | new system or module | everyone, after you approve the plan |
+
+Specialists write their full report to `.empresa/handoff/<task>-<role>.md` and return a few lines to the Lead; the next specialist reads the file. The Lead no longer relays content between agents.
 
 ### Graphify first
 
@@ -439,8 +445,8 @@ The terminal did not load the function. Open a new terminal. On Windows, check `
 **The agents still have the old names or instructions**
 Run `bun run agentes:aplicar` and open a new session. Claude Code reads agents when a session starts.
 
-**Agents report `NO SKILL` for almost everything**
-The skill stack is missing or was installed after the session began. Run `claude plugin list` and `claude mcp list`, install what is missing and open a new session.
+**An agent is blocked with "playbook not called", or cannot find a third-party skill**
+The `office-*` playbooks are copied to `~/.claude/skills` by `bun run agentes:aplicar` (and by `claude --office`); run it and open a new session. For third-party skills, run `claude plugin list` and `claude mcp list`, install what is missing and open a new session.
 
 **The 21st.dev MCP shows "needs authentication"**
 `API_KEY_21ST` is not set in that terminal. Set it, open a new terminal and run `claude mcp list` again. A `503` means the 21st.dev service itself is unavailable; try again later.
@@ -492,7 +498,7 @@ Claude Code ──hooks──▶ hooks/send.ts ──HTTP──▶ server (Bun) 
 
 - `claude --office` sets `CLAUDE_OFFICE=1`, updates the agents, starts the server if needed and opens `claude --agent office-ceo`.
 - `hooks/send.ts` receives each event's JSON and sends it to `http://127.0.0.1:7777/events`. If the session is not an Office one or the server is off, it exits in milliseconds without getting in Claude's way.
-- `hooks/exigir-skill.ts` runs when an `office-*` agent tries to stop and blocks it if the transcript has no `Skill` call.
+- `hooks/exigir-skill.ts` runs when an `office-*` agent tries to stop and blocks it if the transcript has no call to an `office-*` playbook skill.
 - The server stores everything in `~/.escritorio-virtual/escritorio.db` and notifies the screens over WebSocket.
 
 ```

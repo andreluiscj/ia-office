@@ -4,15 +4,17 @@
 const BLOCKED = new Set(["Edit", "Write", "NotebookEdit", "MultiEdit"]);
 try {
   const p = JSON.parse(await Bun.stdin.text());
-  // única escrita liberada: a memória do próprio Líder (memory: project)
+  // escritas liberadas: a memória do Líder e os arquivos de coordenação (plano, padrões, lições)
   const alvo = String(p.tool_input?.file_path ?? p.tool_input?.notebook_path ?? "").replace(/\\/g, "/");
-  const memoria = /\/\.claude\/agent-memory\/office-ceo\//.test(alvo) && !alvo.includes("..");
-  if (BLOCKED.has(p.tool_name) && !p.agent_id && p.agent_type === "office-ceo" && !memoria) {
+  const liberado = !alvo.includes("..") && (/\/\.claude\/agent-memory\/office-ceo\//.test(alvo)
+    || /\/\.empresa\/(plano|padroes|licoes)\.md$/.test(alvo)
+    || /\/CLAUDE-SECURITY-[^/]+\//.test(alvo));   // o Claude Security roda na sessão do Líder e grava o próprio relatório
+  if (BLOCKED.has(p.tool_name) && !p.agent_id && p.agent_type === "office-ceo" && !liberado) {
     console.log(JSON.stringify({
       hookSpecificOutput: {
         hookEventName: "PreToolUse",
         permissionDecision: "deny",
-        permissionDecisionReason: "The Lead does not edit files. Hand this change to the responsible specialist (Joaquim, Igor, Leonardo or Luis Felipe).",
+        permissionDecisionReason: "The Lead does not edit files. Hand this change to the responsible specialist (Joaquim, Igor, Leonardo or Lucas). The Lead writes only .empresa/plano.md, padroes.md, licoes.md, its memory and Claude Security report folders.",
       },
     }));
   }

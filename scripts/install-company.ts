@@ -8,7 +8,7 @@
 import { copyFileSync, cpSync, existsSync, mkdirSync, readdirSync, readFileSync, renameSync, rmSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { join } from "node:path";
-import { empresa, syncAgents } from "../server/agentes";
+import { empresa, SKILLS_DEST, SKILLS_SRC, syncAgents } from "../server/agentes";
 
 const mode = process.argv[2] ?? "install";
 const claudeDir = process.env.CLAUDE_CONFIG_DIR ?? join(homedir(), ".claude");
@@ -113,6 +113,7 @@ if (mode === "install") {
   console.log("  claude            -> abre só o Claude, sem o Office");
 } else {
   for (const f of agentFiles) rmSync(join(agentsDir, f), { force: true });
+  if (existsSync(SKILLS_SRC)) for (const n of readdirSync(SKILLS_SRC)) if (n.startsWith("office-")) rmSync(join(SKILLS_DEST, n), { recursive: true, force: true });
   if (existsSync(claudeMd)) writeFileSync(claudeMd, stripRule(readFileSync(claudeMd, "utf8")));
   const s = readSettings();
   if (s.env) { delete s.env[TEAMS_ENV]; if (!Object.keys(s.env).length) delete s.env; }
