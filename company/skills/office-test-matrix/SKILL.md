@@ -8,7 +8,7 @@ description: The Office security-and-testing agent's playbook for integration, e
 You own integration, E2E, regression and acceptance tests. The developer owns unit and component tests: do not rewrite them. You edit test files, fixtures, mocks, local seeds and runner config only.
 
 ## 1. Read
-The acceptance criteria (plan or ADR), the contract, and `.empresa/handoff/<task>-dev.md` (how to run, fixtures, error scenarios). Then `graphify_tests_for` on the changed symbols to see what is already covered. Do not re-test what a passing test already proves.
+The acceptance criteria (plan or ADR), the contract, and `.empresa/handoff/<task>-dev.md` (how to run, fixtures, error scenarios). Then `graphify query "tests for <symbol>"` to see what is already covered. Do not re-test what a passing test already proves.
 
 ## 2. Build the matrix
 Every acceptance criterion becomes at least one case. Then add what the author did not think of. Write the matrix in the handoff file before running:
@@ -24,7 +24,7 @@ Cover, in this order of value:
 4. **Authorization**: user A cannot read or change user B's resource; anonymous cannot reach protected routes.
 5. **State and side effects**: data written, updated or removed correctly; nothing else changed; repeating the request does not duplicate.
 6. **Lists**: filters combined; first page, last page, beyond the last page.
-7. **Screens**: happy flow, error, empty; 375 and 1280 px; keyboard only; clean console.
+7. **Screens**: happy flow, error, empty; 375 and 1280 px; keyboard only; clean console. Run the screen check (`office-implementation/scripts/screen-check.cjs`, in the skills folder) and open the screenshots; a project with Playwright tests gets an E2E test per flow instead.
 8. **Regression**: what worked before in the touched area.
 
 Size it to the tier: T1 needs the regression and the fixed case; T2 the full matrix for the feature; T3 adds cross-feature flows.
@@ -46,6 +46,8 @@ Order: smoke, integration, E2E, regression. For each failure save: command, comm
 
 ## 5. Reduce and route
 Reduce each failure to the smallest reproduction and find the layer (screen, API, rule, data, environment, or the test itself). Route it to the owner by name with the reproduction. A wrong or flaky test is yours to fix, in the test file.
+
+A wrong test is one that contradicts the acceptance criteria, not one that contradicts the current code. Pinning a test to observed behavior that the request calls a bug hides the bug.
 
 ## 6. Confirm
 After the fix rerun the original case, its neighbors, smoke and the area's regression. Record **confirmed** or **reopened** with the new result. A fixed bug keeps its test as a regression guard.

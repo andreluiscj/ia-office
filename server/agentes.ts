@@ -118,6 +118,16 @@ export function writeOfficeMcp() {
   return OFFICE_MCP_FILE;
 }
 
+/** Plugins desligados só nas sessões do Office: o ponytail injeta "faça o mínimo, pule o que der" em todo agente,
+ *  e nos testes isso fez agentes pularem a checagem de tela. As outras sessões do Claude continuam com ele. */
+export const OFFICE_DISABLED_PLUGINS = ["ponytail@ponytail"];
+export const OFFICE_SETTINGS_FILE = join(homedir(), ".escritorio-virtual", "office-settings.json");
+export function writeOfficeSettings() {
+  mkdirSync(join(homedir(), ".escritorio-virtual"), { recursive: true });
+  writeFileSync(OFFICE_SETTINGS_FILE, JSON.stringify({ enabledPlugins: Object.fromEntries(OFFICE_DISABLED_PLUGINS.map(p => [p, false])) }));
+  return OFFICE_SETTINGS_FILE;
+}
+
 /** Copia os playbooks do Office (company/skills/office-*) para ~/.claude/skills, trocando a versão anterior. */
 export function syncSkills() {
   if (!existsSync(SKILLS_SRC)) return [];

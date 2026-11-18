@@ -25,7 +25,7 @@ The audit is read-only. A finding needs evidence; a clean scanner run is not a v
 When you are continued with `SendMessage`, you keep your earlier context: reuse the threat model, read only the new diff.
 
 ## 1. Scope
-The diff plus its blast radius (`graphify_impact`, `graphify_callers`). End-of-project audit: every entry point. Read the security level set by the architect (`L1` default, `L2` for personal data, payments, multi-tenant, admin). No level set: assume `L2` if any of those are present. Write down what is **out** of scope.
+The diff plus its blast radius (`graphify query` on the changed symbols). End-of-project audit: every entry point. Read the security level set by the architect (`L1` default, `L2` for personal data, payments, multi-tenant, admin). No level set: assume `L2` if any of those are present. Write down what is **out** of scope.
 
 ## 2. Inventory
 - **Assets**: credentials and tokens, personal data, money, admin actions, other tenants' data, the AI model's tools and context.

@@ -16,6 +16,8 @@ Read one reference, only if the task touches it:
 2. Find how the project already does this kind of thing (graph, then one or two excerpts). Copy that pattern.
 3. Find the commands: test, lint, typecheck, build (package manifest or your memory file). Run the tests once to know the baseline is green.
 
+Create and change files with `Write`/`Edit`, never with shell redirection (`cat > file`, `echo >>`, heredocs): it is reviewable and it does not stall on a permission prompt. Run commands from the project root, one purpose per command, without `cd ... &&` chains or `;` lists: a chain that mixes an allowed command with an unusual one gets the whole call denied.
+
 ## 2. The slice cycle
 
 Repeat for each slice of the task, smallest useful behavior first:
@@ -53,9 +55,17 @@ If a rule cannot be followed, do not work around it: report it to the Lead.
 - [ ] tests, lint, typecheck, build are green (or absent, noted)
 - [ ] the diff contains only this task: no debug logs, temp files, secrets, stray formatting
 - [ ] no test removed or weakened; no lockfile change that was not approved
-- [ ] screens: opened in a real browser, states and sizes checked, console clean
+- [ ] screens: run the screen check below (it starts and stops the app itself with `--start`), **open** the 375 and 1280 screenshots with `Read` and look at them; fix or justify every issue it lists
 - [ ] migrations: ran on a confirmed local database, with a rollback noted
 ```
+
+## Screen check (any change a user sees)
+
+```bash
+node <this skill's base directory>/scripts/screen-check.cjs http://localhost:<port>/<page> .empresa/screens --start "<the project's serve command>"
+```
+
+It opens the page in headless Chromium at 375, 768 and 1280 px, saves `.empresa/screens/screen-<width>.png`, and reports console errors, horizontal scroll, unnamed controls, images without `alt`, targets under 24 px (44 px recommended on phone), invisible text and missing `lang`/`<title>`. Do not probe for Playwright first (no `npm ls`, `npx`, `python`): just run the script; it is installed globally and the script says so if it is not. If it is missing, write "screen not verified: Playwright missing" in the handoff instead of claiming a browser check. To check a state (empty, error), point it at the page with that state reproduced, for example by stopping the API to see the error state.
 
 ## 5. Handoff
 

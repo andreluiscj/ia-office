@@ -1,7 +1,7 @@
 // Chamado pelo `claude --office` antes de abrir o Claude Code:
 //  1. atualiza os agentes em ~/.claude/agents com o que está em company/agents (suas edições valem na hora);
 //  2. liga o servidor do Office se estiver parado.
-import { OFFICE_MCP_FILE, syncAgents, writeOfficeMcp } from "../server/agentes";
+import { OFFICE_MCP_FILE, OFFICE_SETTINGS_FILE, syncAgents, writeOfficeMcp, writeOfficeSettings } from "../server/agentes";
 import { join, resolve } from "node:path";
 import { homedir } from "node:os";
 import { mkdirSync, openSync, rmSync } from "node:fs";
@@ -17,6 +17,7 @@ async function running() {
 try { syncAgents(); } catch (e) { console.error("Office: não consegui atualizar os agentes:", (e as Error).message); }
 // Sem o arquivo, o `claude --office` abre com todos os conectores, como antes.
 try { writeOfficeMcp(); } catch { rmSync(OFFICE_MCP_FILE, { force: true }); }
+try { writeOfficeSettings(); } catch { rmSync(OFFICE_SETTINGS_FILE, { force: true }); }
 
 if (await running()) {
   console.log(`Office: ${BASE}`);

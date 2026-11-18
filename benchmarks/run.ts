@@ -4,7 +4,7 @@
 import { appendFileSync, cpSync, mkdirSync, mkdtempSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { writeOfficeMcp } from "../server/agentes";
+import { writeOfficeMcp, writeOfficeSettings } from "../server/agentes";
 
 const TASKS: Record<string, string> = {
   t1: "Bug: GET /notes?page=1&limit=2 skips the first notes (page is 1-based). Fix it and add a regression test. Run the tests. Do not ask me anything and do not commit.",
@@ -17,6 +17,8 @@ TASKS.t5 = "Add a link preview feature to this API. POST /link-preview takes JSO
 TASKS.t4 = "Build public/notes.html: a screen that lists notes from GET /notes with Previous and Next pagination (5 per page, page numbers start at 1). It must look finished and work well on a phone and on a desktop. Plain HTML, CSS and JavaScript, no frameworks, no new dependencies. Keep handle(req) exported from src/server.ts. Add tests and run them. Do not ask me anything and do not commit.";
 // t0: a question; nothing may change. Scored on the answer and on an untouched tree.
 TASKS.t0 = "Question, do not change any file: how does GET /notes pagination work in this API, and does it have a bug? Answer briefly.";
+// t6: a data-model change (tags) that should go through architecture first.
+TASKS.t6 = "Notes need tags. POST /notes {text 1-500 chars, tags optional: at most 5, each 1-20 chars of a-z 0-9 or -, stored lowercase and deduplicated} returns 201 {id, text, tags}; invalid field 422 {error:{code,message}}; malformed JSON 400. GET /notes accepts ?tag= (case-insensitive) to filter, keeps pagination, and every note now has tags (existing notes: []). GET /tags returns {items:[{name, count}]} sorted by count descending, then name. Decide the data model and record it before coding. Keep handle(req) exported, storage in memory, no new dependencies. Add tests and run them. Do not ask me anything and do not commit.";
 // t3 without accepting the Claude Security cost: same work, no scan (to compare team shapes without the scan's minutes)
 TASKS.t3n = TASKS.t3.replace(" I accept that the Claude Security scan may take a long time and use a lot of tokens.", "");
 const [label, mode, task] = process.argv.slice(2);
@@ -35,10 +37,10 @@ sh(["git", "add", "-A"]);
 sh(["git", "-c", "user.name=bench", "-c", "user.email=bench@localhost", "commit", "-qm", "fixture"]);
 
 // Same flags as `claude --office`: the Lead agent with only the connectors the team uses.
-const who = mode === "office" ? ["--agent", "office-ceo", "--strict-mcp-config", "--mcp-config", writeOfficeMcp()] : ["--model", "sonnet"];
+const who = mode === "office" ? ["--agent", "office-ceo", "--strict-mcp-config", "--mcp-config", writeOfficeMcp(), "--settings", writeOfficeSettings()] : ["--model", "sonnet"];
 const t0 = Date.now();
 const run = sh(["claude", "-p", TASKS[task], "--output-format", "json", "--permission-mode", "acceptEdits",
-  "--allowedTools", "Bash(bun:*)", "Bash(git diff:*)", "Bash(git status:*)", "Bash(git log:*)", "Bash(ls:*)", "Bash(cat:*)", "Bash(cd:*)",
+  "--allowedTools", "Bash(bun:*)", "Bash(git diff:*)", "Bash(git status:*)", "Bash(git log:*)", "Bash(ls:*)", "Bash(cat:*)", "Bash(cd:*)", "Bash(node:*)", "Bash(git diff:*)", "Bash(tail:*)", "Bash(head:*)", "Bash(grep:*)",
   // Claude Security helpers; in an interactive session the user approves these once
   "Workflow", "Bash(python3:*)", "Bash(bash:*)", "Bash(date:*)", "Bash(mkdir:*)", ...who],
   mode === "office" ? { CLAUDE_OFFICE: "1" } : {});

@@ -26,7 +26,7 @@ The Lead runs `/claude-security` and returns the report folder `CLAUDE-SECURITY-
 
 ## 2. Triage
 - Read `CLAUDE-SECURITY-RESULTS.md`, not the whole `.jsonl`. Check the revision stamp: commit scanned, effort, uncommitted changes. A scan of a different commit than the one being delivered must be redone.
-- For each finding: open the code at the reported location, confirm the vulnerable pattern, and confirm reachability with `graphify_callers` / `graphify_impact`.
+- For each finding: open the code at the reported location, confirm the vulnerable pattern, and confirm reachability with `graphify query` (who calls it).
 - Drop false positives with a one-line reason each. Keep the list of dropped ones in your report.
 - Classify the rest. Critical and high block delivery.
 - Route each accepted finding to its owner by name: the developer for code, the architect for design flaws. Ask the security agent to write a test that reproduces each critical or high finding.

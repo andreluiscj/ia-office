@@ -30,6 +30,8 @@ const AUTO_ALLOW = [
   "Bash(npm test:*)", "Bash(npm run test:*)", "Bash(npm run lint:*)", "Bash(npm run build:*)", "Bash(npm run typecheck:*)", "Bash(npm audit:*)",
   "Bash(npx tsc:*)", "Bash(npx playwright test:*)", "Bash(npx vitest:*)", "Bash(npx eslint:*)",
   "Bash(bun test:*)", "Bash(bun run test:*)", "Bash(bun run lint:*)", "Bash(bun run build:*)",
+  "Bash(npx playwright test:*)", "Bash(playwright screenshot:*)",
+  `Bash(node ${join(claudeDir, "skills", "office-implementation", "scripts", "screen-check.cjs").replace(/\\/g, "/")}:*)`,
   "Bash(php artisan test:*)", "Bash(composer audit:*)", "Bash(pytest:*)", "Bash(python -m pytest:*)", "Bash(pip-audit:*)",
 ];
 const TEAMS_ENV = "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS";

@@ -15,9 +15,18 @@ description: The Office Lead's playbook. Classifies a request into tiers T0-T3, 
 | touches login, permissions, payments, personal data, a public contract | T2 with security, or T3 if the model itself changes |
 | new project or module, migration of real data, 3+ specialists, costs money | T3 |
 
-Vague request ("make me an X" with no who/why): ask up to 3 questions in one message, each with your recommended answer. Use `grilling` only if the answers still leave the goal unclear.
+## 2. Grill every new request (T1-T3)
 
-## 2. Plan (size follows tier)
+Every new request starts with the `grilling` skill (the user's `/grill-me`): a question costs the user seconds, a wrong assumption costs a whole agent round. Skip it only for T0, where reading is the answer.
+
+1. Read only what grilling needs to avoid asking for facts: the graph map and `git ls-files`. Facts are yours to find; decisions are the user's.
+2. Ask the frontier in **one message**, numbered, each with your recommended answer, worded so "yes" accepts it. Cover only what changes the work: scope and out of scope, who uses it, acceptance criteria, data and limits, look and feel for screens, security-relevant choices (who may see what).
+3. Size it to the tier: T1 at most 3 questions and one round; T2 at most 6 per round and two rounds; T3 until the frontier is empty.
+4. Write the settled answers into the plan under `Decisions` (T1: in the brief). Specialists read them there and never ask again.
+5. The user says "pode seguir", "siga" or similar, or the request says not to ask anything: take your recommended answers and record them as `Assumed:` lines in the plan.
+6. In the Obsidian flow the questions go into the request note under `## Perguntas` with status `perguntas`; work starts when the user answers and changes the status back.
+
+## 3. Plan (size follows tier)
 
 - **T0**: no plan. Answer.
 - **T1**: one line: what, which file, who. Start in the same reply.
@@ -38,12 +47,13 @@ Slices:
 Risks: <data, auth, cost, irreversible steps>
 Model: sonnet | opus — <reason, only for strongly visual screens or very large structures>
 Claude Security: (T3) a low-effort scan of <dirs> after the last slice; it can take several minutes and use many tokens. Approving this plan accepts that cost.
-Decisions for the user: <only T3 or critical>
+Decisions: <answers settled in grilling; `Assumed:` lines where the user let you choose>
+Decisions still for the user: <only T3 or critical>
 ```
 
 Slices are vertical (one user-visible behavior end to end), not layers. Slices with no dependency between them and no shared file run in parallel.
 
-## 3. Brief the specialist
+## 4. Brief the specialist
 
 The brief is the roadmap: write it once, completely, so nobody comes back to ask. Every brief carries the map, the exact files, the contract or acceptance criteria and where to read previous work.
 
@@ -59,9 +69,11 @@ Read first: .empresa/adr/0004-password-reset.md
 
 Never paste file contents, logs or another specialist's report into a brief. Pass paths.
 
-## 4. Validate
+## 5. Validate
 
-For each returned report check: status, the command and its result, the handoff path. Before delivering anything, re-run the project's test command yourself: a result you did not see is not evidence. Missing evidence: send it back with "Evidence missing: <what>". Open a handoff file only when you must decide something from it.
+For each returned report check: status, the command and its result, the handoff path. Before delivering anything, re-run the project's test command yourself: a result you did not see is not evidence. Missing evidence: send it back with "Evidence missing: <what>". Two checks are mechanical, so apply them every time:
+- A change a user sees and no `.empresa/screens/screen-375.png`: back to the developer to run the screen check ("not run" is not an answer while Playwright is installed).
+- A report whose risks say the code contradicts the request (a contract mismatch, a known bug left in place): that is a blocker, not a pending item. Decide it (the request wins unless it breaks another consumer) and send it back. Open a handoff file only when you must decide something from it.
 
 You review alone **only in T1**. A T2 always gets its verifier agent, even when the code looks simple; serving files, fetching URLs, parsing uploads or rendering user text counts as external input.
 
@@ -76,7 +88,7 @@ Order by tier:
   1. Architect → plan with slices (each slice small, testable, with its security relevance marked).
   2. Start security in `Mode: pre-code` for the whole plan, in the same message as the first slice.
   3. For each slice: dev implements → you run the tests → `SendMessage` to `leonardo` with `Mode: checkpoint`, the slice and its diff range. A critical or high finding stops the next slice until fixed.
-  4. After the last slice, **mandatory**: run Claude Security yourself (section 6: `Scan codebase` scoped to the changed directories, effort `low`).
+  4. After the last slice, **mandatory**: run Claude Security yourself (section 7: `Scan codebase` scoped to the changed directories, effort `low`).
   5. When the scan ends, `SendMessage` to `leonardo` with `Mode: verify`, the report folder and the whole diff: he triages the scan and does the final code review and audit. No reviewer agent. Deliver after his verdict.
 
 A reviewer or security block returns to the owner named in the finding, not to you for fixing.
@@ -90,9 +102,11 @@ Run `git diff` and read it, then run the project's test command yourself; nothin
 ```
 All ticked: approved, write the commit summary yourself. Anything unticked: back to the developer with the exact line.
 
+A fix round is for failing acceptance criteria and critical, high or medium findings. Low findings and nits go to RISK / PENDING in your report, without another round.
+
 Stop the loop after 2 failed fix rounds on the same finding: reassess the design with the architect, or escalate the model for that slice, and record why.
 
-## 5. Deliver
+## 6. Deliver
 
 Only after the verifier approved (you in T1, security when it verified, the reviewer otherwise). Give the user, in their language, the final report from your agent file plus commit commands, one block per logical change:
 
@@ -103,7 +117,7 @@ git commit -m "feat: add password reset request endpoint" -m "Returns 202 for an
 
 End with `git push`. Never `git add .`. Messages in English, imperative, specific.
 
-## 6. Claude Security (Anthropic's attacker-minded scanner)
+## 7. Claude Security (Anthropic's attacker-minded scanner)
 
 The plugin runs only in the main session, so you start it: call `Skill` with `claude-security:claude-security` and arguments naming the job, scope and effort. Return the report folder `CLAUDE-SECURITY-<timestamp>/` to whoever asked.
 
@@ -115,7 +129,7 @@ Two rules from the plugin decide how you call it:
 - **End of project, or when the user asks for an audit or an attack attempt**: the reviewer runs their final-audit playbook and sends you the request (`Scan codebase`, effort `high`, then `Suggest patches`).
 - Never for T1; for T2 only when the user asks.
 
-## 7. Learning
+## 8. Learning
 
 - User repeats a preference or correction: append one line to `.empresa/padroes.md` (`date | situation | preference | count`). Count reaches 2: ask the architect for a project skill.
 - Mistake caught by review or tests: one line in `.empresa/licoes.md` (`date | cause | rule`). Search this file by term before briefing a similar task; never read it whole.

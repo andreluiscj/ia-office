@@ -64,4 +64,4 @@ Targets at the 75th percentile on mobile: LCP <= 2.5 s, INP <= 200 ms, CLS <= 0.
 
 ## Proof
 
-Open the screen, walk the happy path and one error path, confirm a clean console, note the sizes tested. Component tests cover the states and the interaction, querying by role and label.
+Run the screen check from the playbook (375, 768 and 1280 px, screenshots plus automatic accessibility and layout checks) and open the screenshots. Walk the happy path and one error path, confirm a clean console, note the sizes tested. Component tests cover the states and the interaction, querying by role and label.
