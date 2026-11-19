@@ -25,6 +25,7 @@
     "office:comando": "bun scripts/install-cli.ts install",
     "office:comando:remover": "bun scripts/install-cli.ts uninstall",
     "graphify:instalar": "uv tool install --upgrade graphifyy",
+    "office:executor": "bun scripts/office-runner.ts",
     "agentes": "bun scripts/agentes.ts",
     "agentes:aplicar": "bun scripts/agentes.ts --aplicar",
     "desinstalar": "bun scripts/install-cli.ts uninstall && bun scripts/install-company.ts uninstall && bun scripts/install-hooks.ts uninstall"
