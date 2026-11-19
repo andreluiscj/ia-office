@@ -39,4 +39,4 @@ Every value that crosses a trust boundary is hostile until validated: body, quer
 - SQL: a quote or a boolean payload in each parameter against the local app; better, read the query construction at `path:line`.
 - XSS: store `<img src=x onerror=alert(1)>` and view it where it renders.
 - Path traversal: `../../etc/passwd` style names in download and upload parameters.
-- SSRF: point the URL at `http://127.0.0.1` and `http://169.254.169.254`; must be refused.
+- SSRF: point the URL at `http://127.0.0.1`, `http://169.254.169.254`, `http://[::ffff:127.0.0.1]`, `http://localhost.` and a name that resolves to loopback (`http://localtest.me:<port>`, `http://127.0.0.1.nip.io:<port>`) with a local server listening on that port; every one must be refused and the local server never hit.

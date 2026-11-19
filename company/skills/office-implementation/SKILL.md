@@ -43,7 +43,7 @@ Tests cover behavior, not implementation: the happy path, each validation rule, 
 8. Rate-limit login, password reset, sign-up and any costly endpoint.
 9. Login, reset and sign-up answer the same way whether or not the account exists.
 10. Supabase or any row-level database: RLS on for every table, with a policy per operation; the service key stays on the server.
-11. Outbound calls have a timeout; URLs taken from user input are validated against an allowlist before the server fetches them.
+11. Outbound calls have a timeout and a response-size cap; URLs taken from user input are validated before the server fetches them: resolve the hostname (`dns.lookup(host, {all: true})`), refuse if any resolved address is private, loopback, link-local or metadata, then connect to that checked address, and re-check every redirect hop. Checking the hostname text alone is not enough: `localtest.me` resolves to 127.0.0.1.
 12. No new dependency without the Lead's approval.
 
 If a rule cannot be followed, do not work around it: report it to the Lead.
