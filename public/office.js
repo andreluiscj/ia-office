@@ -899,7 +899,7 @@ async function refresh() {
     clockSkew = Date.now() - data.now;
     if (!roster) { roster = { funcionarios: data.funcionarios }; renderStatic(); }
     renderBanner();
-    renderUsage(usageEl, data.usage, clockSkew);
+    renderUsage(usageEl, data.usage, clockSkew, "codex" in data ? data.codex : undefined);
     syncPeople(firstSync); firstSync = false;
     if (selected) { const p = people.get(selected); if (p) renderDetail(p); }
   } catch (err) { console.error(err); }

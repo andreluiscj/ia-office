@@ -5,6 +5,8 @@ import { company, roster } from "./company";
 import { listSkills, skillDetail, skillRoots } from "./skills";
 import * as graphify from "./graphify";
 import { startExecutor } from "../scripts/office-runner";
+import { codexUsage } from "./codex-usage";
+import { tasks } from "./tarefas";
 
 const PORT = Number(process.env.PORT ?? 7777);
 const PUBLIC = join(import.meta.dir, "..", "public");
@@ -185,7 +187,8 @@ const server = Bun.serve({
     if (path === "/api/state") return json(state());
     if (path === "/api/company") return json(company(health()));
     if (path === "/api/roster") return json(roster());
-    if (path === "/api/usage") { const u = getMeta("usage"); return json({ now: Date.now(), usage: u ? JSON.parse(u) : null }); }
+    if (path === "/api/usage") { const u = getMeta("usage"); return json({ now: Date.now(), usage: u ? JSON.parse(u) : null, codex: codexUsage() }); }
+    if (path === "/api/tasks") return json(tasks());
     if (path === "/api/skills") { const list = listSkills().map(({ path: _p, ...s }) => s); return json({ skills: list, roots: skillRoots() }); }
     if (path.startsWith("/api/skills/")) {
       const d = skillDetail(path.slice("/api/skills/".length));
@@ -222,7 +225,7 @@ const server = Bun.serve({
     }
 
     // Arquivos estáticos
-    const file = path === "/" ? "index.html" : path === "/dashboard" ? "dashboard.html" : path === "/skills" ? "skills.html" : path === "/graphify" ? "graphify.html" : path.slice(1);
+    const file = path === "/" ? "index.html" : path === "/dashboard" ? "dashboard.html" : path === "/skills" ? "skills.html" : path === "/graphify" ? "graphify.html" : path === "/tarefas" ? "tarefas.html" : path.slice(1);
     const full = normalize(join(PUBLIC, file));
     if (!full.startsWith(PUBLIC)) return new Response("not found", { status: 404 });
     const f = Bun.file(full);

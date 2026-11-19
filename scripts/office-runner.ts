@@ -15,7 +15,7 @@ import { isAbsolute, join } from "node:path";
 import { empresa, prepareVault, writeOfficeMcp, writeOfficeSettings } from "../server/agentes";
 
 const e = empresa();
-const VAULT = (process.env.OFFICE_VAULT || e.cofre || "").replace(/\\/g, "/");
+export const VAULT = (process.env.OFFICE_VAULT || e.cofre || "").replace(/\\/g, "/");
 const PROJECTS = (process.env.OFFICE_PROJECTS || (e as any).projetos || "C:/Projetos").replace(/\\/g, "/");
 const MAX_PARALLEL = 2;
 const LOG = join(homedir(), ".escritorio-virtual", "executor.log");
@@ -24,7 +24,7 @@ const log = (m: string) => { const l = `${new Date().toISOString()} ${m}`; conso
 
 // ---- frontmatter (flat key: value; the notes are ours, so a full YAML parser is not needed)
 type Note = { path: string; meta: Record<string, string>; body: string; raw: string };
-function readNote(path: string): Note | null {
+export function readNote(path: string): Note | null {
   const raw = readFileSync(path, "utf8");
   const m = raw.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n?([\s\S]*)$/);
   if (!m) return null;

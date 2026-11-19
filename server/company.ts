@@ -2,6 +2,7 @@
 // o Diretor é a sessão principal do Claude Code, independente do projeto.
 import { db, getMeta, modelFamily, type Agent } from "./db";
 import { agentDocs, empresa, fill, variables } from "./agentes";
+import { codexUsage } from "./codex-usage";
 
 const MIN = 60_000, HOUR = 60 * MIN, DAY = 24 * HOUR;
 
@@ -146,5 +147,6 @@ export function company(health: unknown) {
     },
     funcionarios, freelancers, links,
     usage: usageRaw ? JSON.parse(usageRaw) : null,
+    codex: codexUsage(),
   };
 }

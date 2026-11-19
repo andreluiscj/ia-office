@@ -69,20 +69,37 @@ function usageRow(label, w, skew) {
   return `<div class="row"><span class="lbl">${label}</span><span class="bar"><i class="${cls}" style="width:${pct}%"></i></span>
     <span class="pct">${pct}%</span><span class="rst">${esc(resetText(w.resets_at, skew))}</span></div>`;
 }
-export function renderUsage(el, u, skew = 0) {
+// Pixel icons for the two plans (generic glyphs, not logos).
+const ICON = {
+  claude: `<svg viewBox="0 0 12 12" width="24" height="24" aria-hidden="true" shape-rendering="crispEdges"><rect x="2" y="2" width="8" height="6" fill="#e8664a"/><rect x="0" y="4" width="2" height="2" fill="#e8664a"/><rect x="10" y="4" width="2" height="2" fill="#e8664a"/><rect x="3" y="8" width="1" height="2" fill="#e8664a"/><rect x="5" y="8" width="2" height="2" fill="#e8664a"/><rect x="8" y="8" width="1" height="2" fill="#e8664a"/><rect x="4" y="4" width="1" height="1" fill="#000"/><rect x="7" y="4" width="1" height="1" fill="#000"/></svg>`,
+  codex: `<svg viewBox="0 0 12 12" width="24" height="24" aria-hidden="true" shape-rendering="crispEdges"><rect x="0" y="1" width="12" height="10" fill="#f2eee3"/><rect x="1" y="2" width="10" height="8" fill="#15141e"/><rect x="2" y="4" width="1" height="1" fill="#5ee07a"/><rect x="3" y="5" width="1" height="1" fill="#5ee07a"/><rect x="2" y="6" width="1" height="1" fill="#5ee07a"/><rect x="5" y="7" width="4" height="1" fill="#5ee07a"/></svg>`,
+};
+const group = (name, title, rows) => `<div class="ugroup" title="${esc(title)}"><span class="uicon" role="img" aria-label="${name}">${ICON[name.toLowerCase()]}</span><div class="urows">${rows}</div></div>`;
+function backAt(epochSec) {
+  const d = new Date(epochSec * 1000);
+  return `${d.toLocaleDateString(LOCALE, { weekday: "short" })} ${d.toLocaleTimeString(LOCALE, { hour: "2-digit", minute: "2-digit" })}`;
+}
+/** codex: undefined = page without Codex row; null = no data yet. */
+export function renderUsage(el, u, skew = 0, codex = undefined) {
   if (!el) return;
-  if (!u || (!u.five_hour && !u.seven_day)) {
-    el.innerHTML = `<div class="empty">${t("Plan usage shows up after Claude Code's first reply")}</div>`;
-    return;
+  const claude = !u || (!u.five_hour && !u.seven_day)
+    ? `<div class="uempty">${t("Plan usage shows up after Claude Code's first reply")}</div>`
+    : (u.five_hour ? usageRow(t("Current session"), u.five_hour, skew) : "") + (u.seven_day ? usageRow(t("Weekly"), u.seven_day, skew) : "");
+  let out = group("Claude", t("Your Claude plan usage limits, the same as Settings › Usage"), claude);
+  if (codex !== undefined) {
+    const blocked = codex?.blocked_until
+      ? `<div class="row"><span class="lbl">${t("Used up")}</span><span class="bar"><i class="hot" style="width:100%"></i></span><span class="pct">100%</span><span class="rst">${esc(t("Back {t}", { t: backAt(codex.blocked_until) }))}</span></div>` : "";
+    const rows = blocked + (codex?.five_hour ? usageRow(t("Current session"), codex.five_hour, skew) : "") + (codex?.seven_day ? usageRow(t("Weekly"), codex.seven_day, skew) : "");
+    out += group("Codex", t("Your Codex usage limits, read from its session logs"), rows || `<div class="uempty">${t("Codex usage shows up after its first run")}</div>`);
   }
-  el.innerHTML = (u.five_hour ? usageRow(t("Current session"), u.five_hour, skew) : "") + (u.seven_day ? usageRow(t("Weekly"), u.seven_day, skew) : "");
+  el.innerHTML = out;
 }
 /** Liga a barra de uso no elemento #usage da página (atualiza a cada 30 s). */
 export function mountUsage() {
   const el = document.getElementById("usage");
   if (!el) return;
   const tick = async () => {
-    try { const r = await (await fetch("/api/usage")).json(); renderUsage(el, r.usage, Date.now() - r.now); } catch {}
+    try { const r = await (await fetch("/api/usage")).json(); renderUsage(el, r.usage, Date.now() - r.now, "codex" in r ? r.codex : undefined); } catch {}
   };
   tick();
   setInterval(tick, 30_000);
