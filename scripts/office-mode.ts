@@ -1,10 +1,10 @@
 // Chamado pelo `claude --office` antes de abrir o Claude Code:
 //  1. atualiza os agentes em ~/.claude/agents com o que está em company/agents (suas edições valem na hora);
 //  2. liga o servidor do Office se estiver parado.
-import { syncAgents } from "../server/agentes";
+import { OFFICE_MCP_FILE, OFFICE_SETTINGS_FILE, OFFICE_VAULT_FILE, syncAgents, writeOfficeMcp, writeOfficeSettings, writeOfficeVault } from "../server/agentes";
 import { join, resolve } from "node:path";
 import { homedir } from "node:os";
-import { mkdirSync, openSync } from "node:fs";
+import { mkdirSync, openSync, rmSync } from "node:fs";
 
 const PORT = Number(process.env.PORT ?? 7777);
 const BASE = `http://127.0.0.1:${PORT}`;
@@ -15,6 +15,10 @@ async function running() {
 }
 
 try { syncAgents(); } catch (e) { console.error("Office: não consegui atualizar os agentes:", (e as Error).message); }
+// Sem o arquivo, o `claude --office` abre com todos os conectores, como antes.
+try { writeOfficeMcp(); } catch { rmSync(OFFICE_MCP_FILE, { force: true }); }
+try { writeOfficeSettings(); } catch { rmSync(OFFICE_SETTINGS_FILE, { force: true }); }
+try { writeOfficeVault(); } catch (e) { rmSync(OFFICE_VAULT_FILE, { force: true }); console.error("Office: cofre do Obsidian indisponível:", (e as Error).message); }
 
 if (await running()) {
   console.log(`Office: ${BASE}`);

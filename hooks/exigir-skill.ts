@@ -36,15 +36,16 @@ try {
 
   let usadas: string[];
   if (p.hook_event_name === "SubagentStop") usadas = skillsChamadas(p.agent_transcript_path, false);
-  else if (!p.agent_id && tipo === "office-ceo") usadas = skillsChamadas(p.transcript_path, true);
+  else if (!p.agent_id && tipo === "office-ceo") usadas = skillsChamadas(p.transcript_path, false);   // playbook do Líder: uma vez por sessão
   else process.exit(0);
 
-  if (usadas.length) process.exit(0);
+  // Vale o playbook do Office (skills office-*), não "qualquer skill": é curto e é o que organiza a tarefa.
+  if (usadas.some(s => /(^|:)office-/.test(s))) process.exit(0);
   console.log(JSON.stringify({
     decision: "block",
-    reason: `Regra nº 1 do Office: toda tarefa usa skill. Você não chamou nenhuma skill nesta tarefa. Chame agora, com a ferramenta Skill, `
-      + `a skill do gatilho que se aplica (tabela no seu arquivo), aplique o que ela pedir `
-      + `e só então entregue, com a linha SKILLS INVOKED / SKILLS INVOCADAS no relatório. ECONOMIZAR TOKEN. UTILIZAR AS SKILLS.`,
+    reason: `Regra nº 1 do Office: toda tarefa usa skill. Você não chamou o seu playbook nesta tarefa. Chame agora, com a ferramenta Skill, `
+      + `o playbook office-* indicado na seção 1 do seu arquivo, aplique o que ele pedir `
+      + `e só então entregue. ECONOMIZAR TOKEN. UTILIZAR AS SKILLS.`,
   }));
 } catch {}
 process.exit(0);

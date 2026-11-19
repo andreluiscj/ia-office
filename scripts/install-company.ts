@@ -8,7 +8,7 @@
 import { copyFileSync, cpSync, existsSync, mkdirSync, readdirSync, readFileSync, renameSync, rmSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { join } from "node:path";
-import { empresa, syncAgents } from "../server/agentes";
+import { empresa, SKILLS_DEST, SKILLS_SRC, syncAgents } from "../server/agentes";
 
 const mode = process.argv[2] ?? "install";
 const claudeDir = process.env.CLAUDE_CONFIG_DIR ?? join(homedir(), ".claude");
@@ -30,6 +30,9 @@ const AUTO_ALLOW = [
   "Bash(npm test:*)", "Bash(npm run test:*)", "Bash(npm run lint:*)", "Bash(npm run build:*)", "Bash(npm run typecheck:*)", "Bash(npm audit:*)",
   "Bash(npx tsc:*)", "Bash(npx playwright test:*)", "Bash(npx vitest:*)", "Bash(npx eslint:*)",
   "Bash(bun test:*)", "Bash(bun run test:*)", "Bash(bun run lint:*)", "Bash(bun run build:*)",
+  "Bash(npx playwright test:*)", "Bash(playwright screenshot:*)",
+  `Bash(node ${join(claudeDir, "skills", "office-implementation", "scripts", "screen-check.cjs").replace(/\\/g, "/")}:*)`,
+  "Bash(printenv OFFICE_VAULT)", "Bash(date:*)", "Bash(codex exec:*)", "Bash(graphify:*)",
   "Bash(php artisan test:*)", "Bash(composer audit:*)", "Bash(pytest:*)", "Bash(python -m pytest:*)", "Bash(pip-audit:*)",
 ];
 const TEAMS_ENV = "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS";
@@ -113,6 +116,7 @@ if (mode === "install") {
   console.log("  claude            -> abre só o Claude, sem o Office");
 } else {
   for (const f of agentFiles) rmSync(join(agentsDir, f), { force: true });
+  if (existsSync(SKILLS_SRC)) for (const n of readdirSync(SKILLS_SRC)) if (n.startsWith("office-")) rmSync(join(SKILLS_DEST, n), { recursive: true, force: true });
   if (existsSync(claudeMd)) writeFileSync(claudeMd, stripRule(readFileSync(claudeMd, "utf8")));
   const s = readSettings();
   if (s.env) { delete s.env[TEAMS_ENV]; if (!Object.keys(s.env).length) delete s.env; }

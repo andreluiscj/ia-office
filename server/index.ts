@@ -4,6 +4,7 @@ import { db, DB_PATH, ingestHook, getMeta, setMeta, type Agent } from "./db";
 import { company, roster } from "./company";
 import { listSkills, skillDetail, skillRoots } from "./skills";
 import * as graphify from "./graphify";
+import { startExecutor } from "../scripts/office-runner";
 
 const PORT = Number(process.env.PORT ?? 7777);
 const PUBLIC = join(import.meta.dir, "..", "public");
@@ -237,3 +238,5 @@ const server = Bun.serve({
 console.log(`\n  Office rodando em http://localhost:${server.port}`);
 console.log(`  Dashboard:                   http://localhost:${server.port}/dashboard`);
 console.log(`  Banco de dados:              ${DB_PATH}\n`);
+// Pedidos escritos no Obsidian (00-Pedidos com status pronto) viram trabalho da equipe.
+if (process.env.OFFICE_EXECUTOR !== "0" && !process.argv.includes("--demo")) startExecutor();

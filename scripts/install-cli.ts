@@ -33,6 +33,10 @@ function update(file: string, block: string | null, bom = false) {
   return true;
 }
 
+// Só os conectores que a equipe usa (gravado pelo office-mode.ts); menos contexto fixo em cada agente.
+const mcpFile = join(homedir(), ".escritorio-virtual", "office-mcp.json");
+const settingsFile = join(homedir(), ".escritorio-virtual", "office-settings.json");   // plugins desligados no Office
+const vaultFile = join(homedir(), ".escritorio-virtual", "office-vault.txt");          // cofre do Obsidian
 const PS = `${START}
 # Criado pelo Office (bun run setup). Para remover: bun run office:comando:remover
 function claude {
@@ -44,7 +48,11 @@ function claude {
     & "${bun}" "${join(root, "scripts", "office-mode.ts")}"
     $antes = $env:CLAUDE_OFFICE
     $env:CLAUDE_OFFICE = '1'
-    try { & $real.Source --agent office-ceo @rest } finally { $env:CLAUDE_OFFICE = $antes }
+    $mcp = "${mcpFile}"
+    $so = @(); if (Test-Path $mcp) { $so = @('--strict-mcp-config', '--mcp-config', $mcp) }
+    $set = "${settingsFile}"; if (Test-Path $set) { $so += @('--settings', $set) }
+    $vf = "${vaultFile}"; $antesCofre = $env:OFFICE_VAULT; if (Test-Path $vf) { $env:OFFICE_VAULT = (Get-Content -Raw $vf).Trim(); $so += @('--add-dir', $env:OFFICE_VAULT) }
+    try { & $real.Source --agent office-ceo @so @rest } finally { $env:CLAUDE_OFFICE = $antes; $env:OFFICE_VAULT = $antesCofre }
   } else {
     & $real.Source @args
   }
@@ -59,7 +67,11 @@ claude() {
   for a in "$@"; do if [ "$a" = "--office" ]; then office=1; else rest+=("$a"); fi; done
   if [ "$office" = 1 ]; then
     "${posix(bun)}" "${posix(join(root, "scripts", "office-mode.ts"))}"
-    CLAUDE_OFFICE=1 command claude --agent office-ceo "\${rest[@]}"
+    local so=(); [ -f "${posix(mcpFile)}" ] && so=(--strict-mcp-config --mcp-config "${posix(mcpFile)}")
+    [ -f "${posix(settingsFile)}" ] && so+=(--settings "${posix(settingsFile)}")
+    local cofre=""; [ -f "${posix(vaultFile)}" ] && cofre="$(cat "${posix(vaultFile)}")"
+    [ -n "$cofre" ] && so+=(--add-dir "$cofre")
+    CLAUDE_OFFICE=1 OFFICE_VAULT="$cofre" command claude --agent office-ceo "\${so[@]}" "\${rest[@]}"
   else
     command claude "$@"
   fi
