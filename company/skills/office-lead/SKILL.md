@@ -129,6 +129,18 @@ Two rules from the plugin decide how you call it:
 - **End of project, or when the user asks for an audit or an attack attempt**: the reviewer runs their final-audit playbook and sends you the request (`Scan codebase`, effort `high`, then `Suggest patches`).
 - Never for T1; for T2 only when the user asks.
 
+## 7b. Codex second opinion (T3, and T2 with external input)
+
+After the verifier approves and before you deliver, ask a second model to attack the change. Run once, from the project root:
+
+```bash
+codex exec --sandbox read-only --skip-git-repo-check "Adversarial review of the uncommitted changes in this repository (git diff, plus untracked files). List only concrete bugs or security problems as path:line - problem - impact. Reply NONE if there are none. At most 15 lines."
+```
+
+- Its findings are leads, not verdicts: send each one to the verifier (security agent) to confirm or drop, then fix what is confirmed like any other finding.
+- It fails (usage limit, not installed, not logged in): write `Codex: indisponível (<reason>)` in the report and deliver anyway. It never blocks a delivery.
+- Skip it for T0, T1 and T2 without external input: the user's Codex plan is free and small.
+
 ## 8. Learning
 
 - User repeats a preference or correction: append one line to `.empresa/padroes.md` (`date | situation | preference | count`). Count reaches 2: ask the architect for a project skill.

@@ -3,8 +3,8 @@
 // O executor abre o Líder nesse projeto (sem terminal), guarda a sessão na nota e retoma a mesma sessão
 // quando você responde às perguntas, aprova um plano ou quando o limite de uso volta.
 //
-// Uso: bun scripts/office-runner.ts            -> fica observando (a cada 10 s)
-//      bun scripts/office-runner.ts --once     -> processa o que estiver pronto e sai
+// O servidor do Office (o mesmo que o `claude --office` liga) inicia este executor sozinho.
+// Uso manual: bun scripts/office-runner.ts --once     -> processa o que estiver pronto e sai (testes)
 //      OFFICE_VAULT=<pasta> / OFFICE_PROJECTS=<pasta> sobrescrevem o company/empresa.json (testes)
 //
 // Segurança: só notas em 00-Pedidos com status `pronto` ou `aprovado` disparam trabalho; o conteúdo
@@ -17,12 +17,8 @@ import { empresa, prepareVault, writeOfficeMcp, writeOfficeSettings } from "../s
 const e = empresa();
 const VAULT = (process.env.OFFICE_VAULT || e.cofre || "").replace(/\\/g, "/");
 const PROJECTS = (process.env.OFFICE_PROJECTS || (e as any).projetos || "C:/Projetos").replace(/\\/g, "/");
-const ONCE = process.argv.includes("--once");
 const MAX_PARALLEL = 2;
 const LOG = join(homedir(), ".escritorio-virtual", "executor.log");
-if (!VAULT) { console.error('Sem cofre: defina "cofre" em company/empresa.json.'); process.exit(1); }
-prepareVault(VAULT);
-mkdirSync(join(homedir(), ".escritorio-virtual"), { recursive: true });
 
 const log = (m: string) => { const l = `${new Date().toISOString()} ${m}`; console.log(l); appendFileSync(LOG, l + "\n"); };
 
@@ -62,7 +58,7 @@ const ALLOW = [
   "Bash(git status:*)", "Bash(git diff:*)", "Bash(git log:*)", "Bash(git ls-files:*)", "Bash(ls:*)", "Bash(cat:*)", "Bash(head:*)",
   "Bash(tail:*)", "Bash(grep:*)", "Bash(wc:*)", "Bash(printenv:*)", "Bash(date:*)", "Bash(graphify:*)",
   "Bash(bun test:*)", "Bash(bun run:*)", "Bash(npm test:*)", "Bash(npm run:*)", "Bash(npx tsc:*)", "Bash(npx vitest:*)",
-  "Bash(npx eslint:*)", "Bash(npx playwright test:*)", "Bash(npm audit:*)", "Bash(pnpm audit:*)", `Bash(node ${SCREEN_CHECK}:*)`,
+  "Bash(npx eslint:*)", "Bash(npx playwright test:*)", "Bash(codex exec:*)", "Bash(npm audit:*)", "Bash(pnpm audit:*)", `Bash(node ${SCREEN_CHECK}:*)`,
 ];
 
 // ---- one Lead session per request, resumed on every return
@@ -124,6 +120,14 @@ async function tick() {
   return jobs.length;
 }
 
-log(`executor no cofre ${VAULT} (projetos em ${PROJECTS})${ONCE ? ", uma passada" : ""}`);
-if (ONCE) { while (await tick()) {} process.exit(0); }
-for (;;) { tick(); await Bun.sleep(10_000); }
+/** Liga o executor. Sem cofre configurado não faz nada. once: processa o que houver e termina. */
+export async function startExecutor(once = false) {
+  if (!VAULT) { console.log("  Executor do Obsidian: desligado (sem \"cofre\" em company/empresa.json)"); return; }
+  prepareVault(VAULT);
+  mkdirSync(join(homedir(), ".escritorio-virtual"), { recursive: true });
+  log(`executor no cofre ${VAULT} (projetos em ${PROJECTS})${once ? ", uma passada" : ""}`);
+  if (once) { while (await tick()) {} return; }
+  for (;;) { tick().catch(x => log(`erro: ${x}`)); await Bun.sleep(10_000); }
+}
+
+if (import.meta.main) { await startExecutor(process.argv.includes("--once")); process.exit(0); }
