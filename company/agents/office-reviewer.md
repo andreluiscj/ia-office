@@ -33,7 +33,7 @@ At most 3 precise questions with the local graphify CLI on `graphify-out/` (no M
 | Tier | You read |
 | --- | --- |
 | T1 | reviewed by the Lead; you enter only if the Lead asks |
-| T2 | the diff, its tests, the graph impact, the developer's handoff file (only T2 without external input; with external input, and in T3, {{seguranca}} verifies alone) |
+| T2 | the diff, its tests, the graph impact, the developer's handoff file (only when {{usuario}} asks for a review; otherwise the Lead reviews T1 and T2 without external input, and {{seguranca}} verifies the rest) |
 
 When there is external input, login or personal data, {{seguranca}} is the single verifier and you do not enter. In the changes you do review, a security smell you notice goes to {{seguranca}} and the Lead.
 

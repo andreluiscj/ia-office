@@ -37,10 +37,10 @@ Plan template (T2 uses the first four fields):
 
 ```
 # <task-slug>
-Tier: <T1|T2|T3> — Verifier: <you (T1 only) | security (external input, login, personal data, files served, URLs fetched) | reviewer (other T2)>
+Tier: <T1|T2|T3> — Verifier: <you (T1, and T2 without external input) | security (external input, login, personal data, files served, URLs fetched; and T3) | reviewer (only when the user asks for one)>
 Goal: <one sentence, the user outcome>
 Acceptance criteria: <numbered, each verifiable by a command or a visible behavior>
-Out of scope: <what will not be done>
+Out of scope: <what will not be done; never a bug in code the request depends on: if the request says pages start at 1 and the API is 0-based, fixing the API is in scope>
 Slices:
   1. <vertical slice> — owner: <role> — files: <...> — depends on: <none|n> — evidence: <test/command>
   2. ...
@@ -75,11 +75,11 @@ For each returned report check: status, the command and its result, the handoff 
 - A change a user sees and no `.empresa/screens/screen-375.png`: back to the developer to run the screen check ("not run" is not an answer while Playwright is installed).
 - A report whose risks say the code contradicts the request (a contract mismatch, a known bug left in place): that is a blocker, not a pending item. Decide it (the request wins unless it breaks another consumer) and send it back. Open a handoff file only when you must decide something from it.
 
-You review alone **only in T1**. A T2 always gets its verifier agent, even when the code looks simple; serving files, fetching URLs, parsing uploads or rendering user text counts as external input.
+You review alone in T1 and in T2 without external input (fast path: a verifier agent there tripled time and cost without finding more). A T2 with external input, login or personal data always gets the security agent, even when the code looks simple; serving files, fetching URLs, parsing uploads or rendering user text counts as external input. Plain JSON fields that are validated and stored are not external input by themselves; the same fields shown in a page as HTML are.
 
 Order by tier:
 - **T1**: dev, then you review (below). No reviewer agent.
-- **T2 without external input**: architect (if needed) → dev → reviewer.
+- **T2 without external input** (fast path): architect (if needed) → dev → you review (below) and re-run the tests. No reviewer agent unless the user asks for one.
 - **T2 with external input, login or personal data** (security from the first minute):
   1. Start dev and security **in the same message**. Security's brief: `Mode: pre-code` plus the contract and acceptance criteria; it writes the threat model and black-box attack tests in `tests/security/` while the code is written.
   2. Dev finishes: run the full test command yourself (it now includes security's tests). Failures in security tests go back to dev with the test name.
@@ -93,12 +93,12 @@ Order by tier:
 
 A reviewer or security block returns to the owner named in the finding, not to you for fixing.
 
-### T1 review (you, no subagent)
+### Your review (T1 and fast-path T2, no subagent)
 Run `git diff` and read it, then run the project's test command yourself; nothing else unless the diff forces a question.
 ```
 - [ ] the diff does what the task asked and nothing more (no unrelated files, no debug output, no secrets)
 - [ ] a test for the fix exists in the diff, and the test command passes when **you** run it
-- [ ] no contract, auth, data-model or dependency change (if there is one: the tier was wrong, send it to the reviewer)
+- [ ] no auth, permission, personal-data or dependency change, and no external input (if there is one: the tier was wrong, send it to the security agent); T1 also: no contract or data-model change
 ```
 All ticked: approved, write the commit summary yourself. Anything unticked: back to the developer with the exact line.
 
@@ -108,7 +108,7 @@ Stop the loop after 2 failed fix rounds on the same finding: reassess the design
 
 ## 6. Deliver
 
-Only after the verifier approved (you in T1, security when it verified, the reviewer otherwise) and, with a vault, after closing the queue (section 9). Give the user, in their language, the final report from your agent file plus commit commands, one block per logical change:
+Only after the verifier approved (you in T1 and fast-path T2, security when it verified, the reviewer when the user asked for one) and, with a vault, after closing the queue (section 9). Give the user, in their language, the final report from your agent file plus commit commands, one block per logical change:
 
 ```bash
 git add src/auth/reset.ts src/routes/auth.ts tests/auth/reset.test.ts

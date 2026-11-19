@@ -1,7 +1,7 @@
 // Office benchmark: runs one fixed task in a fresh copy of the fixture, with the Office team or plain Sonnet,
 // then scores it with hidden acceptance tests and appends one line to benchmarks/results.jsonl.
 // Usage: bun benchmarks/run.ts <label> <office|sonnet> <t1..t5|t3n>
-import { appendFileSync, cpSync, mkdirSync, mkdtempSync } from "node:fs";
+import { appendFileSync, cpSync, existsSync, mkdirSync, mkdtempSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { prepareVault, writeOfficeMcp, writeOfficeSettings } from "../server/agentes";
@@ -67,6 +67,11 @@ const accName = task === "t3n" ? "t3" : task;
 cpSync(join(here, "acceptance", `${accName}.test.ts`), join(dir, "acceptance", `${accName}.test.ts`));
 const acc = sh(["bun", "test", `acceptance/${accName}.test.ts`]).stderr.toString();
 const count = (re: RegExp) => Number(acc.match(re)?.[1] ?? 0);
+// Harder attacks (acceptance-hard/): the plain acceptance tests stopped telling the variants apart.
+const hardSrc = join(here, "acceptance-hard", `${accName}.test.ts`);
+let hard = "";
+if (existsSync(hardSrc)) { mkdirSync(join(dir, "hard"), { recursive: true }); cpSync(hardSrc, join(dir, "hard", `${accName}.test.ts`)); hard = sh(["bun", "test", `./hard/${accName}.test.ts`]).stderr.toString(); }
+const hcount = (re: RegExp) => (hard ? Number(hard.match(re)?.[1] ?? 0) : null);
 const models = Object.values<any>(r.modelUsage ?? {});
 const sum = (k: string) => models.reduce((a, m) => a + (m[k] ?? 0), 0);
 
@@ -79,6 +84,7 @@ const row = {
   denials: (r.permission_denials ?? []).length,
   vault_notes: mode === "office" ? countNotes(vault) : null,
   own_tests_ok: own.exitCode === 0, acceptance_pass: count(/(\d+) pass/), acceptance_fail: count(/(\d+) fail/),
+  hard_pass: hcount(/(\d+) pass/), hard_fail: hcount(/(\d+) fail/),
   error: r.error ?? (r.is_error ? String(r.result).slice(0, 200) : undefined),
 };
 appendFileSync(join(here, "results.jsonl"), JSON.stringify(row) + "\n");

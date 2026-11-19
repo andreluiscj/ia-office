@@ -79,6 +79,7 @@ async function run(note: Note, kind: "start" | "resume") {
   if (kind === "resume" && note.meta.sessao) args.push("--resume", note.meta.sessao);
   setMeta(note.path, { status: "em andamento", atualizado: now() });
   log(`${kind} ${rel} em ${dir}`);
+  const t0 = Date.now();   // wall clock: duration_ms in the JSON leaves out the subagents
   const p = Bun.spawn(args, { cwd: dir, stdout: "pipe", stderr: "pipe", env: { ...process.env, CLAUDE_OFFICE: "1", OFFICE_VAULT: VAULT } });
   const out = await new Response(p.stdout).text(), err = await new Response(p.stderr).text();
   await p.exited;
@@ -90,8 +91,11 @@ async function run(note: Note, kind: "start" | "resume") {
   if (r.is_error && LIMIT.test(String(r.result))) { changes.status = "pausado"; changes.motivo = "limite de uso; retoma sozinho"; }
   else if (r.is_error) { changes.status = "bloqueado"; changes.motivo = String(r.result).replace(/\s+/g, " ").slice(0, 160); }
   else if (after && after.meta.status === "em andamento") changes.status = "concluido";   // the Lead forgot to close it
+  const secs = Math.round((Date.now() - t0) / 1000);
+  const total = secs + (Number(note.meta.tempo_s) || 0);   // summed over every start/resume of this request
+  changes.tempo_s = String(total);
   setMeta(note.path, changes);
-  log(`fim ${rel}: ${changes.status ?? after?.meta.status} (US$ ${(r.total_cost_usd ?? 0).toFixed(2)}, ${Math.round((r.duration_ms ?? 0) / 1000)} s)`);
+  log(`fim ${rel}: ${changes.status ?? after?.meta.status} (US$ ${(r.total_cost_usd ?? 0).toFixed(2)}, ${secs} s, total ${total} s)`);
 }
 
 function pending(): { note: Note; kind: "start" | "resume" }[] {
