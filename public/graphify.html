@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="pt-BR">
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -9,36 +9,36 @@
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;500;600&family=Silkscreen&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=9">
+  <link rel="stylesheet" href="style.css?v=10">
 </head>
 <body>
   <header class="topbar three">
     <div class="tb-left">
       <div class="brand">OFFICE</div>
-      <nav class="nav"><a href="/">Escritório</a><a href="/dashboard">Dashboard</a><a href="/skills">Skills</a><a href="/graphify" class="on">Graphify</a></nav>
+      <nav class="nav"><a href="/" data-i18n>Office</a><a href="/dashboard">Dashboard</a><a href="/skills">Skills</a><a href="/graphify" class="on">Graphify</a></nav>
     </div>
-    <div class="usage" id="usage" title="Limites de uso do seu plano do Claude, os mesmos de Configurações › Uso"></div>
+    <div class="usage" id="usage" title="Your Claude plan usage limits, the same as Settings › Usage" data-i18n-title></div>
     <div class="tb-right">
-      <div class="conn off" id="conn">conectando</div>
+      <div class="conn off" id="conn" data-i18n>connecting</div>
     </div>
   </header>
   <main class="dash">
-    <section class="box gf-status" id="status"><p class="muted">Verificando o Graphify...</p></section>
+    <section class="box gf-status" id="status"><p class="muted" data-i18n>Checking Graphify...</p></section>
     <div class="skills-layout">
       <section class="box">
-        <h2>Projetos</h2>
-        <div class="sub">Pastas onde o Claude Code já trabalhou, mais as que você adicionar.</div>
+        <h2 data-i18n>Projects</h2>
+        <div class="sub" data-i18n>Folders where Claude Code has worked, plus the ones you add.</div>
         <form id="addForm" class="gf-add">
-          <input id="addPath" class="search" placeholder="Adicionar pasta, ex.: C:\Projetos\meu-app ou ~/projetos/meu-app" autocomplete="off">
-          <button class="btn" type="submit">Adicionar</button>
+          <input id="addPath" class="search" placeholder="Add a folder, e.g. C:\Projects\my-app or ~/projects/my-app" data-i18n-placeholder autocomplete="off">
+          <button class="btn" type="submit" data-i18n>Add</button>
         </form>
         <div id="projects" class="skill-list"></div>
       </section>
       <section class="box skill-detail gf-detail" id="detail">
-        <p class="muted">Escolha um projeto para ver o grafo.</p>
+        <p class="muted" data-i18n>Pick a project to see the graph.</p>
       </section>
     </div>
   </main>
-  <script type="module" src="graphify.js?v=9"></script>
+  <script type="module" src="graphify.js?v=10"></script>
 </body>
 </html>

@@ -27,6 +27,8 @@
     "graphify:instalar": "uv tool install --upgrade graphifyy",
     "agentes": "bun scripts/agentes.ts",
     "agentes:aplicar": "bun scripts/agentes.ts --aplicar",
+    "bench": "bun bench/run.ts",
+    "bench:report": "bun bench/report.ts",
     "desinstalar": "bun scripts/install-cli.ts uninstall && bun scripts/install-company.ts uninstall && bun scripts/install-hooks.ts uninstall"
   },
   "license": "MIT"

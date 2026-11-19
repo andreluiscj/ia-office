@@ -1,0 +1,2241 @@
+[
+ {
+  "round": "saas",
+  "rows": [
+   {
+    "v": "plain",
+    "cost": 2.1260676000000003,
+    "wallMs": 518942,
+    "tokens": 1997332,
+    "checks": [
+     {
+      "id": "F0",
+      "group": "functional",
+      "name": "server starts and answers on PORT",
+      "pass": true,
+      "detail": ""
+     },
+     {
+      "id": "F1",
+      "group": "functional",
+      "name": "signup creates org and owner (201 + cookie)",
+      "pass": true,
+      "detail": "201 {\"user\":{\"id\":1,\"email\":\"a-svvy6r@example.com\",\"role\":\"owner\"},\"org\":{\"id\":1,\"na"
+     },
+     {
+      "id": "F2",
+      "group": "functional",
+      "name": "GET /api/me returns the session user",
+      "pass": true,
+      "detail": ""
+     },
+     {
+      "id": "F3",
+      "group": "functional",
+      "name": "duplicate email -> 409",
+      "pass": true,
+      "detail": "409"
+     },
+     {
+      "id": "F4",
+      "group": "functional",
+      "name": "signup validation (short password, bad email, empty org -> 400)",
+      "pass": true,
+      "detail": ""
+     },
+     {
+      "id": "F5",
+      "group": "functional",
+      "name": "login: wrong password 401, right password 200 + cookie",
+      "pass": true,
+      "detail": ""
+     },
+     {
+      "id": "S13",
+      "group": "security",
+      "name": "new session id on every login (no fixation)",
+      "pass": true,
+      "detail": ""
+     },
+     {
+      "id": "F6",
+      "group": "functional",
+      "name": "create client (201) and list it",
+      "pass": true,
+      "detail": ""
+     },
+     {
+      "id": "F7",
+      "group": "functional",
+      "name": "invoice total computed server-side in cents (3*12050+999=37149), ignores client total",
+      "pass": true,
+      "detail": "201 total=37149"
+     },
+     {
+      "id": "F8",
+      "group": "functional",
+      "name": "invoice numbers sequential per org (INV-0001)",
+      "pass": true,
+      "detail": "INV-0001"
+     },
+     {
+      "id": "F8b",
+      "group": "functional",
+      "name": "second invoice is INV-0002",
+      "pass": true,
+      "detail": "INV-0002"
+     },
+     {
+      "id": "F9",
+      "group": "functional",
+      "name": "GET /api/invoices/:id returns it",
+      "pass": true,
+      "detail": ""
+     },
+     {
+      "id": "F10",
+      "group": "functional",
+      "name": "free plan: 6th invoice -> 402",
+      "pass": true,
+      "detail": "402"
+     },
+     {
+      "id": "F11",
+      "group": "functional",
+      "name": "invoice validation (negative qty, float price, no items, qty>1000, long text) never 201",
+      "pass": true,
+      "detail": "400,400,400,400,400"
+     },
+     {
+      "id": "F12",
+      "group": "functional",
+      "name": "upgrade to pro lifts the 5-invoice limit",
+      "pass": true,
+      "detail": "true 201"
+     },
+     {
+      "id": "F13",
+      "group": "functional",
+      "name": "owner creates a member in the same org who can log in",
+      "pass": true,
+      "detail": ""
+     },
+     {
+      "id": "S14",
+      "group": "security",
+      "name": "member cannot create members or delete invoices (403)",
+      "pass": true,
+      "detail": "true true"
+     },
+     {
+      "id": "S14b",
+      "group": "security",
+      "name": "member cannot upgrade billing (403)",
+      "pass": true,
+      "detail": "403"
+     },
+     {
+      "id": "F14",
+      "group": "functional",
+      "name": "owner deletes invoice (204)",
+      "pass": true,
+      "detail": "204"
+     },
+     {
+      "id": "F15",
+      "group": "functional",
+      "name": "logout invalidates the session",
+      "pass": true,
+      "detail": "204/401"
+     },
+     {
+      "id": "S2",
+      "group": "security",
+      "name": "tenant isolation: B cannot read, list, use the client of, or delete A's data",
+      "pass": true,
+      "detail": "truetruetruetruetrue"
+     },
+     {
+      "id": "S9",
+      "group": "security",
+      "name": "mass assignment: extra signup fields (orgId, plan) are ignored",
+      "pass": true,
+      "detail": "{\"id\":3,\"name\":\"C\",\"plan\":\"free\"}"
+     },
+     {
+      "id": "S1",
+      "group": "security",
+      "name": "unauthenticated access to protected routes -> 401",
+      "pass": true,
+      "detail": ""
+     },
+     {
+      "id": "S3",
+      "group": "security",
+      "name": "state-changing requests without X-Requested-With -> 403",
+      "pass": true,
+      "detail": "true 403"
+     },
+     {
+      "id": "S5",
+      "group": "security",
+      "name": "SQL injection: login payloads rejected, quote/DROP payload stored as plain text",
+      "pass": true,
+      "detail": "truetrue 201"
+     },
+     {
+      "id": "S4",
+      "group": "security",
+      "name": "password not stored in plaintext and never returned by the API",
+      "pass": true,
+      "detail": "dbBytes=374928"
+     },
+     {
+      "id": "S6",
+      "group": "security",
+      "name": "session cookie is HttpOnly and SameSite",
+      "pass": true,
+      "detail": "sid=efQennhzT1WR1ZGT_pD_G_Teth_DB6VbvIGNDp1vVnc; HttpOnly; SameSite=Lax; Path=/; Max-Age=604800"
+     },
+     {
+      "id": "S7",
+      "group": "security",
+      "name": "security headers: CSP, nosniff, frame protection, referrer policy",
+      "pass": true,
+      "detail": "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; object-src 'none'; ba"
+     },
+     {
+      "id": "S7b",
+      "group": "security",
+      "name": "CSP does not allow unsafe-inline scripts or eval",
+      "pass": true,
+      "detail": "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; object-src 'none'; ba"
+     },
+     {
+      "id": "S7c",
+      "group": "security",
+      "name": "security headers also on API responses",
+      "pass": true,
+      "detail": ""
+     },
+     {
+      "id": "S11",
+      "group": "security",
+      "name": "malformed input gives clean JSON errors without stack traces or SQL",
+      "pass": true,
+      "detail": "true true"
+     },
+     {
+      "id": "S12",
+      "group": "security",
+      "name": "request body over 1 MB -> 413",
+      "pass": true,
+      "detail": "413"
+     },
+     {
+      "id": "S8",
+      "group": "security",
+      "name": "brute force: login locked (429) after repeated failures, even with the right password",
+      "pass": true,
+      "detail": "429=true next=429"
+     },
+     {
+      "id": "F16",
+      "group": "functional",
+      "name": "GET / serves an HTML app with login/signup inputs (in the HTML or its script)",
+      "pass": true,
+      "detail": "200 5552b scripts=1"
+     },
+     {
+      "id": "F17",
+      "group": "functional",
+      "name": "UI basics: lang attribute, viewport meta, labelled inputs",
+      "pass": true,
+      "detail": "true,true,true"
+     },
+     {
+      "id": "D1",
+      "group": "security",
+      "name": "path traversal / source files are not served (10 probes)",
+      "pass": true,
+      "detail": "1111111111"
+     },
+     {
+      "id": "D2",
+      "group": "security",
+      "name": "email uniqueness is case-insensitive (no duplicate account via upper case)",
+      "pass": true,
+      "detail": "409"
+     },
+     {
+      "id": "D3",
+      "group": "security",
+      "name": "prototype pollution payload does not elevate or break the server",
+      "pass": true,
+      "detail": "201"
+     },
+     {
+      "id": "D4",
+      "group": "security",
+      "name": "very long password rejected or handled fast (<2 s, no hash DoS)",
+      "pass": true,
+      "detail": "400 17ms"
+     },
+     {
+      "id": "D5",
+      "group": "security",
+      "name": "huge malformed email handled fast (<2 s) and rejected",
+      "pass": true,
+      "detail": "400 14ms"
+     },
+     {
+      "id": "D6",
+      "group": "security",
+      "name": "race condition: 12 parallel invoices on a free plan create exactly 5, with unique numbers",
+      "pass": true,
+      "detail": "created=5"
+     },
+     {
+      "id": "D7",
+      "group": "security",
+      "name": "no permissive CORS for a foreign origin",
+      "pass": true,
+      "detail": "none"
+     },
+     {
+      "id": "D8",
+      "group": "security",
+      "name": "non-JSON content-type body is rejected (415/400), not parsed",
+      "pass": false,
+      "detail": "201"
+     },
+     {
+      "id": "D9",
+      "group": "security",
+      "name": "TRACE refused and unknown API route is a clean JSON 404",
+      "pass": true,
+      "detail": "0/404"
+     },
+     {
+      "id": "D10",
+      "group": "security",
+      "name": "session cookie has an expiry (Max-Age/Expires) and path",
+      "pass": true,
+      "detail": "sid=efQennhzT1WR1ZGT_pD_G_Teth_DB6VbvIGNDp1vVnc; HttpOnly; SameSite=Lax; Path=/; Max-Age=604800"
+     },
+     {
+      "id": "D11",
+      "group": "security",
+      "name": "same error body for unknown user and wrong password (no enumeration)",
+      "pass": true,
+      "detail": "401/401"
+     },
+     {
+      "id": "D12",
+      "group": "security",
+      "name": "login timing for unknown vs known user is similar (within 3x, no hash skip)",
+      "pass": true,
+      "detail": "known=45ms unknown=47ms"
+     },
+     {
+      "id": "D13",
+      "group": "security",
+      "name": "no IDOR: another org cannot read any of invoices 1..10 or the new one",
+      "pass": true,
+      "detail": ""
+     },
+     {
+      "id": "D15",
+      "group": "functional",
+      "name": "extreme totals stay exact in integer cents (50 x 1000 x 1e8 = 5e12)",
+      "pass": true,
+      "detail": "201 5000000000000"
+     },
+     {
+      "id": "D16",
+      "group": "functional",
+      "name": "more than 50 items is rejected",
+      "pass": true,
+      "detail": "400"
+     },
+     {
+      "id": "D17",
+      "group": "security",
+      "name": "parallel brute force: at most ~5 of 30 concurrent wrong guesses are evaluated (rest 429)",
+      "pass": true,
+      "detail": "5 guesses were evaluated"
+     },
+     {
+      "id": "D14",
+      "group": "security",
+      "name": "server still alive and responding after the abuse above",
+      "pass": true,
+      "detail": ""
+     },
+     {
+      "id": "F18",
+      "group": "functional",
+      "name": "data persists across a server restart",
+      "pass": true,
+      "detail": "200 n=6"
+     }
+    ],
+    "skills": [],
+    "mem": 0,
+    "spawned": [],
+    "tools": {
+     "Bash": 11,
+     "Write": 18,
+     "Edit": 6,
+     "Glob": 1,
+     "Read": 3
+    },
+    "static": {
+     "files": 15,
+     "loc": {
+      "source": 469,
+      "tests": 416,
+      "web": 320
+     },
+     "docs": [
+      {
+       "file": "docs/architecture.md",
+       "lines": 56,
+       "bytes": 4561
+      },
+      {
+       "file": "docs/product.md",
+       "lines": 46,
+       "bytes": 2937
+      },
+      {
+       "file": "docs/security.md",
+       "lines": 62,
+       "bytes": 6932
+      },
+      {
+       "file": "README.md",
+       "lines": 57,
+       "bytes": 2306
+      }
+     ],
+     "hasProductDoc": true,
+     "hasArchitectureDoc": true,
+     "hasSecurityDoc": true,
+     "hasReadme": true,
+     "tests": {
+      "pass": 26,
+      "fail": 0,
+      "total": 26,
+      "files": 4
+     },
+     "dependencies": [],
+     "patterns": {
+      "eval": 0,
+      "innerHTMLwithData": 0,
+      "sqlConcatenation": 0,
+      "passwordHashing": true,
+      "timingSafeEqual": true,
+      "randomBytesSession": true,
+      "consoleLogs": 2
+     }
+    }
+   },
+   {
+    "v": "office",
+    "cost": 5.758208099999999,
+    "wallMs": 895178,
+    "tokens": 7914515,
+    "checks": [
+     {
+      "id": "F0",
+      "group": "functional",
+      "name": "server starts and answers on PORT",
+      "pass": true,
+      "detail": ""
+     },
+     {
+      "id": "F1",
+      "group": "functional",
+      "name": "signup creates org and owner (201 + cookie)",
+      "pass": true,
+      "detail": "201 {\"user\":{\"id\":1,\"email\":\"a-vz0ez0@example.com\",\"role\":\"owner\"},\"org\":{\"id\":1,\"na"
+     },
+     {
+      "id": "F2",
+      "group": "functional",
+      "name": "GET /api/me returns the session user",
+      "pass": true,
+      "detail": ""
+     },
+     {
+      "id": "F3",
+      "group": "functional",
+      "name": "duplicate email -> 409",
+      "pass": true,
+      "detail": "409"
+     },
+     {
+      "id": "F4",
+      "group": "functional",
+      "name": "signup validation (short password, bad email, empty org -> 400)",
+      "pass": true,
+      "detail": ""
+     },
+     {
+      "id": "F5",
+      "group": "functional",
+      "name": "login: wrong password 401, right password 200 + cookie",
+      "pass": true,
+      "detail": ""
+     },
+     {
+      "id": "S13",
+      "group": "security",
+      "name": "new session id on every login (no fixation)",
+      "pass": true,
+      "detail": ""
+     },
+     {
+      "id": "F6",
+      "group": "functional",
+      "name": "create client (201) and list it",
+      "pass": true,
+      "detail": ""
+     },
+     {
+      "id": "F7",
+      "group": "functional",
+      "name": "invoice total computed server-side in cents (3*12050+999=37149), ignores client total",
+      "pass": true,
+      "detail": "201 total=37149"
+     },
+     {
+      "id": "F8",
+      "group": "functional",
+      "name": "invoice numbers sequential per org (INV-0001)",
+      "pass": true,
+      "detail": "INV-0001"
+     },
+     {
+      "id": "F8b",
+      "group": "functional",
+      "name": "second invoice is INV-0002",
+      "pass": true,
+      "detail": "INV-0002"
+     },
+     {
+      "id": "F9",
+      "group": "functional",
+      "name": "GET /api/invoices/:id returns it",
+      "pass": true,
+      "detail": ""
+     },
+     {
+      "id": "F10",
+      "group": "functional",
+      "name": "free plan: 6th invoice -> 402",
+      "pass": true,
+      "detail": "402"
+     },
+     {
+      "id": "F11",
+      "group": "functional",
+      "name": "invoice validation (negative qty, float price, no items, qty>1000, long text) never 201",
+      "pass": true,
+      "detail": "400,400,400,400,400"
+     },
+     {
+      "id": "F12",
+      "group": "functional",
+      "name": "upgrade to pro lifts the 5-invoice limit",
+      "pass": true,
+      "detail": "true 201"
+     },
+     {
+      "id": "F13",
+      "group": "functional",
+      "name": "owner creates a member in the same org who can log in",
+      "pass": true,
+      "detail": ""
+     },
+     {
+      "id": "S14",
+      "group": "security",
+      "name": "member cannot create members or delete invoices (403)",
+      "pass": true,
+      "detail": "true true"
+     },
+     {
+      "id": "S14b",
+      "group": "security",
+      "name": "member cannot upgrade billing (403)",
+      "pass": true,
+      "detail": "403"
+     },
+     {
+      "id": "F14",
+      "group": "functional",
+      "name": "owner deletes invoice (204)",
+      "pass": true,
+      "detail": "204"
+     },
+     {
+      "id": "F15",
+      "group": "functional",
+      "name": "logout invalidates the session",
+      "pass": true,
+      "detail": "204/401"
+     },
+     {
+      "id": "S2",
+      "group": "security",
+      "name": "tenant isolation: B cannot read, list, use the client of, or delete A's data",
+      "pass": true,
+      "detail": "truetruetruetruetrue"
+     },
+     {
+      "id": "S9",
+      "group": "security",
+      "name": "mass assignment: extra signup fields (orgId, plan) are ignored",
+      "pass": true,
+      "detail": "{\"id\":3,\"name\":\"C\",\"plan\":\"free\"}"
+     },
+     {
+      "id": "S1",
+      "group": "security",
+      "name": "unauthenticated access to protected routes -> 401",
+      "pass": true,
+      "detail": ""
+     },
+     {
+      "id": "S3",
+      "group": "security",
+      "name": "state-changing requests without X-Requested-With -> 403",
+      "pass": true,
+      "detail": "true 403"
+     },
+     {
+      "id": "S5",
+      "group": "security",
+      "name": "SQL injection: login payloads rejected, quote/DROP payload stored as plain text",
+      "pass": true,
+      "detail": "truetrue 201"
+     },
+     {
+      "id": "S4",
+      "group": "security",
+      "name": "password not stored in plaintext and never returned by the API",
+      "pass": true,
+      "detail": "dbBytes=383168"
+     },
+     {
+      "id": "S6",
+      "group": "security",
+      "name": "session cookie is HttpOnly and SameSite",
+      "pass": true,
+      "detail": "sid=p8ykVEnA2D68Fs9NGbJqMXyckBf3f2pWg_PuLIcH0rE; HttpOnly; SameSite=Strict; Path=/; Max-Age=604800"
+     },
+     {
+      "id": "S7",
+      "group": "security",
+      "name": "security headers: CSP, nosniff, frame protection, referrer policy",
+      "pass": true,
+      "detail": "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; object-src 'none'; ba"
+     },
+     {
+      "id": "S7b",
+      "group": "security",
+      "name": "CSP does not allow unsafe-inline scripts or eval",
+      "pass": true,
+      "detail": "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; object-src 'none'; ba"
+     },
+     {
+      "id": "S7c",
+      "group": "security",
+      "name": "security headers also on API responses",
+      "pass": true,
+      "detail": ""
+     },
+     {
+      "id": "S11",
+      "group": "security",
+      "name": "malformed input gives clean JSON errors without stack traces or SQL",
+      "pass": true,
+      "detail": "true true"
+     },
+     {
+      "id": "S12",
+      "group": "security",
+      "name": "request body over 1 MB -> 413",
+      "pass": true,
+      "detail": "413"
+     },
+     {
+      "id": "S8",
+      "group": "security",
+      "name": "brute force: login locked (429) after repeated failures, even with the right password",
+      "pass": true,
+      "detail": "429=true next=429"
+     },
+     {
+      "id": "F16",
+      "group": "functional",
+      "name": "GET / serves an HTML app with login/signup inputs (in the HTML or its script)",
+      "pass": true,
+      "detail": "200 768b scripts=1"
+     },
+     {
+      "id": "F17",
+      "group": "functional",
+      "name": "UI basics: lang attribute, viewport meta, labelled inputs",
+      "pass": true,
+      "detail": "true,true,true"
+     },
+     {
+      "id": "D1",
+      "group": "security",
+      "name": "path traversal / source files are not served (10 probes)",
+      "pass": true,
+      "detail": "1111111111"
+     },
+     {
+      "id": "D2",
+      "group": "security",
+      "name": "email uniqueness is case-insensitive (no duplicate account via upper case)",
+      "pass": true,
+      "detail": "409"
+     },
+     {
+      "id": "D3",
+      "group": "security",
+      "name": "prototype pollution payload does not elevate or break the server",
+      "pass": true,
+      "detail": "201"
+     },
+     {
+      "id": "D4",
+      "group": "security",
+      "name": "very long password rejected or handled fast (<2 s, no hash DoS)",
+      "pass": true,
+      "detail": "400 16ms"
+     },
+     {
+      "id": "D5",
+      "group": "security",
+      "name": "huge malformed email handled fast (<2 s) and rejected",
+      "pass": true,
+      "detail": "400 15ms"
+     },
+     {
+      "id": "D6",
+      "group": "security",
+      "name": "race condition: 12 parallel invoices on a free plan create exactly 5, with unique numbers",
+      "pass": true,
+      "detail": "created=5"
+     },
+     {
+      "id": "D7",
+      "group": "security",
+      "name": "no permissive CORS for a foreign origin",
+      "pass": true,
+      "detail": "none"
+     },
+     {
+      "id": "D8",
+      "group": "security",
+      "name": "non-JSON content-type body is rejected (415/400), not parsed",
+      "pass": false,
+      "detail": "201"
+     },
+     {
+      "id": "D9",
+      "group": "security",
+      "name": "TRACE refused and unknown API route is a clean JSON 404",
+      "pass": true,
+      "detail": "0/404"
+     },
+     {
+      "id": "D10",
+      "group": "security",
+      "name": "session cookie has an expiry (Max-Age/Expires) and path",
+      "pass": true,
+      "detail": "sid=p8ykVEnA2D68Fs9NGbJqMXyckBf3f2pWg_PuLIcH0rE; HttpOnly; SameSite=Strict; Path=/; Max-Age=604800"
+     },
+     {
+      "id": "D11",
+      "group": "security",
+      "name": "same error body for unknown user and wrong password (no enumeration)",
+      "pass": true,
+      "detail": "429/429"
+     },
+     {
+      "id": "D12",
+      "group": "security",
+      "name": "login timing for unknown vs known user is similar (within 3x, no hash skip)",
+      "pass": true,
+      "detail": "known=16ms unknown=15ms"
+     },
+     {
+      "id": "D13",
+      "group": "security",
+      "name": "no IDOR: another org cannot read any of invoices 1..10 or the new one",
+      "pass": true,
+      "detail": ""
+     },
+     {
+      "id": "D15",
+      "group": "functional",
+      "name": "extreme totals stay exact in integer cents (50 x 1000 x 1e8 = 5e12)",
+      "pass": true,
+      "detail": "201 5000000000000"
+     },
+     {
+      "id": "D16",
+      "group": "functional",
+      "name": "more than 50 items is rejected",
+      "pass": true,
+      "detail": "400"
+     },
+     {
+      "id": "D17",
+      "group": "security",
+      "name": "parallel brute force: at most ~5 of 30 concurrent wrong guesses are evaluated (rest 429)",
+      "pass": true,
+      "detail": "0 guesses were evaluated"
+     },
+     {
+      "id": "D14",
+      "group": "security",
+      "name": "server still alive and responding after the abuse above",
+      "pass": true,
+      "detail": ""
+     },
+     {
+      "id": "F18",
+      "group": "functional",
+      "name": "data persists across a server restart",
+      "pass": true,
+      "detail": "200 n=6"
+     }
+    ],
+    "skills": [],
+    "mem": 5,
+    "spawned": [
+     "empresa-arquiteto",
+     "empresa-backend",
+     "empresa-frontend",
+     "empresa-seguranca",
+     "empresa-qa",
+     "empresa-revisor"
+    ],
+    "tools": {
+     "Bash": 35,
+     "Agent": 6,
+     "SendMessage": 11,
+     "Write": 22,
+     "Glob": 2,
+     "Grep": 10,
+     "Read": 15,
+     "Edit": 45,
+     "ToolSearch": 2
+    },
+    "static": {
+     "files": 14,
+     "loc": {
+      "source": 613,
+      "tests": 390,
+      "web": 351
+     },
+     "docs": [
+      {
+       "file": "docs/architecture.md",
+       "lines": 130,
+       "bytes": 9946
+      },
+      {
+       "file": "docs/product.md",
+       "lines": 44,
+       "bytes": 2605
+      },
+      {
+       "file": "docs/security.md",
+       "lines": 167,
+       "bytes": 19971
+      },
+      {
+       "file": "README.md",
+       "lines": 50,
+       "bytes": 1967
+      }
+     ],
+     "hasProductDoc": true,
+     "hasArchitectureDoc": true,
+     "hasSecurityDoc": true,
+     "hasReadme": true,
+     "tests": {
+      "pass": 20,
+      "fail": 0,
+      "total": 20,
+      "files": 2
+     },
+     "dependencies": [],
+     "patterns": {
+      "eval": 0,
+      "innerHTMLwithData": 0,
+      "sqlConcatenation": 0,
+      "passwordHashing": true,
+      "timingSafeEqual": true,
+      "randomBytesSession": true,
+      "consoleLogs": 2
+     }
+    }
+   }
+  ]
+ },
+ {
+  "round": "saas-skills",
+  "rows": [
+   {
+    "v": "office",
+    "cost": 6.026813500000003,
+    "wallMs": 730205,
+    "tokens": 9252079,
+    "checks": [
+     {
+      "id": "F0",
+      "group": "functional",
+      "name": "server starts and answers on PORT",
+      "pass": true,
+      "detail": ""
+     },
+     {
+      "id": "F1",
+      "group": "functional",
+      "name": "signup creates org and owner (201 + cookie)",
+      "pass": true,
+      "detail": "201 {\"user\":{\"id\":1,\"email\":\"a-4y5bfy@example.com\",\"role\":\"owner\"},\"org\":{\"id\":1,\"na"
+     },
+     {
+      "id": "F2",
+      "group": "functional",
+      "name": "GET /api/me returns the session user",
+      "pass": true,
+      "detail": ""
+     },
+     {
+      "id": "F3",
+      "group": "functional",
+      "name": "duplicate email -> 409",
+      "pass": true,
+      "detail": "409"
+     },
+     {
+      "id": "F4",
+      "group": "functional",
+      "name": "signup validation (short password, bad email, empty org -> 400)",
+      "pass": true,
+      "detail": ""
+     },
+     {
+      "id": "F5",
+      "group": "functional",
+      "name": "login: wrong password 401, right password 200 + cookie",
+      "pass": true,
+      "detail": ""
+     },
+     {
+      "id": "S13",
+      "group": "security",
+      "name": "new session id on every login (no fixation)",
+      "pass": true,
+      "detail": ""
+     },
+     {
+      "id": "F6",
+      "group": "functional",
+      "name": "create client (201) and list it",
+      "pass": true,
+      "detail": ""
+     },
+     {
+      "id": "F7",
+      "group": "functional",
+      "name": "invoice total computed server-side in cents (3*12050+999=37149), ignores client total",
+      "pass": true,
+      "detail": "201 total=37149"
+     },
+     {
+      "id": "F8",
+      "group": "functional",
+      "name": "invoice numbers sequential per org (INV-0001)",
+      "pass": true,
+      "detail": "INV-0001"
+     },
+     {
+      "id": "F8b",
+      "group": "functional",
+      "name": "second invoice is INV-0002",
+      "pass": true,
+      "detail": "INV-0002"
+     },
+     {
+      "id": "F9",
+      "group": "functional",
+      "name": "GET /api/invoices/:id returns it",
+      "pass": true,
+      "detail": ""
+     },
+     {
+      "id": "F10",
+      "group": "functional",
+      "name": "free plan: 6th invoice -> 402",
+      "pass": true,
+      "detail": "402"
+     },
+     {
+      "id": "F11",
+      "group": "functional",
+      "name": "invoice validation (negative qty, float price, no items, qty>1000, long text) never 201",
+      "pass": true,
+      "detail": "400,400,400,400,400"
+     },
+     {
+      "id": "F12",
+      "group": "functional",
+      "name": "upgrade to pro lifts the 5-invoice limit",
+      "pass": true,
+      "detail": "true 201"
+     },
+     {
+      "id": "F13",
+      "group": "functional",
+      "name": "owner creates a member in the same org who can log in",
+      "pass": true,
+      "detail": ""
+     },
+     {
+      "id": "S14",
+      "group": "security",
+      "name": "member cannot create members or delete invoices (403)",
+      "pass": true,
+      "detail": "true true"
+     },
+     {
+      "id": "S14b",
+      "group": "security",
+      "name": "member cannot upgrade billing (403)",
+      "pass": true,
+      "detail": "403"
+     },
+     {
+      "id": "F14",
+      "group": "functional",
+      "name": "owner deletes invoice (204)",
+      "pass": true,
+      "detail": "204"
+     },
+     {
+      "id": "F15",
+      "group": "functional",
+      "name": "logout invalidates the session",
+      "pass": true,
+      "detail": "204/401"
+     },
+     {
+      "id": "S2",
+      "group": "security",
+      "name": "tenant isolation: B cannot read, list, use the client of, or delete A's data",
+      "pass": true,
+      "detail": "truetruetruetruetrue"
+     },
+     {
+      "id": "S9",
+      "group": "security",
+      "name": "mass assignment: extra signup fields (orgId, plan) are ignored",
+      "pass": true,
+      "detail": "{\"id\":3,\"name\":\"C\",\"plan\":\"free\"}"
+     },
+     {
+      "id": "S1",
+      "group": "security",
+      "name": "unauthenticated access to protected routes -> 401",
+      "pass": true,
+      "detail": ""
+     },
+     {
+      "id": "S3",
+      "group": "security",
+      "name": "state-changing requests without X-Requested-With -> 403",
+      "pass": true,
+      "detail": "true 403"
+     },
+     {
+      "id": "S5",
+      "group": "security",
+      "name": "SQL injection: login payloads rejected, quote/DROP payload stored as plain text",
+      "pass": true,
+      "detail": "truetrue 201"
+     },
+     {
+      "id": "S4",
+      "group": "security",
+      "name": "password not stored in plaintext and never returned by the API",
+      "pass": true,
+      "detail": "dbBytes=539728"
+     },
+     {
+      "id": "S6",
+      "group": "security",
+      "name": "session cookie is HttpOnly and SameSite",
+      "pass": true,
+      "detail": "sid=sK0uGw3o7AijDj_6KzqdQbuXWCY7XvUMXRsz-ITTsmM; HttpOnly; SameSite=Lax; Path=/; Max-Age=604800"
+     },
+     {
+      "id": "S7",
+      "group": "security",
+      "name": "security headers: CSP, nosniff, frame protection, referrer policy",
+      "pass": true,
+      "detail": "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; object-src 'none'; ba"
+     },
+     {
+      "id": "S7b",
+      "group": "security",
+      "name": "CSP does not allow unsafe-inline scripts or eval",
+      "pass": true,
+      "detail": "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; object-src 'none'; ba"
+     },
+     {
+      "id": "S7c",
+      "group": "security",
+      "name": "security headers also on API responses",
+      "pass": true,
+      "detail": ""
+     },
+     {
+      "id": "S11",
+      "group": "security",
+      "name": "malformed input gives clean JSON errors without stack traces or SQL",
+      "pass": true,
+      "detail": "true true"
+     },
+     {
+      "id": "S12",
+      "group": "security",
+      "name": "request body over 1 MB -> 413",
+      "pass": true,
+      "detail": "413"
+     },
+     {
+      "id": "S8",
+      "group": "security",
+      "name": "brute force: login locked (429) after repeated failures, even with the right password",
+      "pass": true,
+      "detail": "429=true next=429"
+     },
+     {
+      "id": "F16",
+      "group": "functional",
+      "name": "GET / serves an HTML app with login/signup inputs (in the HTML or its script)",
+      "pass": true,
+      "detail": "200 4544b scripts=1"
+     },
+     {
+      "id": "F17",
+      "group": "functional",
+      "name": "UI basics: lang attribute, viewport meta, labelled inputs",
+      "pass": true,
+      "detail": "true,true,true"
+     },
+     {
+      "id": "D1",
+      "group": "security",
+      "name": "path traversal / source files are not served (10 probes)",
+      "pass": true,
+      "detail": "1111111111"
+     },
+     {
+      "id": "D2",
+      "group": "security",
+      "name": "email uniqueness is case-insensitive (no duplicate account via upper case)",
+      "pass": true,
+      "detail": "409"
+     },
+     {
+      "id": "D3",
+      "group": "security",
+      "name": "prototype pollution payload does not elevate or break the server",
+      "pass": true,
+      "detail": "201"
+     },
+     {
+      "id": "D4",
+      "group": "security",
+      "name": "very long password rejected or handled fast (<2 s, no hash DoS)",
+      "pass": true,
+      "detail": "400 17ms"
+     },
+     {
+      "id": "D5",
+      "group": "security",
+      "name": "huge malformed email handled fast (<2 s) and rejected",
+      "pass": true,
+      "detail": "400 14ms"
+     },
+     {
+      "id": "D6",
+      "group": "security",
+      "name": "race condition: 12 parallel invoices on a free plan create exactly 5, with unique numbers",
+      "pass": true,
+      "detail": "created=5"
+     },
+     {
+      "id": "D7",
+      "group": "security",
+      "name": "no permissive CORS for a foreign origin",
+      "pass": true,
+      "detail": "none"
+     },
+     {
+      "id": "D8",
+      "group": "security",
+      "name": "non-JSON content-type body is rejected (415/400), not parsed",
+      "pass": false,
+      "detail": "201"
+     },
+     {
+      "id": "D9",
+      "group": "security",
+      "name": "TRACE refused and unknown API route is a clean JSON 404",
+      "pass": true,
+      "detail": "0/404"
+     },
+     {
+      "id": "D10",
+      "group": "security",
+      "name": "session cookie has an expiry (Max-Age/Expires) and path",
+      "pass": true,
+      "detail": "sid=sK0uGw3o7AijDj_6KzqdQbuXWCY7XvUMXRsz-ITTsmM; HttpOnly; SameSite=Lax; Path=/; Max-Age=604800"
+     },
+     {
+      "id": "D11",
+      "group": "security",
+      "name": "same error body for unknown user and wrong password (no enumeration)",
+      "pass": true,
+      "detail": "401/401"
+     },
+     {
+      "id": "D12",
+      "group": "security",
+      "name": "login timing for unknown vs known user is similar (within 3x, no hash skip)",
+      "pass": true,
+      "detail": "known=46ms unknown=33ms"
+     },
+     {
+      "id": "D13",
+      "group": "security",
+      "name": "no IDOR: another org cannot read any of invoices 1..10 or the new one",
+      "pass": true,
+      "detail": ""
+     },
+     {
+      "id": "D15",
+      "group": "functional",
+      "name": "extreme totals stay exact in integer cents (50 x 1000 x 1e8 = 5e12)",
+      "pass": true,
+      "detail": "201 5000000000000"
+     },
+     {
+      "id": "D16",
+      "group": "functional",
+      "name": "more than 50 items is rejected",
+      "pass": true,
+      "detail": "400"
+     },
+     {
+      "id": "D17",
+      "group": "security",
+      "name": "parallel brute force: at most ~5 of 30 concurrent wrong guesses are evaluated (rest 429)",
+      "pass": true,
+      "detail": "5 guesses were evaluated"
+     },
+     {
+      "id": "D14",
+      "group": "security",
+      "name": "server still alive and responding after the abuse above",
+      "pass": true,
+      "detail": ""
+     },
+     {
+      "id": "F18",
+      "group": "functional",
+      "name": "data persists across a server restart",
+      "pass": true,
+      "detail": "200 n=6"
+     }
+    ],
+    "skills": [],
+    "mem": 8,
+    "spawned": [
+     "empresa-arquiteto",
+     "empresa-backend",
+     "empresa-frontend",
+     "empresa-seguranca",
+     "empresa-qa",
+     "empresa-revisor"
+    ],
+    "tools": {
+     "Bash": 39,
+     "Agent": 6,
+     "ToolSearch": 1,
+     "SendMessage": 10,
+     "Write": 25,
+     "Grep": 12,
+     "Read": 13,
+     "Edit": 44,
+     "Glob": 2
+    },
+    "static": {
+     "files": 14,
+     "loc": {
+      "source": 476,
+      "tests": 661,
+      "web": 460
+     },
+     "docs": [
+      {
+       "file": "docs/architecture.md",
+       "lines": 120,
+       "bytes": 13351
+      },
+      {
+       "file": "docs/product.md",
+       "lines": 66,
+       "bytes": 5482
+      },
+      {
+       "file": "docs/security.md",
+       "lines": 116,
+       "bytes": 15228
+      },
+      {
+       "file": "README.md",
+       "lines": 40,
+       "bytes": 1344
+      }
+     ],
+     "hasProductDoc": true,
+     "hasArchitectureDoc": true,
+     "hasSecurityDoc": true,
+     "hasReadme": true,
+     "tests": {
+      "pass": 36,
+      "fail": 1,
+      "total": 37,
+      "files": 3
+     },
+     "dependencies": [],
+     "patterns": {
+      "eval": 0,
+      "innerHTMLwithData": 0,
+      "sqlConcatenation": 0,
+      "passwordHashing": true,
+      "timingSafeEqual": true,
+      "randomBytesSession": true,
+      "consoleLogs": 3
+     }
+    }
+   }
+  ]
+ },
+ {
+  "round": "saas-round1",
+  "rows": [
+   {
+    "v": "plain",
+    "cost": 1.9147463999999998,
+    "wallMs": 443107,
+    "tokens": 1759326,
+    "checks": [
+     {
+      "id": "F0",
+      "group": "functional",
+      "name": "server starts and answers on PORT",
+      "pass": true,
+      "detail": ""
+     },
+     {
+      "id": "F1",
+      "group": "functional",
+      "name": "signup creates org and owner (201 + cookie)",
+      "pass": true,
+      "detail": "201 {\"user\":{\"id\":1,\"email\":\"a-h4m1l0@example.com\",\"role\":\"owner\"},\"org\":{\"id\":1,\"na"
+     },
+     {
+      "id": "F2",
+      "group": "functional",
+      "name": "GET /api/me returns the session user",
+      "pass": true,
+      "detail": ""
+     },
+     {
+      "id": "F3",
+      "group": "functional",
+      "name": "duplicate email -> 409",
+      "pass": true,
+      "detail": "409"
+     },
+     {
+      "id": "F4",
+      "group": "functional",
+      "name": "signup validation (short password, bad email, empty org -> 400)",
+      "pass": true,
+      "detail": ""
+     },
+     {
+      "id": "F5",
+      "group": "functional",
+      "name": "login: wrong password 401, right password 200 + cookie",
+      "pass": true,
+      "detail": ""
+     },
+     {
+      "id": "S13",
+      "group": "security",
+      "name": "new session id on every login (no fixation)",
+      "pass": true,
+      "detail": ""
+     },
+     {
+      "id": "F6",
+      "group": "functional",
+      "name": "create client (201) and list it",
+      "pass": true,
+      "detail": ""
+     },
+     {
+      "id": "F7",
+      "group": "functional",
+      "name": "invoice total computed server-side in cents (3*12050+999=37149), ignores client total",
+      "pass": true,
+      "detail": "201 total=37149"
+     },
+     {
+      "id": "F8",
+      "group": "functional",
+      "name": "invoice numbers sequential per org (INV-0001)",
+      "pass": true,
+      "detail": "INV-0001"
+     },
+     {
+      "id": "F8b",
+      "group": "functional",
+      "name": "second invoice is INV-0002",
+      "pass": true,
+      "detail": "INV-0002"
+     },
+     {
+      "id": "F9",
+      "group": "functional",
+      "name": "GET /api/invoices/:id returns it",
+      "pass": true,
+      "detail": ""
+     },
+     {
+      "id": "F10",
+      "group": "functional",
+      "name": "free plan: 6th invoice -> 402",
+      "pass": true,
+      "detail": "402"
+     },
+     {
+      "id": "F11",
+      "group": "functional",
+      "name": "invoice validation (negative qty, float price, no items, qty>1000, long text) never 201",
+      "pass": true,
+      "detail": "400,400,400,400,400"
+     },
+     {
+      "id": "F12",
+      "group": "functional",
+      "name": "upgrade to pro lifts the 5-invoice limit",
+      "pass": true,
+      "detail": "true 201"
+     },
+     {
+      "id": "F13",
+      "group": "functional",
+      "name": "owner creates a member in the same org who can log in",
+      "pass": true,
+      "detail": ""
+     },
+     {
+      "id": "S14",
+      "group": "security",
+      "name": "member cannot create members or delete invoices (403)",
+      "pass": true,
+      "detail": "true true"
+     },
+     {
+      "id": "S14b",
+      "group": "security",
+      "name": "member cannot upgrade billing (403)",
+      "pass": true,
+      "detail": "403"
+     },
+     {
+      "id": "F14",
+      "group": "functional",
+      "name": "owner deletes invoice (204)",
+      "pass": true,
+      "detail": "204"
+     },
+     {
+      "id": "F15",
+      "group": "functional",
+      "name": "logout invalidates the session",
+      "pass": true,
+      "detail": "204/401"
+     },
+     {
+      "id": "S2",
+      "group": "security",
+      "name": "tenant isolation: B cannot read, list, use the client of, or delete A's data",
+      "pass": true,
+      "detail": "truetruetruetruetrue"
+     },
+     {
+      "id": "S9",
+      "group": "security",
+      "name": "mass assignment: extra signup fields (orgId, plan) are ignored",
+      "pass": true,
+      "detail": "{\"id\":3,\"name\":\"C\",\"plan\":\"free\"}"
+     },
+     {
+      "id": "S1",
+      "group": "security",
+      "name": "unauthenticated access to protected routes -> 401",
+      "pass": true,
+      "detail": ""
+     },
+     {
+      "id": "S3",
+      "group": "security",
+      "name": "state-changing requests without X-Requested-With -> 403",
+      "pass": true,
+      "detail": "true 403"
+     },
+     {
+      "id": "S5",
+      "group": "security",
+      "name": "SQL injection: login payloads rejected, quote/DROP payload stored as plain text",
+      "pass": true,
+      "detail": "truetrue 201"
+     },
+     {
+      "id": "S4",
+      "group": "security",
+      "name": "password not stored in plaintext and never returned by the API",
+      "pass": true,
+      "detail": "dbBytes=374928"
+     },
+     {
+      "id": "S6",
+      "group": "security",
+      "name": "session cookie is HttpOnly and SameSite",
+      "pass": true,
+      "detail": "sid=8LqBatAg83r6iyGPrzC3-Sz-DuvEro9HJjTP7lAciec; HttpOnly; SameSite=Strict; Path=/; Max-Age=604800"
+     },
+     {
+      "id": "S7",
+      "group": "security",
+      "name": "security headers: CSP, nosniff, frame protection, referrer policy",
+      "pass": true,
+      "detail": "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; o"
+     },
+     {
+      "id": "S7b",
+      "group": "security",
+      "name": "CSP does not allow unsafe-inline scripts or eval",
+      "pass": true,
+      "detail": "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; o"
+     },
+     {
+      "id": "S7c",
+      "group": "security",
+      "name": "security headers also on API responses",
+      "pass": true,
+      "detail": ""
+     },
+     {
+      "id": "S11",
+      "group": "security",
+      "name": "malformed input gives clean JSON errors without stack traces or SQL",
+      "pass": true,
+      "detail": "true true"
+     },
+     {
+      "id": "S12",
+      "group": "security",
+      "name": "request body over 1 MB -> 413",
+      "pass": true,
+      "detail": "413"
+     },
+     {
+      "id": "S8",
+      "group": "security",
+      "name": "brute force: login locked (429) after repeated failures, even with the right password",
+      "pass": true,
+      "detail": "429=true next=429"
+     },
+     {
+      "id": "F16",
+      "group": "functional",
+      "name": "GET / serves an HTML app with login/signup inputs (in the HTML or its script)",
+      "pass": true,
+      "detail": "200 5072b scripts=1"
+     },
+     {
+      "id": "F17",
+      "group": "functional",
+      "name": "UI basics: lang attribute, viewport meta, labelled inputs",
+      "pass": true,
+      "detail": "true,true,true"
+     },
+     {
+      "id": "D1",
+      "group": "security",
+      "name": "path traversal / source files are not served (10 probes)",
+      "pass": true,
+      "detail": "1111111111"
+     },
+     {
+      "id": "D2",
+      "group": "security",
+      "name": "email uniqueness is case-insensitive (no duplicate account via upper case)",
+      "pass": true,
+      "detail": "409"
+     },
+     {
+      "id": "D3",
+      "group": "security",
+      "name": "prototype pollution payload does not elevate or break the server",
+      "pass": true,
+      "detail": "201"
+     },
+     {
+      "id": "D4",
+      "group": "security",
+      "name": "very long password rejected or handled fast (<2 s, no hash DoS)",
+      "pass": true,
+      "detail": "400 18ms"
+     },
+     {
+      "id": "D5",
+      "group": "security",
+      "name": "huge malformed email handled fast (<2 s) and rejected",
+      "pass": true,
+      "detail": "400 14ms"
+     },
+     {
+      "id": "D6",
+      "group": "security",
+      "name": "race condition: 12 parallel invoices on a free plan create exactly 5, with unique numbers",
+      "pass": true,
+      "detail": "created=5"
+     },
+     {
+      "id": "D7",
+      "group": "security",
+      "name": "no permissive CORS for a foreign origin",
+      "pass": true,
+      "detail": "none"
+     },
+     {
+      "id": "D8",
+      "group": "security",
+      "name": "non-JSON content-type body is rejected (415/400), not parsed",
+      "pass": false,
+      "detail": "201"
+     },
+     {
+      "id": "D9",
+      "group": "security",
+      "name": "TRACE refused and unknown API route is a clean JSON 404",
+      "pass": true,
+      "detail": "0/404"
+     },
+     {
+      "id": "D10",
+      "group": "security",
+      "name": "session cookie has an expiry (Max-Age/Expires) and path",
+      "pass": true,
+      "detail": "sid=8LqBatAg83r6iyGPrzC3-Sz-DuvEro9HJjTP7lAciec; HttpOnly; SameSite=Strict; Path=/; Max-Age=604800"
+     },
+     {
+      "id": "D11",
+      "group": "security",
+      "name": "same error body for unknown user and wrong password (no enumeration)",
+      "pass": true,
+      "detail": "401/401"
+     },
+     {
+      "id": "D12",
+      "group": "security",
+      "name": "login timing for unknown vs known user is similar (within 3x, no hash skip)",
+      "pass": true,
+      "detail": "known=45ms unknown=47ms"
+     },
+     {
+      "id": "D13",
+      "group": "security",
+      "name": "no IDOR: another org cannot read any of invoices 1..10 or the new one",
+      "pass": true,
+      "detail": ""
+     },
+     {
+      "id": "D15",
+      "group": "functional",
+      "name": "extreme totals stay exact in integer cents (50 x 1000 x 1e8 = 5e12)",
+      "pass": true,
+      "detail": "201 5000000000000"
+     },
+     {
+      "id": "D16",
+      "group": "functional",
+      "name": "more than 50 items is rejected",
+      "pass": true,
+      "detail": "400"
+     },
+     {
+      "id": "D17",
+      "group": "security",
+      "name": "parallel brute force: at most ~5 of 30 concurrent wrong guesses are evaluated (rest 429)",
+      "pass": true,
+      "detail": "5 guesses were evaluated"
+     },
+     {
+      "id": "D14",
+      "group": "security",
+      "name": "server still alive and responding after the abuse above",
+      "pass": true,
+      "detail": ""
+     },
+     {
+      "id": "F18",
+      "group": "functional",
+      "name": "data persists across a server restart",
+      "pass": true,
+      "detail": "200 n=6"
+     }
+    ],
+    "skills": [],
+    "mem": 0,
+    "spawned": [],
+    "tools": {
+     "Bash": 10,
+     "Write": 12,
+     "Edit": 7
+    },
+    "static": {
+     "files": 12,
+     "loc": {
+      "source": 624,
+      "tests": 399,
+      "web": 408
+     },
+     "docs": [
+      {
+       "file": "docs/architecture.md",
+       "lines": 65,
+       "bytes": 5668
+      },
+      {
+       "file": "docs/product.md",
+       "lines": 53,
+       "bytes": 3463
+      },
+      {
+       "file": "docs/security.md",
+       "lines": 67,
+       "bytes": 7661
+      },
+      {
+       "file": "README.md",
+       "lines": 58,
+       "bytes": 2502
+      }
+     ],
+     "hasProductDoc": true,
+     "hasArchitectureDoc": true,
+     "hasSecurityDoc": true,
+     "hasReadme": true,
+     "tests": {
+      "pass": 24,
+      "fail": 0,
+      "total": 24,
+      "files": 1
+     },
+     "dependencies": [],
+     "patterns": {
+      "eval": 0,
+      "innerHTMLwithData": 0,
+      "sqlConcatenation": 0,
+      "passwordHashing": true,
+      "timingSafeEqual": true,
+      "randomBytesSession": true,
+      "consoleLogs": 2
+     }
+    }
+   },
+   {
+    "v": "office",
+    "cost": 3.1033118999999987,
+    "wallMs": 436128,
+    "tokens": 3275549,
+    "checks": [
+     {
+      "id": "F0",
+      "group": "functional",
+      "name": "server starts and answers on PORT",
+      "pass": true,
+      "detail": ""
+     },
+     {
+      "id": "F1",
+      "group": "functional",
+      "name": "signup creates org and owner (201 + cookie)",
+      "pass": true,
+      "detail": "201 {\"user\":{\"id\":1,\"email\":\"a-qn4r88@example.com\",\"role\":\"owner\"},\"org\":{\"id\":1,\"na"
+     },
+     {
+      "id": "F2",
+      "group": "functional",
+      "name": "GET /api/me returns the session user",
+      "pass": true,
+      "detail": ""
+     },
+     {
+      "id": "F3",
+      "group": "functional",
+      "name": "duplicate email -> 409",
+      "pass": true,
+      "detail": "409"
+     },
+     {
+      "id": "F4",
+      "group": "functional",
+      "name": "signup validation (short password, bad email, empty org -> 400)",
+      "pass": true,
+      "detail": ""
+     },
+     {
+      "id": "F5",
+      "group": "functional",
+      "name": "login: wrong password 401, right password 200 + cookie",
+      "pass": true,
+      "detail": ""
+     },
+     {
+      "id": "S13",
+      "group": "security",
+      "name": "new session id on every login (no fixation)",
+      "pass": true,
+      "detail": ""
+     },
+     {
+      "id": "F6",
+      "group": "functional",
+      "name": "create client (201) and list it",
+      "pass": true,
+      "detail": ""
+     },
+     {
+      "id": "F7",
+      "group": "functional",
+      "name": "invoice total computed server-side in cents (3*12050+999=37149), ignores client total",
+      "pass": true,
+      "detail": "201 total=37149"
+     },
+     {
+      "id": "F8",
+      "group": "functional",
+      "name": "invoice numbers sequential per org (INV-0001)",
+      "pass": true,
+      "detail": "INV-0001"
+     },
+     {
+      "id": "F8b",
+      "group": "functional",
+      "name": "second invoice is INV-0002",
+      "pass": true,
+      "detail": "INV-0002"
+     },
+     {
+      "id": "F9",
+      "group": "functional",
+      "name": "GET /api/invoices/:id returns it",
+      "pass": true,
+      "detail": ""
+     },
+     {
+      "id": "F10",
+      "group": "functional",
+      "name": "free plan: 6th invoice -> 402",
+      "pass": true,
+      "detail": "402"
+     },
+     {
+      "id": "F11",
+      "group": "functional",
+      "name": "invoice validation (negative qty, float price, no items, qty>1000, long text) never 201",
+      "pass": true,
+      "detail": "400,400,400,400,400"
+     },
+     {
+      "id": "F12",
+      "group": "functional",
+      "name": "upgrade to pro lifts the 5-invoice limit",
+      "pass": true,
+      "detail": "true 201"
+     },
+     {
+      "id": "F13",
+      "group": "functional",
+      "name": "owner creates a member in the same org who can log in",
+      "pass": true,
+      "detail": ""
+     },
+     {
+      "id": "S14",
+      "group": "security",
+      "name": "member cannot create members or delete invoices (403)",
+      "pass": true,
+      "detail": "true true"
+     },
+     {
+      "id": "S14b",
+      "group": "security",
+      "name": "member cannot upgrade billing (403)",
+      "pass": true,
+      "detail": "403"
+     },
+     {
+      "id": "F14",
+      "group": "functional",
+      "name": "owner deletes invoice (204)",
+      "pass": true,
+      "detail": "204"
+     },
+     {
+      "id": "F15",
+      "group": "functional",
+      "name": "logout invalidates the session",
+      "pass": true,
+      "detail": "204/401"
+     },
+     {
+      "id": "S2",
+      "group": "security",
+      "name": "tenant isolation: B cannot read, list, use the client of, or delete A's data",
+      "pass": true,
+      "detail": "truetruetruetruetrue"
+     },
+     {
+      "id": "S9",
+      "group": "security",
+      "name": "mass assignment: extra signup fields (orgId, plan) are ignored",
+      "pass": true,
+      "detail": "{\"id\":3,\"name\":\"C\",\"plan\":\"free\"}"
+     },
+     {
+      "id": "S1",
+      "group": "security",
+      "name": "unauthenticated access to protected routes -> 401",
+      "pass": true,
+      "detail": ""
+     },
+     {
+      "id": "S3",
+      "group": "security",
+      "name": "state-changing requests without X-Requested-With -> 403",
+      "pass": true,
+      "detail": "true 403"
+     },
+     {
+      "id": "S5",
+      "group": "security",
+      "name": "SQL injection: login payloads rejected, quote/DROP payload stored as plain text",
+      "pass": true,
+      "detail": "truetrue 201"
+     },
+     {
+      "id": "S4",
+      "group": "security",
+      "name": "password not stored in plaintext and never returned by the API",
+      "pass": true,
+      "detail": "dbBytes=416128"
+     },
+     {
+      "id": "S6",
+      "group": "security",
+      "name": "session cookie is HttpOnly and SameSite",
+      "pass": true,
+      "detail": "sid=yrsGebisjtPf9lnurFzg2InhKVDN7rKDluqX20Qq5RE; HttpOnly; SameSite=Lax; Path=/; Max-Age=604800"
+     },
+     {
+      "id": "S7",
+      "group": "security",
+      "name": "security headers: CSP, nosniff, frame protection, referrer policy",
+      "pass": true,
+      "detail": "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; object-src 'none'; ba"
+     },
+     {
+      "id": "S7b",
+      "group": "security",
+      "name": "CSP does not allow unsafe-inline scripts or eval",
+      "pass": true,
+      "detail": "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; object-src 'none'; ba"
+     },
+     {
+      "id": "S7c",
+      "group": "security",
+      "name": "security headers also on API responses",
+      "pass": true,
+      "detail": ""
+     },
+     {
+      "id": "S11",
+      "group": "security",
+      "name": "malformed input gives clean JSON errors without stack traces or SQL",
+      "pass": true,
+      "detail": "true true"
+     },
+     {
+      "id": "S12",
+      "group": "security",
+      "name": "request body over 1 MB -> 413",
+      "pass": true,
+      "detail": "413"
+     },
+     {
+      "id": "S8",
+      "group": "security",
+      "name": "brute force: login locked (429) after repeated failures, even with the right password",
+      "pass": true,
+      "detail": "429=true next=429"
+     },
+     {
+      "id": "F16",
+      "group": "functional",
+      "name": "GET / serves an HTML app with login/signup inputs (in the HTML or its script)",
+      "pass": true,
+      "detail": "200 4542b scripts=1"
+     },
+     {
+      "id": "F17",
+      "group": "functional",
+      "name": "UI basics: lang attribute, viewport meta, labelled inputs",
+      "pass": true,
+      "detail": "true,true,true"
+     },
+     {
+      "id": "D1",
+      "group": "security",
+      "name": "path traversal / source files are not served (10 probes)",
+      "pass": true,
+      "detail": "1111111111"
+     },
+     {
+      "id": "D2",
+      "group": "security",
+      "name": "email uniqueness is case-insensitive (no duplicate account via upper case)",
+      "pass": true,
+      "detail": "409"
+     },
+     {
+      "id": "D3",
+      "group": "security",
+      "name": "prototype pollution payload does not elevate or break the server",
+      "pass": true,
+      "detail": "201"
+     },
+     {
+      "id": "D4",
+      "group": "security",
+      "name": "very long password rejected or handled fast (<2 s, no hash DoS)",
+      "pass": true,
+      "detail": "400 5ms"
+     },
+     {
+      "id": "D5",
+      "group": "security",
+      "name": "huge malformed email handled fast (<2 s) and rejected",
+      "pass": true,
+      "detail": "400 11ms"
+     },
+     {
+      "id": "D6",
+      "group": "security",
+      "name": "race condition: 12 parallel invoices on a free plan create exactly 5, with unique numbers",
+      "pass": true,
+      "detail": "created=5"
+     },
+     {
+      "id": "D7",
+      "group": "security",
+      "name": "no permissive CORS for a foreign origin",
+      "pass": true,
+      "detail": "none"
+     },
+     {
+      "id": "D8",
+      "group": "security",
+      "name": "non-JSON content-type body is rejected (415/400), not parsed",
+      "pass": false,
+      "detail": "201"
+     },
+     {
+      "id": "D9",
+      "group": "security",
+      "name": "TRACE refused and unknown API route is a clean JSON 404",
+      "pass": true,
+      "detail": "0/404"
+     },
+     {
+      "id": "D10",
+      "group": "security",
+      "name": "session cookie has an expiry (Max-Age/Expires) and path",
+      "pass": true,
+      "detail": "sid=yrsGebisjtPf9lnurFzg2InhKVDN7rKDluqX20Qq5RE; HttpOnly; SameSite=Lax; Path=/; Max-Age=604800"
+     },
+     {
+      "id": "D11",
+      "group": "security",
+      "name": "same error body for unknown user and wrong password (no enumeration)",
+      "pass": true,
+      "detail": "401/401"
+     },
+     {
+      "id": "D12",
+      "group": "security",
+      "name": "login timing for unknown vs known user is similar (within 3x, no hash skip)",
+      "pass": true,
+      "detail": "known=48ms unknown=47ms"
+     },
+     {
+      "id": "D13",
+      "group": "security",
+      "name": "no IDOR: another org cannot read any of invoices 1..10 or the new one",
+      "pass": true,
+      "detail": ""
+     },
+     {
+      "id": "D15",
+      "group": "functional",
+      "name": "extreme totals stay exact in integer cents (50 x 1000 x 1e8 = 5e12)",
+      "pass": true,
+      "detail": "201 5000000000000"
+     },
+     {
+      "id": "D16",
+      "group": "functional",
+      "name": "more than 50 items is rejected",
+      "pass": true,
+      "detail": "400"
+     },
+     {
+      "id": "D17",
+      "group": "security",
+      "name": "parallel brute force: at most ~5 of 30 concurrent wrong guesses are evaluated (rest 429)",
+      "pass": false,
+      "detail": "30 guesses were evaluated"
+     },
+     {
+      "id": "D14",
+      "group": "security",
+      "name": "server still alive and responding after the abuse above",
+      "pass": true,
+      "detail": ""
+     },
+     {
+      "id": "F18",
+      "group": "functional",
+      "name": "data persists across a server restart",
+      "pass": true,
+      "detail": "200 n=6"
+     }
+    ],
+    "skills": [],
+    "mem": 6,
+    "spawned": [
+     "empresa-arquiteto",
+     "empresa-backend",
+     "empresa-frontend",
+     "empresa-seguranca",
+     "empresa-revisor"
+    ],
+    "tools": {
+     "Bash": 14,
+     "Agent": 5,
+     "Grep": 4,
+     "ToolSearch": 1,
+     "SendMessage": 3,
+     "Write": 19,
+     "Read": 8,
+     "Edit": 16
+    },
+    "static": {
+     "files": 13,
+     "loc": {
+      "source": 561,
+      "tests": 377,
+      "web": 396
+     },
+     "docs": [
+      {
+       "file": "docs/architecture.md",
+       "lines": 100,
+       "bytes": 10300
+      },
+      {
+       "file": "docs/product.md",
+       "lines": 37,
+       "bytes": 2782
+      },
+      {
+       "file": "docs/security.md",
+       "lines": 74,
+       "bytes": 11714
+      },
+      {
+       "file": "README.md",
+       "lines": 39,
+       "bytes": 2809
+      }
+     ],
+     "hasProductDoc": true,
+     "hasArchitectureDoc": true,
+     "hasSecurityDoc": true,
+     "hasReadme": true,
+     "tests": {
+      "pass": 21,
+      "fail": 0,
+      "total": 21,
+      "files": 1
+     },
+     "dependencies": [],
+     "patterns": {
+      "eval": 0,
+      "innerHTMLwithData": 0,
+      "sqlConcatenation": 0,
+      "passwordHashing": true,
+      "timingSafeEqual": true,
+      "randomBytesSession": true,
+      "consoleLogs": 2
+     }
+    }
+   }
+  ]
+ }
+]

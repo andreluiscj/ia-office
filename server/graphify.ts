@@ -142,7 +142,7 @@ const find = (id: string) => projects().find(p => p.id === id) ?? null;
 
 export function addProject(path: string) {
   const p = resolve(String(path ?? "").trim().replace(/^"(.*)"$/, "$1"));
-  try { if (!statSync(p).isDirectory()) return { error: "Isso não é uma pasta." }; } catch { return { error: "Pasta não encontrada." }; }
+  try { if (!statSync(p).isDirectory()) return { error: "That is not a folder." }; } catch { return { error: "Folder not found." }; }
   const list = extra().filter(x => x.toLowerCase() !== p.toLowerCase());
   list.unshift(p);
   setMeta("graphify_projects", JSON.stringify(list.slice(0, 100)));
@@ -153,7 +153,7 @@ export function addProject(path: string) {
 /** Oculta o projeto da lista (não apaga nada; dá para mostrar de novo). */
 export function hideProject(id: string) {
   const p = find(id);
-  if (!p) return { error: "Projeto não encontrado." };
+  if (!p) return { error: "Project not found." };
   setMeta("graphify_hidden", JSON.stringify([...hidden().filter(x => x.toLowerCase() !== p.path.toLowerCase()), p.path]));
   return { ok: true };
 }
@@ -186,12 +186,12 @@ const ASK: Record<string, (a: string[]) => string[] | null> = {
 /** Pergunta ao grafo do projeto com os comandos do próprio Graphify (query, explain, path, affected, god-nodes). */
 export function ask(id: string, kind: string, args: string[]) {
   const p = find(id);
-  if (!p) return { error: "Projeto não encontrado." };
-  if (!p.graph) return { error: "Gere o grafo primeiro." };
+  if (!p) return { error: "Project not found." };
+  if (!p.graph) return { error: "Build the graph first." };
   const mk = ASK[kind];
-  if (!mk) return { error: "Tipo de pergunta inválido." };
+  if (!mk) return { error: "Invalid question type." };
   const cmd = mk((args ?? []).map(x => String(x ?? "").slice(0, 500)));
-  if (!cmd) return { error: "Preencha os campos da pergunta." };
+  if (!cmd) return { error: "Fill in the question fields." };
   return run(cmd, p.path, 60_000);
 }
 

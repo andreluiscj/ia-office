@@ -249,3 +249,16 @@ td .dot { vertical-align: middle; }
   .usage { justify-self: stretch; }
   .usage .row { grid-template-columns: 78px minmax(40px, 1fr) 34px auto; }
 }
+
+/* ---------- Language picker (flags) ---------- */
+.lang { position: relative; }
+.lang-btn { display: inline-flex; align-items: center; gap: 6px; padding: 5px 8px; background: var(--panel); color: var(--ink);
+  border: 3px solid #000; box-shadow: 3px 3px 0 #000; font-family: var(--pixel); font-size: 12px; cursor: pointer; }
+.lang-btn:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 #000; }
+.lang-btn:focus-visible, .lang-menu li:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.flag { display: block; border: 1px solid #000; flex: none; }
+.lang-menu { position: absolute; right: 0; top: calc(100% + 8px); z-index: 30; list-style: none; margin: 0; padding: 4px;
+  min-width: 170px; background: var(--panel); border: 3px solid #000; box-shadow: 4px 4px 0 #000; }
+.lang-menu li { display: flex; align-items: center; gap: 10px; padding: 7px 10px; cursor: pointer; font-size: 15px; }
+.lang-menu li:hover, .lang-menu li[aria-selected="true"] { background: var(--panel-2); }
+.lang-menu li[aria-selected="true"] span { color: var(--accent); }

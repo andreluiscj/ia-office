@@ -22,3 +22,14 @@ O que foi conferido em cada um: hooks e `settings.json` que se instalam sozinhos
 ## Cuidados que continuam valendo
 - **Termos do Google e LGPD:** raspar o Google Maps pode violar os termos de uso do Google, e o próprio projeto avisa isso. Use com moderação (um job por vez, `depth` baixo). Os dados são de empresas (B2B), mas e-mail e telefone de MEI podem ser dado pessoal: a Marina guarda só o necessário, fora de repositório público, e nunca envia nada sem a sua aprovação.
 - Skills que já existiam com o mesmo nome são movidas para `~/.claude/skills-backup-<data>` antes de serem trocadas.
+
+## Rodada 2 (tarde de 29/10): skills de segurança, UX e teste
+| Skill | Repositório @ commit | Agente | Resultado |
+| --- | --- | --- | --- |
+| security-review | getsentry/skills @ d12f250 | Igor, Pedro | OK. Só texto (SKILL.md + 17 guias OWASP, 227 KB, carregados sob demanda). Método de pesquisar o código antes de reportar e só reportar achado de alta confiança. Os `eval(`/`curl \| bash` que aparecem nos guias são exemplos do que procurar. Licença do material: OWASP CC BY-SA. |
+| find-bugs | getsentry/skills @ d12f250 | Luis Felipe, Lucas | OK. 1 arquivo de texto (~3 KB). |
+| skill-scanner | getsentry/skills @ d12f250 | Pedro | OK. Script Python que só procura padrões suspeitos em skills (rede, shell, ofuscação); não executa o que escaneia. Substitui a `skill-security-auditor`, que nunca foi instalada. |
+| frontend-design | anthropics/skills @ ca45fc4 | Leonardo | OK. Oficial, só texto. |
+| webapp-testing | anthropics/skills @ ca45fc4 | Leonardo, Luis Felipe | OK. Oficial. `with_server.py` sobe o servidor do projeto e roda o comando que o agente informar (uso esperado). |
+
+Fontes consultadas para as boas práticas: [regras de context engineering para a geração Claude 5](https://claude.com/blog/the-new-rules-of-context-engineering-for-claude-5-generation-models) e [comparativo de skills de segurança](https://timonweb.com/ai/i-checked-5-security-skills-for-claude-code-only-one-is-worth-installing) (as skills de segurança populares eram cópias umas das outras; a do Sentry é a única com método).

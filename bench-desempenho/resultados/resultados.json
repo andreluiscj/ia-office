@@ -1,0 +1,184 @@
+[
+  {
+    "task": "feature",
+    "variant": "plain",
+    "run": 1,
+    "ok": false,
+    "score": 25,
+    "total": 44,
+    "changed": 6,
+    "failed": [
+      "PATCH com due inválido => 400",
+      "PATCH com tags inválidas => 400",
+      "PATCH done continua funcionando",
+      "404 em PATCH e DELETE de id inexistente",
+      "listagem no formato { items, page, limit, total }",
+      "padrão: página 1, 10 itens",
+      "terceira página traz o resto (total 27 => 7 itens)",
+      "páginas em ordem crescente de id, sem repetir nem pular",
+      "page=0, page=abc, limit=0, limit=51 => 400",
+      "limit=50 aceito",
+      "filtro ?tag= (total filtrado correto: 1 + 12 = 13)",
+      "filtro ?tag= ignora maiúsculas",
+      "filtro ?done=true (1 tarefa feita)",
+      "filtro ?done=false",
+      "?done=talvez => 400",
+      "?overdue=true traz só pendentes vencidas (3)",
+      "filtros combinados + paginação (12 ímpares: página 2 de 5 => 5 itens, total 12)",
+      "DELETE continua 204 e reduz o total",
+      "pelo menos 10 testes no total (5 originais + 5 novos)"
+    ],
+    "sec": 105,
+    "cost": 0.33542839999999996,
+    "tokens": 281995,
+    "turns": 11,
+    "subagents": 0,
+    "skillCalls": 0,
+    "skills": [],
+    "models": [
+      "claude-sonnet-5-5"
+    ],
+    "dir": "C:\\Users\\andre\\AppData\\Local\\Temp\\bench-feature-plain-d9U5LV"
+  },
+  {
+    "task": "feature",
+    "variant": "office",
+    "run": 1,
+    "ok": false,
+    "score": 26,
+    "total": 44,
+    "changed": 7,
+    "failed": [
+      "PATCH com due inválido => 400",
+      "PATCH com tags inválidas => 400",
+      "PATCH done continua funcionando",
+      "404 em PATCH e DELETE de id inexistente",
+      "listagem no formato { items, page, limit, total }",
+      "padrão: página 1, 10 itens",
+      "terceira página traz o resto (total 27 => 7 itens)",
+      "páginas em ordem crescente de id, sem repetir nem pular",
+      "page=0, page=abc, limit=0, limit=51 => 400",
+      "limit=50 aceito",
+      "filtro ?tag= (total filtrado correto: 1 + 12 = 13)",
+      "filtro ?tag= ignora maiúsculas",
+      "filtro ?done=true (1 tarefa feita)",
+      "filtro ?done=false",
+      "?done=talvez => 400",
+      "?overdue=true traz só pendentes vencidas (3)",
+      "filtros combinados + paginação (12 ímpares: página 2 de 5 => 5 itens, total 12)",
+      "DELETE continua 204 e reduz o total"
+    ],
+    "sec": 127,
+    "cost": 0.48585150000000005,
+    "tokens": 775853,
+    "turns": 16,
+    "subagents": 0,
+    "skillCalls": 2,
+    "skills": [
+      "writing-plans",
+      "verification-before-completion"
+    ],
+    "models": [
+      "claude-sonnet-5-5"
+    ],
+    "dir": "C:\\Users\\andre\\AppData\\Local\\Temp\\bench-feature-office-5eTzon"
+  },
+  {
+    "task": "feature",
+    "variant": "plain",
+    "run": 2,
+    "ok": false,
+    "score": 43,
+    "total": 44,
+    "changed": 6,
+    "failed": [
+      "pelo menos 10 testes no total (5 originais + 5 novos)"
+    ],
+    "sec": 83,
+    "cost": 0.24944550000000004,
+    "tokens": 206688,
+    "turns": 14,
+    "subagents": 0,
+    "skillCalls": 0,
+    "skills": [],
+    "models": [
+      "claude-sonnet-5-5"
+    ],
+    "dir": "C:\\Users\\andre\\AppData\\Local\\Temp\\bench-feature-plain-KFqj90"
+  },
+  {
+    "task": "feature",
+    "variant": "office",
+    "run": 2,
+    "ok": true,
+    "score": 44,
+    "total": 44,
+    "changed": 6,
+    "failed": [],
+    "sec": 119,
+    "cost": 0.5348366999999999,
+    "tokens": 700018,
+    "turns": 4,
+    "subagents": 1,
+    "skillCalls": 4,
+    "skills": [
+      "writing-plans",
+      "test-driven-development",
+      "verification-before-completion",
+      "verification-before-completion"
+    ],
+    "models": [
+      "claude-sonnet-5-5"
+    ],
+    "dir": "C:\\Users\\andre\\AppData\\Local\\Temp\\bench-feature-office-RnCLTH"
+  },
+  {
+    "task": "feature",
+    "variant": "plain",
+    "run": 3,
+    "ok": false,
+    "score": 43,
+    "total": 44,
+    "changed": 6,
+    "failed": [
+      "pelo menos 10 testes no total (5 originais + 5 novos)"
+    ],
+    "sec": 395,
+    "cost": 0.3624648,
+    "tokens": 514416,
+    "turns": 1,
+    "subagents": 0,
+    "skillCalls": 0,
+    "skills": [],
+    "models": [
+      "claude-sonnet-5-5"
+    ],
+    "dir": "C:\\Users\\andre\\AppData\\Local\\Temp\\bench-feature-plain-KoyUWI"
+  },
+  {
+    "task": "feature",
+    "variant": "office",
+    "run": 3,
+    "ok": true,
+    "score": 44,
+    "total": 44,
+    "changed": 6,
+    "failed": [],
+    "sec": 168,
+    "cost": 0.5931998999999998,
+    "tokens": 1148616,
+    "turns": 4,
+    "subagents": 1,
+    "skillCalls": 4,
+    "skills": [
+      "writing-plans",
+      "test-driven-development",
+      "verification-before-completion",
+      "verification-before-completion"
+    ],
+    "models": [
+      "claude-sonnet-5-5"
+    ],
+    "dir": "C:\\Users\\andre\\AppData\\Local\\Temp\\bench-feature-office-NOc4Gj"
+  }
+]

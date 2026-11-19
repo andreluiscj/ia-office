@@ -1,0 +1,13 @@
+{
+  "nome": "Clínica Sorriso Mineiro",
+  "categoria": "Clínica odontológica",
+  "cidade": "Uberlândia, MG",
+  "endereco": "Av. Exemplo, 1000, Centro, Uberlândia - MG",
+  "telefone": "(34) 3200-0000",
+  "whatsapp": "5534990000000",
+  "horario": "Seg a Sex 8h às 18h, Sáb 8h às 12h",
+  "nota_google": 4.8,
+  "avaliacoes_google": 132,
+  "servicos": ["Limpeza e prevenção", "Clareamento dental", "Tratamento de canal", "Aparelho ortodôntico", "Implantes"],
+  "observacao": "Dados de exemplo para o teste. Não invente depoimentos, preços, prêmios nem fotos de pessoas."
+}

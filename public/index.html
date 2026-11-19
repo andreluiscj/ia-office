@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="pt-BR">
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -9,17 +9,17 @@
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;500;600&family=Silkscreen&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=9">
+  <link rel="stylesheet" href="style.css?v=10">
 </head>
 <body>
   <header class="topbar three">
     <div class="tb-left">
       <div class="brand">OFFICE</div>
-      <nav class="nav"><a href="/" class="on">Escritório</a><a href="/dashboard">Dashboard</a><a href="/skills">Skills</a><a href="/graphify">Graphify</a></nav>
+      <nav class="nav"><a href="/" class="on" data-i18n>Office</a><a href="/dashboard">Dashboard</a><a href="/skills">Skills</a><a href="/graphify">Graphify</a></nav>
     </div>
-    <div class="usage" id="usage" title="Limites de uso do seu plano do Claude, os mesmos de Configurações › Uso"></div>
+    <div class="usage" id="usage" title="Your Claude plan usage limits, the same as Settings › Usage" data-i18n-title></div>
     <div class="tb-right">
-      <div class="conn off" id="conn">conectando</div>
+      <div class="conn off" id="conn" data-i18n>connecting</div>
     </div>
   </header>
   <main class="office-wrap">
@@ -27,15 +27,15 @@
     <div class="stage" id="stage">
       <canvas id="office"></canvas>
       <div class="zoom">
-        <button id="zoomIn" title="Aproximar">+</button>
-        <button id="zoomOut" title="Afastar">−</button>
-        <button id="zoomFit" title="Ver o andar inteiro">⤢</button>
+        <button id="zoomIn" title="Zoom in" data-i18n-title>+</button>
+        <button id="zoomOut" title="Zoom out" data-i18n-title>−</button>
+        <button id="zoomFit" title="See the whole floor" data-i18n-title>⤢</button>
       </div>
       <div class="tip" id="tip" hidden></div>
     </div>
-    <div class="hint-row"><div class="hint-map">Arraste para mover · roda do mouse para zoom · clique numa pessoa para ver detalhes</div><div class="legend" id="legend"></div></div>
+    <div class="hint-row"><div class="hint-map" data-i18n>Drag to move · mouse wheel to zoom · click a person for details</div><div class="legend" id="legend"></div></div>
   </main>
   <aside class="card-detail" id="detail" hidden></aside>
-  <script type="module" src="office.js?v=7"></script>
+  <script type="module" src="office.js?v=8"></script>
 </body>
 </html>

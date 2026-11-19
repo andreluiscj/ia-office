@@ -1,11 +1,11 @@
 // Dashboard da equipe: quem está trabalhando, em quê, e quais skills cada funcionário mais usa.
-import { ago, esc, shortName, live, mountUsage } from "./common.js";
+import { ago, esc, shortName, live, mountUsage, t } from "./common.js";
 mountUsage();
 
 let range = 7, project = "";
 const $ = id => document.getElementById(id);
 const COLORS = { working: "#5ee07a", waiting: "#ffcc4d", idle: "#7aa2c8" };
-const LABEL = { working: "Trabalhando", waiting: "Esperando você", idle: "Disponível" };
+const LABEL = { working: t("Working"), waiting: t("Waiting for you"), idle: t("Available") };
 
 async function refresh() {
   const [st, co] = await Promise.all([
@@ -16,26 +16,26 @@ async function refresh() {
   renderCards(st, co);
   renderTeam(co);
   renderByAgent(st.byAgent, co);
-  renderBars($("topSkills"), st.topSkills.map(r => ({ label: shortName(r.skill), title: r.skill, value: r.c, note: `${r.agents} funcionário(s)` })), "#ffcc4d", "Nenhuma skill usada no período.");
-  renderBars($("topTools"), st.topTools.map(r => ({ label: shortName(r.tool), title: r.tool, value: r.c })), "#4a90e2", "Nenhuma ferramenta usada no período.");
+  renderBars($("topSkills"), st.topSkills.map(r => ({ label: shortName(r.skill), title: r.skill, value: r.c, note: t("{n} employee(s)", { n: r.agents }) })), "#ffcc4d", t("No skill used in the period."));
+  renderBars($("topTools"), st.topTools.map(r => ({ label: shortName(r.tool), title: r.tool, value: r.c })), "#4a90e2", t("No tool used in the period."));
   renderDaily(st.daily);
 }
 
 function renderProjects(list) {
   const sel = $("project"), cur = sel.value;
-  sel.innerHTML = `<option value="">Todos</option>` + list.map(p => `<option ${p === cur ? "selected" : ""}>${esc(p)}</option>`).join("");
+  sel.innerHTML = `<option value="">${t("All")}</option>` + list.map(p => `<option ${p === cur ? "selected" : ""}>${esc(p)}</option>`).join("");
 }
 
 function renderCards(st, co) {
-  const per = { 1: "hoje", 7: "em 7 dias", 30: "em 30 dias", 0: "no total" }[st.rangeDays] ?? "";
+  const per = { 1: t("today"), 7: t("in 7 days"), 30: t("in 30 days"), 0: t("in total") }[st.rangeDays] ?? "";
   const working = co.funcionarios.filter(f => f.status === "working").length;
   const projects = new Set(co.diretor.sessions.map(s => s.project)).size;
   const items = [
-    ["Funcionários trabalhando", `${working}/${co.funcionarios.length}`, COLORS.working],
-    ["Projetos ativos agora", projects],
-    ["Esperando você", co.diretor.sessions.filter(s => s.status === "waiting").length, COLORS.waiting],
-    [`Tarefas delegadas ${per}`, st.cards.subagents],
-    [`Usos de skill ${per}`, st.cards.skillUses],
+    [t("Employees working"), `${working}/${co.funcionarios.length}`, COLORS.working],
+    [t("Active projects now"), projects],
+    [t("Waiting for you"), co.diretor.sessions.filter(s => s.status === "waiting").length, COLORS.waiting],
+    [t("Delegated tasks {per}", { per }), st.cards.subagents],
+    [t("Skill uses {per}", { per }), st.cards.skillUses],
   ];
   $("cards").innerHTML = items.map(([l, n, color]) =>
     `<div class="stat"><div class="l">${esc(l)}</div><div class="n" style="${color ? `color:${color}` : ""}">${n}</div></div>`).join("");
@@ -47,27 +47,27 @@ function renderTeam(co) {
   const rows = [...co.funcionarios].sort((a, b) => (a.status === "working" ? 0 : 1) - (b.status === "working" ? 0 : 1));
   const d = co.diretor;
   const dirRow = `<tr>
-      <td><i class="dot" style="background:${d.cor}"></i> <b>${esc(d.nome)}</b><div class="muted">Líder</div></td>
-      <td>Liderança</td>
-      <td><span class="pill" style="background:${COLORS[d.status]}">${d.status === "idle" ? "Sem projeto" : LABEL[d.status]}</span></td>
+      <td><i class="dot" style="background:${d.cor}"></i> <b>${esc(d.nome)}</b><div class="muted">${t("Lead")}</div></td>
+      <td>${t("Leadership")}</td>
+      <td><span class="pill" style="background:${COLORS[d.status]}">${d.status === "idle" ? t("No project") : LABEL[d.status]}</span></td>
       <td>${d.sessions.map(s => `${esc(s.project)}${s.task ? `<div class="muted">${esc(s.task)}</div>` : ""}`).join("") || '<span class="muted">—</span>'}</td>
       <td class="muted">—</td><td class="muted">—</td><td class="muted">—</td></tr>`;
   $("team").innerHTML = `<table><thead><tr>
-      <th>Funcionário</th><th>Setor</th><th>Status</th><th>Agora</th><th>Tarefas (7 dias)</th><th>Última atividade</th><th>Skills mais usadas</th>
+      <th>${t("Employee")}</th><th>${t("Department")}</th><th>${t("Status")}</th><th>${t("Now")}</th><th>${t("Tasks (7 days)")}</th><th>${t("Last activity")}</th><th>${t("Most used skills")}</th>
     </tr></thead><tbody>${dirRow}${rows.map(f => `<tr>
       <td><i class="dot" style="background:${f.cor}"></i> <b>${esc(f.nome)}</b><div class="muted">${esc(f.cargo)}</div></td>
       <td>${esc(setor(f.setor))}</td>
       <td><span class="pill" style="background:${COLORS[f.status]}">${LABEL[f.status]}${f.active.length > 1 ? ` x${f.active.length}` : ""}</span></td>
       <td>${f.active.map(a => `${esc(a.project)}${a.task ? `<div class="muted">${esc(a.task)}</div>` : ""}`).join("") || '<span class="muted">—</span>'}</td>
       <td>${f.tasks7d}</td>
-      <td>${f.last ? `há ${ago(f.last.ts, now)}` : '<span class="muted">nunca</span>'}</td>
+      <td>${f.last ? t("{t} ago", { t: ago(f.last.ts, now) }) : `<span class="muted">${t("never")}</span>`}</td>
       <td><div class="chips">${f.skills.slice(0, 3).map(s => `<span class="chip" title="${esc(s.name)}">${esc(shortName(s.name))} <b>${s.count}</b></span>`).join("") || '<span class="muted">—</span>'}</div></td>
     </tr>`).join("")}</tbody></table>`;
 }
 
 function renderByAgent(groups, co) {
   const byId = new Map(groups.map(g => [g.agent, g]));
-  const cards = [{ key: "diretor", nome: co.diretor.nome, cargo: "Líder", cor: co.diretor.cor }]
+  const cards = [{ key: "diretor", nome: co.diretor.nome, cargo: t("Lead"), cor: co.diretor.cor }]
     .concat(co.funcionarios.map(f => ({ key: f.id, nome: f.nome, cargo: f.cargo, cor: f.cor })));
   // terceirizados com uso no período
   for (const g of groups) if (g.agent !== "diretor" && !co.funcionarios.some(f => g.agent === f.id || g.agent.endsWith(":" + f.id)))
@@ -77,11 +77,11 @@ function renderByAgent(groups, co) {
     const maxS = g.skills[0]?.count ?? 1, maxT = g.tools[0]?.count ?? 1;
     return `<div class="agent-card">
       <div class="head"><i class="dot" style="background:${c.cor}"></i><span class="name">${esc(c.nome)}</span>
-        <span class="muted">${esc(c.cargo)}</span><span class="total">${c.key === "diretor" ? "" : `${g.tasks} tarefas`}</span></div>
-      <div class="muted" style="margin:4px 0">Skills</div>
-      <div class="bars">${g.skills.slice(0, 4).map(s => bar(shortName(s.skill), s.skill, s.count, maxS, c.cor)).join("") || '<span class="muted">nenhuma no período</span>'}</div>
-      <div class="muted" style="margin:8px 0 4px">Ferramentas</div>
-      <div class="bars">${g.tools.slice(0, 4).map(s => bar(shortName(s.tool), s.tool, s.count, maxT, "#4a90e2")).join("") || '<span class="muted">nenhuma no período</span>'}</div>
+        <span class="muted">${esc(c.cargo)}</span><span class="total">${c.key === "diretor" ? "" : t("{n} tasks", { n: g.tasks })}</span></div>
+      <div class="muted" style="margin:4px 0">${t("Skills")}</div>
+      <div class="bars">${g.skills.slice(0, 4).map(s => bar(shortName(s.skill), s.skill, s.count, maxS, c.cor)).join("") || `<span class="muted">${t("none in the period")}</span>`}</div>
+      <div class="muted" style="margin:8px 0 4px">${t("Tools")}</div>
+      <div class="bars">${g.tools.slice(0, 4).map(s => bar(shortName(s.tool), s.tool, s.count, maxT, "#4a90e2")).join("") || `<span class="muted">${t("none in the period")}</span>`}</div>
     </div>`;
   }).join("");
 }
@@ -111,14 +111,14 @@ function renderDaily(rows) {
     }
   }
   const total = rows.reduce((s, r) => s + r.c, 0);
-  $("dailySub").textContent = total ? `${total} usos de skill no período.` : "Nenhum uso no período.";
+  $("dailySub").textContent = total ? t("{n} skill uses in the period.", { n: total }) : t("No usage in the period.");
   if (!days.length) { $("daily").innerHTML = ""; return; }
   const W = 960, H = 220, L = 36, B = 28, T = 16;
   const max = Math.max(1, ...days.map(d => map.get(d) ?? 0));
   const bw = (W - L - 8) / days.length;
   const y = v => H - B - (v / max) * (H - B - T);
   const every = Math.ceil(days.length / 12);
-  $("daily").innerHTML = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Usos de skill por dia">
+  $("daily").innerHTML = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${t("Skill uses per day")}">
     <line x1="${L}" x2="${W - 8}" y1="${H - B}" y2="${H - B}" stroke="#000" stroke-width="3"/>
     <text x="${L - 6}" y="${y(max) + 5}" text-anchor="end" fill="#a49fbd" font-family="Pixelify Sans" font-size="14">${max}</text>
     <line x1="${L}" x2="${W - 8}" y1="${y(max)}" y2="${y(max)}" stroke="#45405f" stroke-dasharray="4 4"/>
@@ -141,4 +141,4 @@ $("range").addEventListener("click", e => {
 $("project").addEventListener("change", e => { project = e.target.value; refresh(); });
 
 const connEl = $("conn");
-live(refresh, ok => { connEl.className = `conn ${ok ? "on" : "off"}`; connEl.textContent = ok ? "ao vivo" : "reconectando"; });
+live(refresh, ok => { connEl.className = `conn ${ok ? "on" : "off"}`; connEl.textContent = ok ? t("live") : t("reconnecting"); });

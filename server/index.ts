@@ -188,31 +188,31 @@ const server = Bun.serve({
     if (path === "/api/skills") { const list = listSkills().map(({ path: _p, ...s }) => s); return json({ skills: list, roots: skillRoots() }); }
     if (path.startsWith("/api/skills/")) {
       const d = skillDetail(path.slice("/api/skills/".length));
-      return d ? json(d) : json({ error: "skill não encontrada" }, 404);
+      return d ? json(d) : json({ error: "skill not found" }, 404);
     }
     // Graphify (grafo de conhecimento dos projetos). As ações exigem o cabeçalho x-office,
     // que uma página de outro site não consegue mandar: só a tela do Office dispara comandos.
     if (path.startsWith("/api/graphify")) {
       const sub = path.slice("/api/graphify".length);
       if (req.method === "POST") {
-        if (req.headers.get("x-office") !== "1") return json({ error: "proibido" }, 403);
+        if (req.headers.get("x-office") !== "1") return json({ error: "forbidden" }, 403);
         const b: any = await req.json().catch(() => ({}));
-        if (sub === "/instalar") { const j = graphify.install(); return j ? json(j) : json({ error: "Python/uv não encontrado" }, 400); }
-        if (sub === "/skill") { const j = graphify.installClaudeSkill(); return j ? json(j) : json({ error: "Instale o Graphify primeiro" }, 400); }
+        if (sub === "/instalar") { const j = graphify.install(); return j ? json(j) : json({ error: "Python/uv not found" }, 400); }
+        if (sub === "/skill") { const j = graphify.installClaudeSkill(); return j ? json(j) : json({ error: "Install Graphify first" }, 400); }
         if (sub === "/projetos") { const r = graphify.addProject(b.path); return json(r, r.error ? 400 : 200); }
         if (sub === "/ocultar") { const r = graphify.hideProject(b.id); return json(r, r.error ? 400 : 200); }
         if (sub === "/mostrar") return json(graphify.showProject(b.path));
-        if (sub === "/gerar") { const j = graphify.build(b.id, !!b.force); return j ? json(j) : json({ error: "Projeto não encontrado ou Graphify não instalado" }, 400); }
+        if (sub === "/gerar") { const j = graphify.build(b.id, !!b.force); return j ? json(j) : json({ error: "Project not found or Graphify not installed" }, 400); }
         if (sub === "/perguntar") { const r = graphify.ask(b.id, b.kind, b.args); return json(r, (r as any).error ? 400 : 200); }
-        return json({ error: "não encontrado" }, 404);
+        return json({ error: "not found" }, 404);
       }
       if (sub === "" || sub === "/status") return json(graphify.status());
       if (sub === "/projetos") return json(graphify.projects());
       if (sub === "/ocultos") return json(graphify.hiddenProjects());
-      if (sub.startsWith("/tarefa/")) { const j = graphify.job(sub.slice(8)); return j ? json(j) : json({ error: "não encontrada" }, 404); }
+      if (sub.startsWith("/tarefa/")) { const j = graphify.job(sub.slice(8)); return j ? json(j) : json({ error: "not found" }, 404); }
       const m = sub.match(/^\/arquivo\/([0-9a-f]{12})\/([A-Za-z_.]+)$/);
       if (m) return graphify.outputFile(m[1], m[2]) ?? new Response("Arquivo ainda não gerado.", { status: 404 });
-      return json({ error: "não encontrado" }, 404);
+      return json({ error: "not found" }, 404);
     }
     if (path === "/api/health") return json({ ok: true, db: DB_PATH, ...health() });
     if (path === "/api/stats") {
@@ -223,10 +223,10 @@ const server = Bun.serve({
     // Arquivos estáticos
     const file = path === "/" ? "index.html" : path === "/dashboard" ? "dashboard.html" : path === "/skills" ? "skills.html" : path === "/graphify" ? "graphify.html" : path.slice(1);
     const full = normalize(join(PUBLIC, file));
-    if (!full.startsWith(PUBLIC)) return new Response("não encontrado", { status: 404 });
+    if (!full.startsWith(PUBLIC)) return new Response("not found", { status: 404 });
     const f = Bun.file(full);
     // no-cache: o navegador sempre confere se há versão nova das telas
-    return (await f.exists()) ? new Response(f, { headers: { "cache-control": "no-cache" } }) : new Response("não encontrado", { status: 404 });
+    return (await f.exists()) ? new Response(f, { headers: { "cache-control": "no-cache" } }) : new Response("not found", { status: 404 });
   },
   websocket: {
     open(ws) { ws.subscribe("live"); },

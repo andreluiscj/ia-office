@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 300" width="680" height="300" role="img" aria-label="Cost per task">
+<style>
+.bg{fill:#fcfcfb}.t1{fill:#0b0b0b}.t2{fill:#52514e}.grid{stroke:#e4e3df}.s-plain{fill:#eb6834}.s-office{fill:#2a78d6}.wh{stroke:#52514e}
+text{font-family:system-ui,-apple-system,Segoe UI,sans-serif}
+@media (prefers-color-scheme: dark){.bg{fill:#1a1a19}.t1{fill:#f0efec}.t2{fill:#c3c2b7}.grid{stroke:#34332f}.s-plain{fill:#d95926}.s-office{fill:#3987e5}.wh{stroke:#c3c2b7}}
+</style>
+<rect class="bg" width="680" height="300" rx="8"/>
+<text class="t1" x="56" y="24" font-size="15" font-weight="600">Cost per task</text>
+<text class="t2" x="56" y="42" font-size="12">US$ (list price) · bar = mean, whisker = min–max over runs</text>
+<rect class="s-office" x="556.4" y="14" width="10" height="10" rx="2"/><text class="t2" x="570.4" y="23" font-size="12">IA Office team</text>
+<rect class="s-plain" x="408.79999999999995" y="14" width="10" height="10" rx="2"/><text class="t2" x="422.79999999999995" y="23" font-size="12">Claude Code (plain)</text>
+<line class="grid" x1="56" x2="664" y1="252" y2="252"/><text class="t2" x="50" y="256" font-size="11" text-anchor="end">$0.00</text>
+<line class="grid" x1="56" x2="664" y1="203" y2="203"/><text class="t2" x="50" y="207" font-size="11" text-anchor="end">$0.20</text>
+<line class="grid" x1="56" x2="664" y1="154" y2="154"/><text class="t2" x="50" y="158" font-size="11" text-anchor="end">$0.40</text>
+<line class="grid" x1="56" x2="664" y1="104.99999999999997" y2="104.99999999999997"/><text class="t2" x="50" y="108.99999999999997" font-size="11" text-anchor="end">$0.60</text>
+<line class="grid" x1="56" x2="664" y1="56" y2="56"/><text class="t2" x="50" y="60" font-size="11" text-anchor="end">$0.80</text>
+<path class="s-plain" d="M128.33333333333331,252 V216.58923466666667 Q128.33333333333331,212.58923466666667 132.33333333333331,212.58923466666667 H152.33333333333331 Q156.33333333333331,212.58923466666667 156.33333333333331,216.58923466666667 V252 Z"><title>Claude Code (plain) · Question (no change): $0.16 (min $0.16, max $0.16, n=3)</title></path>
+<line class="wh" x1="142.33333333333331" x2="142.33333333333331" y1="212.597238" y2="212.578324" stroke-width="1.5"/>
+<text class="t1" x="142.33333333333331" y="206.578324" font-size="11" text-anchor="middle">$0.16</text>
+<path class="s-office" d="M158.33333333333331,252 V167.39731799999998 Q158.33333333333331,163.39731799999998 162.33333333333331,163.39731799999998 H182.33333333333331 Q186.33333333333331,163.39731799999998 186.33333333333331,167.39731799999998 V252 Z"><title>IA Office team · Question (no change): $0.36 (min $0.30, max $0.48, n=3)</title></path>
+<line class="wh" x1="172.33333333333331" x2="172.33333333333331" y1="177.94311499999998" y2="134.53705300000001" stroke-width="1.5"/>
+<text class="t1" x="172.33333333333331" y="128.53705300000001" font-size="11" text-anchor="middle">$0.36</text>
+<text class="t2" x="157.33333333333331" y="270" font-size="12" text-anchor="middle">A. Question (no change)</text>
+<path class="s-plain" d="M330.99999999999994,252 V200.397348 Q330.99999999999994,196.397348 334.99999999999994,196.397348 H354.99999999999994 Q358.99999999999994,196.397348 358.99999999999994,200.397348 V252 Z"><title>Claude Code (plain) · Bug fix + test: $0.23 (min $0.22, max $0.25, n=3)</title></path>
+<line class="wh" x1="344.99999999999994" x2="344.99999999999994" y1="199.166387" y2="191.24534100000002" stroke-width="1.5"/>
+<text class="t1" x="344.99999999999994" y="185.24534100000002" font-size="11" text-anchor="middle">$0.23</text>
+<path class="s-office" d="M360.99999999999994,252 V100.78136883333335 Q360.99999999999994,96.78136883333335 364.99999999999994,96.78136883333335 H384.99999999999994 Q388.99999999999994,96.78136883333335 388.99999999999994,100.78136883333335 V252 Z"><title>IA Office team · Bug fix + test: $0.63 (min $0.58, max $0.68, n=3)</title></path>
+<line class="wh" x1="374.99999999999994" x2="374.99999999999994" y1="108.80938250000003" y2="85.62162699999999" stroke-width="1.5"/>
+<text class="t1" x="374.99999999999994" y="79.62162699999999" font-size="11" text-anchor="middle">$0.63</text>
+<text class="t2" x="359.99999999999994" y="270" font-size="12" text-anchor="middle">B. Bug fix + test</text>
+<path class="s-plain" d="M533.6666666666666,252 V203.50427466666667 Q533.6666666666666,199.50427466666667 537.6666666666666,199.50427466666667 H557.6666666666666 Q561.6666666666666,199.50427466666667 561.6666666666666,203.50427466666667 V252 Z"><title>Claude Code (plain) · Small feature + tests: $0.21 (min $0.21, max $0.22, n=3)</title></path>
+<line class="wh" x1="547.6666666666666" x2="547.6666666666666" y1="200.115615" y2="199.093769" stroke-width="1.5"/>
+<text class="t1" x="547.6666666666666" y="193.093769" font-size="11" text-anchor="middle">$0.21</text>
+<path class="s-office" d="M563.6666666666666,252 V115.34214349999999 Q563.6666666666666,111.34214349999999 567.6666666666666,111.34214349999999 H587.6666666666666 Q591.6666666666666,111.34214349999999 591.6666666666666,115.34214349999999 V252 Z"><title>IA Office team · Small feature + tests: $0.57 (min $0.55, max $0.60, n=3)</title></path>
+<line class="wh" x1="577.6666666666666" x2="577.6666666666666" y1="117.24421799999998" y2="105.67107950000002" stroke-width="1.5"/>
+<text class="t1" x="577.6666666666666" y="99.67107950000002" font-size="11" text-anchor="middle">$0.57</text>
+<text class="t2" x="562.6666666666666" y="270" font-size="12" text-anchor="middle">C. Small feature + tests</text>
+<line class="grid" x1="56" x2="664" y1="252" y2="252"/></svg>

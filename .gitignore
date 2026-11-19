@@ -14,3 +14,7 @@ node_modules/
 .DS_Store
 Thumbs.db
 graphify-out/
+
+# benchmark raw runs (local paths, session ids)
+bench/results/raw/
+bench/results/archive/
