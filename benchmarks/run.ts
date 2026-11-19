@@ -4,7 +4,7 @@
 import { appendFileSync, cpSync, mkdirSync, mkdtempSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { writeOfficeMcp, writeOfficeSettings } from "../server/agentes";
+import { prepareVault, writeOfficeMcp, writeOfficeSettings } from "../server/agentes";
 
 const TASKS: Record<string, string> = {
   t1: "Bug: GET /notes?page=1&limit=2 skips the first notes (page is 1-based). Fix it and add a regression test. Run the tests. Do not ask me anything and do not commit.",
@@ -37,13 +37,16 @@ sh(["git", "add", "-A"]);
 sh(["git", "-c", "user.name=bench", "-c", "user.email=bench@localhost", "commit", "-qm", "fixture"]);
 
 // Same flags as `claude --office`: the Lead agent with only the connectors the team uses.
-const who = mode === "office" ? ["--agent", "office-ceo", "--strict-mcp-config", "--mcp-config", writeOfficeMcp(), "--settings", writeOfficeSettings()] : ["--model", "sonnet"];
+const vault = join(dir + "-vault");
+const who = mode === "office" ? ["--agent", "office-ceo", "--strict-mcp-config", "--mcp-config", writeOfficeMcp(), "--settings", writeOfficeSettings(), "--add-dir", vault] : ["--model", "sonnet"];
+const countNotes = (d: string): number => { try { return require("node:fs").readdirSync(d, { recursive: true }).filter((f: string) => String(f).endsWith(".md")).length; } catch { return 0; } };
+if (mode === "office") prepareVault(vault);
 const t0 = Date.now();
 const run = sh(["claude", "-p", TASKS[task], "--output-format", "json", "--permission-mode", "acceptEdits",
-  "--allowedTools", "Bash(bun:*)", "Bash(git diff:*)", "Bash(git status:*)", "Bash(git log:*)", "Bash(ls:*)", "Bash(cat:*)", "Bash(cd:*)", "Bash(node:*)", "Bash(git diff:*)", "Bash(tail:*)", "Bash(head:*)", "Bash(grep:*)",
+  "--allowedTools", "Bash(bun:*)", "Bash(git diff:*)", "Bash(git status:*)", "Bash(git log:*)", "Bash(ls:*)", "Bash(cat:*)", "Bash(cd:*)", "Bash(node:*)", "Bash(printenv:*)", "Bash(date:*)", "Bash(graphify:*)", "Bash(git diff:*)", "Bash(tail:*)", "Bash(head:*)", "Bash(grep:*)",
   // Claude Security helpers; in an interactive session the user approves these once
   "Workflow", "Bash(python3:*)", "Bash(bash:*)", "Bash(date:*)", "Bash(mkdir:*)", ...who],
-  mode === "office" ? { CLAUDE_OFFICE: "1" } : {});
+  mode === "office" ? { CLAUDE_OFFICE: "1", OFFICE_VAULT: vault.replace(/\\/g, "/") } : {});
 const seconds = Math.round((Date.now() - t0) / 1000);
 let r: any = {};
 try { r = JSON.parse(run.stdout.toString()); }
@@ -74,6 +77,7 @@ const row = {
   cache_read: sum("cacheReadInputTokens"), cache_write: sum("cacheCreationInputTokens"),
   lead_output: r.usage?.output_tokens ?? null, subagents: r.subagent_stats?.spawned ?? null,
   denials: (r.permission_denials ?? []).length,
+  vault_notes: mode === "office" ? countNotes(vault) : null,
   own_tests_ok: own.exitCode === 0, acceptance_pass: count(/(\d+) pass/), acceptance_fail: count(/(\d+) fail/),
   error: r.error ?? (r.is_error ? String(r.result).slice(0, 200) : undefined),
 };

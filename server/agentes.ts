@@ -18,7 +18,7 @@ export const SKILLS_DEST = join(CLAUDE, "skills");
 const OFFICE_KEYS = ["nome", "cargo", "setor", "resumo", "cor", "cabelo", "pele"];
 
 export type AgentDoc = { id: string; file: string; meta: Record<string, string>; text: string };
-export type Empresa = { empresa: string; usuario: string; setores: { id: string; nome: string }[] };
+export type Empresa = { empresa: string; usuario: string; cofre: string; setores: { id: string; nome: string }[] };
 
 function readFrontmatter(text: string) {
   const m = text.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n?/);
@@ -52,6 +52,7 @@ export function empresa(): Empresa {
   return {
     empresa: e.empresa?.trim() || "Office",
     usuario: e.usuario?.trim() || gitUserName() || "Usuário",
+    cofre: e.cofre?.trim() ?? "",
     setores: e.setores ?? [],
   };
 }
@@ -116,6 +117,50 @@ export function writeOfficeMcp() {
   mkdirSync(join(homedir(), ".escritorio-virtual"), { recursive: true });
   writeFileSync(OFFICE_MCP_FILE, JSON.stringify({ mcpServers }));
   return OFFICE_MCP_FILE;
+}
+
+/** Cofre do Obsidian: o Líder grava nele pedidos, tarefas com status e relatórios (fila visível).
+ *  O caminho vai para o ambiente (OFFICE_VAULT) pelo lançador; o hook do Líder só libera escrita ali. */
+export const OFFICE_VAULT_FILE = join(homedir(), ".escritorio-virtual", "office-vault.txt");
+const QUADRO = `filters:
+  and:
+    - file.inFolder("10-Tarefas")
+    - 'tipo == "tarefa"'
+views:
+  - type: table
+    name: Tarefas
+    order:
+      - file.name
+      - pedido
+      - dono
+      - faixa
+      - status
+      - atualizado
+  - type: cards
+    name: Cartões
+`;
+const MODELO = `---
+status: novo
+projeto:
+prioridade: normal
+---
+
+# Título do pedido
+
+Descreva o que você quer.
+`;
+export function prepareVault(dir: string) {
+  for (const d of ["00-Pedidos", "10-Tarefas", "20-Mapas", "90-Relatorios"]) mkdirSync(join(dir, d), { recursive: true });
+  const q = join(dir, "Quadro.base"); if (!existsSync(q)) writeFileSync(q, QUADRO);
+  const m = join(dir, "00-Pedidos", "_Modelo.md"); if (!existsSync(m)) writeFileSync(m, MODELO);
+}
+export function writeOfficeVault() {
+  const dir = empresa().cofre;
+  mkdirSync(join(homedir(), ".escritorio-virtual"), { recursive: true });
+  if (!dir) { rmSync(OFFICE_VAULT_FILE, { force: true }); return ""; }
+  prepareVault(dir);
+  writeFileSync(OFFICE_VAULT_FILE, dir.replace(/\\/g, "/"));
+  return dir;
 }
 
 /** Plugins desligados só nas sessões do Office: o ponytail injeta "faça o mínimo, pule o que der" em todo agente,
