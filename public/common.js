@@ -61,7 +61,8 @@ function resetText(epochSec, skew) {
   const h = Math.floor(ms / 3600000), m = Math.floor((ms % 3600000) / 60000);
   if (h < 24) return t("Resets in {t}", { t: `${h ? `${h} h ` : ""}${m} min` });
   const d = new Date(epochSec * 1000);
-  return t("Resets {t}", { t: `${d.toLocaleDateString(LOCALE, { weekday: "short" })} ${d.toLocaleTimeString(LOCALE, { hour: "2-digit", minute: "2-digit" })}` });
+  const day = h < 24 * 6 ? { weekday: "short" } : { day: "2-digit", month: "2-digit" };   // a weekday alone is ambiguous past a week (Codex free: 30-day window)
+  return t("Resets {t}", { t: `${d.toLocaleDateString(LOCALE, day)} ${d.toLocaleTimeString(LOCALE, { hour: "2-digit", minute: "2-digit" })}` });
 }
 function usageRow(label, w, skew) {
   const pct = Math.max(0, Math.min(100, Math.round(w.used_percentage ?? 0)));
@@ -89,7 +90,8 @@ export function renderUsage(el, u, skew = 0, codex = undefined) {
   if (codex !== undefined) {
     const blocked = codex?.blocked_until
       ? `<div class="row"><span class="lbl">${t("Used up")}</span><span class="bar"><i class="hot" style="width:100%"></i></span><span class="pct">100%</span><span class="rst">${esc(t("Back {t}", { t: backAt(codex.blocked_until) }))}</span></div>` : "";
-    const rows = blocked + (codex?.five_hour ? usageRow(t("Current session"), codex.five_hour, skew) : "") + (codex?.seven_day ? usageRow(t("Weekly"), codex.seven_day, skew) : "");
+    const label = m => m === 300 ? t("Current session") : m === 10080 ? t("Weekly") : m === 43200 ? t("Monthly") : m ? t("{n} days", { n: Math.round(m / 1440) }) : t("Current session");
+    const rows = blocked + (codex?.windows ?? []).map(w => usageRow(label(w.minutes), w, skew)).join("");
     out += group("Codex", t("Your Codex usage limits, read from its session logs"), rows || `<div class="uempty">${t("Codex usage shows up after its first run")}</div>`);
   }
   el.innerHTML = out;

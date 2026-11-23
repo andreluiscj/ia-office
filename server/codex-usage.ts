@@ -5,8 +5,8 @@ import { readdirSync, readFileSync, statSync } from "node:fs";
 import { homedir } from "node:os";
 import { join } from "node:path";
 
-type Window = { used_percentage: number; resets_at: number | null };
-export type CodexUsage = { five_hour: Window | null; seven_day: Window | null; blocked_until: number | null; ts: number } | null;
+type Window = { minutes: number | null; used_percentage: number; resets_at: number | null };
+export type CodexUsage = { windows: Window[]; blocked_until: number | null; ts: number } | null;
 
 const ROOT = join(process.env.CODEX_HOME ?? join(homedir(), ".codex"), "sessions");
 
@@ -37,7 +37,7 @@ function toWindow(w: any): Window | null {
   if (!w || typeof w.used_percent !== "number") return null;
   const resets = typeof w.resets_at === "number" ? w.resets_at
     : typeof w.resets_in_seconds === "number" ? Math.round(Date.now() / 1000) + w.resets_in_seconds : null;
-  return { used_percentage: w.used_percent, resets_at: resets };
+  return { minutes: typeof w.window_minutes === "number" ? w.window_minutes : null, used_percentage: w.used_percent, resets_at: resets };
 }
 
 let cache: { at: number; v: CodexUsage } | null = null;
@@ -66,19 +66,16 @@ function readCodexUsage(): CodexUsage {
     }
   }
   if (!limits && !blocked) return null;
-  // Windows are told apart by length: Codex sends window_minutes 300 (5 h) and 10080 (week).
-  const ws = [limits?.primary, limits?.secondary].filter(Boolean);
-  const pick = (min: number) => toWindow(ws.find(w => w.window_minutes === min) ?? null);
-  const five = limits ? (pick(300) ?? toWindow(limits.primary)) : null;
-  const week = limits ? (pick(10080) ?? toWindow(limits.secondary)) : null;
+  // Window length depends on the plan (paid: 300 min and 10080 min; free: 43200 min), so the page labels them by minutes.
+  const windows = [limits?.primary, limits?.secondary].map(toWindow).filter((w): w is Window => !!w).sort((a, b) => (a.minutes ?? 0) - (b.minutes ?? 0));
   // A newer successful limits reading means the block is over.
   const stillBlocked = blocked && blocked * 1000 > Date.now() && blockedTs >= limitsTs ? blocked : null;
-  return { five_hour: five, seven_day: week, blocked_until: stillBlocked, ts: Math.max(limitsTs, blockedTs) };
+  return { windows, blocked_until: stillBlocked, ts: Math.max(limitsTs, blockedTs) };
 }
 
 if (import.meta.main) {
   console.assert(parseRetry("or try again at Nov 20th, 2026 2:17 PM.") === Math.round(Date.parse("Nov 20, 2026 2:17 PM") / 1000), "parseRetry");
   console.assert(parseRetry("no date here") === null, "parseRetry null");
-  console.assert(toWindow({ used_percent: 40, window_minutes: 10080, resets_at: 5 })?.used_percentage === 40, "toWindow");
+  console.assert(toWindow({ used_percent: 40, window_minutes: 10080, resets_at: 5 })?.minutes === 10080, "toWindow");
   console.log(JSON.stringify(codexUsage()));
 }

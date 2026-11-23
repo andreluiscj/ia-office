@@ -38,6 +38,8 @@ const D = {
   "Plan usage shows up after Claude Code's first reply": ["O uso do plano aparece depois da primeira resposta do Claude Code", "El uso del plan aparece tras la primera respuesta de Claude Code", "L'uso del piano compare dopo la prima risposta di Claude Code", "Die Plannutzung erscheint nach der ersten Antwort von Claude Code", "L'utilisation du forfait s'affiche après la première réponse de Claude Code", "Claude Code 首次回复后显示套餐用量", "Claude Code の最初の応答後にプラン使用量が表示されます", "Claude Code के पहले जवाब के बाद प्लान का उपयोग दिखता है"],
   "Current session": ["Sessão atual", "Sesión actual", "Sessione attuale", "Aktuelle Sitzung", "Session actuelle", "当前会话", "現在のセッション", "मौजूदा सत्र"],
   "Weekly": ["Semanal", "Semanal", "Settimanale", "Wöchentlich", "Hebdomadaire", "每周", "週間", "साप्ताहिक"],
+  "Monthly": ["Mensal", "Mensual", "Mensile", "Monatlich", "Mensuel", "每月", "月間", "मासिक"],
+  "{n} days": ["{n} dias", "{n} días", "{n} giorni", "{n} Tage", "{n} jours", "{n} 天", "{n} 日", "{n} दिन"],
   "Tasks": ["Tarefas", "Tareas", "Attività", "Aufgaben", "Tâches", "任务", "タスク", "कार्य"],
   "Used up": ["Esgotado", "Agotado", "Esaurito", "Aufgebraucht", "Épuisé", "已用完", "上限到達", "समाप्त"],
   "Back {t}": ["Volta {t}", "Vuelve {t}", "Torna {t}", "Zurück {t}", "Retour {t}", "恢复于 {t}", "{t} に復帰", "{t} को वापस"],

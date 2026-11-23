@@ -137,7 +137,7 @@ After the verifier approves and before you deliver, ask a second model to attack
 codex exec --sandbox read-only --skip-git-repo-check "Adversarial review of the uncommitted changes in this repository (git diff, plus untracked files). List only concrete bugs or security problems as path:line - problem - impact. Reply NONE if there are none. At most 15 lines."
 ```
 
-- Its findings are leads, not verdicts: send each one to the verifier (security agent) to confirm or drop, then fix what is confirmed like any other finding.
+- Its findings are leads, not verdicts: send each one to the verifier (security agent) to confirm or drop, then fix what is confirmed like any other finding. A confirmed finding that breaks one of the developer's secure-coding rules (for example an SSRF check on one DNS answer while the fetch resolves again) is fixed, never recorded as an accepted risk.
 - It fails (usage limit, not installed, not logged in): write `Codex: indisponível (<reason>)` in the report and deliver anyway. It never blocks a delivery.
 - Skip it for T0, T1 and T2 without external input: the user's Codex plan is free and small.
 
