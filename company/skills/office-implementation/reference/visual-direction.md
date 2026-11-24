@@ -4,9 +4,9 @@ Read this only when building a new look: a new project, or a screen with no desi
 
 ## Order of preference
 
-1. **The project has a design system or `.empresa/design.md`**: follow it. Do not load any design skill.
+1. **The project has a design system or `.empresa/design.md`**: follow it. Do not load any design skill. Assets are in `.empresa/assets.md`.
 2. **There is a reference** (Figma, screenshot, existing site): reproduce its intent and list any divergence in the handoff.
-3. **Nothing exists**: define the direction once, record it, reuse it.
+3. **Nothing exists**: the identity and imagery belong to Pedro (office-designer) (agent `office-designer`). When he has not run yet and the task is a new look, tell the Lead and stop; the Lead starts him first. Only a small screen inside an existing product is yours to direct alone.
 
 ## Defining the direction (case 3, once per project)
 
@@ -36,6 +36,6 @@ Every later screen reads `.empresa/design.md` instead of reloading the skill.
 
 ## What reads as generic
 
-Avoid by default: purple-to-blue gradients on everything, uniform rounded cards in a grid with an icon each, centered hero with two buttons and no real content, decorative emoji, glass effects without purpose. Prefer: real content, a clear hierarchy, generous and consistent spacing, one accent color used sparingly.
+See "No AI look" in `frontend.md`. Avoid by default: purple-to-blue gradients on everything, uniform rounded cards in a grid with an icon each, centered hero with two buttons and no real content, decorative emoji, glass effects without purpose, tinted message banners. Prefer: real content, a clear hierarchy, generous and consistent spacing, one accent color used sparingly.
 
 Strongly visual or animated work is one of the two cases where the Lead may start you on Opus.

@@ -18,7 +18,7 @@ try {
       hookSpecificOutput: {
         hookEventName: "PreToolUse",
         permissionDecision: "deny",
-        permissionDecisionReason: "The Lead does not edit files. Hand this change to the responsible specialist (Joaquim, Igor, Leonardo or Lucas). The Lead writes only .empresa/plano.md, padroes.md, licoes.md, its memory, Claude Security report folders and the Obsidian vault.",
+        permissionDecisionReason: "The Lead does not edit files. Hand this change to the responsible specialist (Joaquim, Igor, Pedro, Leonardo or Lucas). The Lead writes only .empresa/plano.md, padroes.md, licoes.md, its memory, Claude Security report folders and the Obsidian vault.",
       },
     }));
   }

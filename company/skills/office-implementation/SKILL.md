@@ -8,7 +8,7 @@ description: The Office developer's playbook for implementing a fix or feature i
 Read one reference, only if the task touches it:
 - API, business rule, database, integration → [reference/backend.md](reference/backend.md)
 - screen, component, form, state → [reference/frontend.md](reference/frontend.md)
-- a new look with no design system or reference to follow → [reference/visual-direction.md](reference/visual-direction.md)
+- a new look with no design system or reference to follow → [reference/visual-direction.md](reference/visual-direction.md) (the identity and imagery are Pedro (office-designer)'s)
 
 ## 1. Before the first edit
 

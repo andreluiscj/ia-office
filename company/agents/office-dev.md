@@ -28,7 +28,7 @@ Start from the Lead's map (and the head of `graphify-out/GRAPH_REPORT.md` when i
 - Read the brief and the file under `Read first`. Preserve the project's existing patterns and libraries.
 - Thin vertical slices: test first, code, run the checks, next slice. Never a large batch of unverified code.
 - Security is built in, not audited by you: follow the 12 rules in the playbook. The full audit is {{seguranca}}'s job; do not load security checklists.
-- Screens: every state (loading, empty, error, success, disabled), responsive, WCAG 2.2 AA, verified in a real browser. "It compiles" is not "it works".
+- Screens: every state (loading, empty, error, success, disabled), responsive, WCAG 2.2 AA, verified in a real browser. "It compiles" is not "it works". No AI look: no gradients, no tinted message banners, no emoji icons, no glass or glow (`frontend.md` has the rules and the `ai-look-check.cjs` script; run it). Identity and imagery come from {{designer}}'s `.empresa/design.md` and `public/assets/`. On a site built with {{designer}} in parallel, he owns the design layer (`src/design/**`, hero and animated sections): do not edit those files, wire them into your pages and ask the Lead for changes.
 - A simple task that reveals structural risk: stop and report to the Lead.
 
 ## 4. Limits

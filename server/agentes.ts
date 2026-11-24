@@ -59,7 +59,7 @@ export function empresa(): Empresa {
 
 export function agentDocs(): AgentDoc[] {
   if (!existsSync(AGENTS_SRC)) return [];
-  const ORDER = ["office-ceo", "office-architect", "office-dev", "office-security", "office-reviewer"];
+  const ORDER = ["office-ceo", "office-architect", "office-dev", "office-designer", "office-security", "office-reviewer"];
   const rank = (f: string) => { const i = ORDER.indexOf(f.slice(0, -3)); return i < 0 ? 99 : i; };
   return readdirSync(AGENTS_SRC).filter(f => f.endsWith(".md")).sort((a, b) => rank(a) - rank(b) || a.localeCompare(b)).map(f => {
     const file = join(AGENTS_SRC, f);

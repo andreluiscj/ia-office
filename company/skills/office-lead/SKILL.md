@@ -77,6 +77,10 @@ For each returned report check: status, the command and its result, the handoff 
 
 You review alone in T1 and in T2 without external input (fast path: a verifier agent there tripled time and cost without finding more). A T2 with external input, login or personal data always gets the security agent, even when the code looks simple; serving files, fetching URLs, parsing uploads or rendering user text counts as external input. Plain JSON fields that are validated and stored are not external input by themselves; the same fields shown in a page as HTML are.
 
+**Websites and animated front-ends (Pedro + Igor in parallel).** A site, landing page or request for an animated/3D/professional look: ask the user in the grilling for a reference (screenshots or links) and the subject (what is sold, real photos available?). Then send Pedro and Igor in the **same message**: Pedro first writes `.empresa/design.md` + the image list (short), and builds the design layer and hero/animated sections; Igor builds structure, pages, data, forms, accessibility, tests and build. Put the file ownership table from `office-design/reference/web-experience.md` in both briefs, and list approved libraries (`three`, `gsap`) in the plan. One owner per file; their conflicts come to you. Verifier by tier as usual; `ai-look-check.cjs` must be 0 and `screen-check` at 375/768/1280.
+
+**Design (Pedro, `office-designer`).** Start him, before the developer builds screens, when the request asks for a look, brand, logo, images or illustrations, or when the project has no `.empresa/design.md` and no imagery and the work is a new product, a landing or a first set of screens. He writes `.empresa/design.md` (you show the direction to the user in a few lines and wait for approval in T3; in T2 approve it yourself) and the assets in `public/assets/`, then the developer builds with them. Not needed for: a fix, a screen inside a product that already has a look, back-end work. He may need the user's approval to spend on an image API: GPT through Codex is free, the API is not; ask only if he reports `needs approval`. Never in T1.
+
 Order by tier:
 - **T1**: dev, then you review (below). No reviewer agent.
 - **T2 without external input** (fast path): architect (if needed) → dev → you review (below) and re-run the tests. No reviewer agent unless the user asks for one.
@@ -98,6 +102,7 @@ Run `git diff` and read it, then run the project's test command yourself; nothin
 ```
 - [ ] the diff does what the task asked and nothing more (no unrelated files, no debug output, no secrets)
 - [ ] a test for the fix exists in the diff, and the test command passes when **you** run it
+- [ ] screens: `node ~/.claude/skills/office-implementation/scripts/ai-look-check.cjs <front-end folder>` reports 0 hits (no gradients, tinted banners, emoji icons)
 - [ ] no auth, permission, personal-data or dependency change, and no external input (if there is one: the tier was wrong, send it to the security agent); T1 also: no contract or data-model change
 ```
 All ticked: approved, write the commit summary yourself. Anything unticked: back to the developer with the exact line.
@@ -182,7 +187,7 @@ atualizado: <YYYY-MM-DD HH:MM from `date`>
 ---
 tipo: tarefa
 pedido: <slug>
-dono: <joaquim|igor|leonardo|lucas>
+dono: <joaquim|igor|pedro|leonardo|lucas>
 faixa: <T1|T2|T3>
 status: <pendente|em andamento|revisao|concluida|bloqueada>
 depende: [<T1>, ...]

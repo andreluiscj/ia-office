@@ -7,6 +7,7 @@ Cada agente do Office é **um arquivo só**, em `company/agents/`. Tudo sobre el
 | `agents/office-ceo.md` | Líder (sessão principal do `claude --office`) |
 | `agents/office-architect.md` | Arquiteto e pesquisador |
 | `agents/office-dev.md` | Desenvolvedor front-end e back-end |
+| `agents/office-designer.md` | Design gráfico e de marca |
 | `agents/office-security.md` | Segurança e testes |
 | `agents/office-reviewer.md` | Code review e auditoria final (Claude Security) |
 
