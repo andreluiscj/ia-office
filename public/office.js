@@ -916,10 +916,24 @@ resize();
 window.addEventListener("resize", resize);
 live(refresh, ok => { connEl.className = `conn ${ok ? "on" : "off"}`; connEl.textContent = ok ? "ao vivo" : "reconectando"; });
 
-let last = performance.now();
+// Simulação separada do desenho: com a aba oculta o navegador para o requestAnimationFrame, e antes os
+// personagens congelavam até você voltar. Agora a simulação anda por um relógio real, também em segundo plano
+// (um Worker não é freado como os timers da página), e ao voltar recupera até 10 min de movimento de uma vez.
+let lastSim = performance.now();
+function simulate() {
+  const t = performance.now();
+  let left = Math.min(600, (t - lastSim) / 1000), virt = t - left * 1000;
+  lastSim = t;
+  while (left > 0) { const dt = Math.min(0.1, left); virt += dt * 1000; update(dt, virt); left -= dt; }
+}
 (function loop(now) {
-  const dt = Math.min(0.1, (now - last) / 1000); last = now;
-  update(dt, now);
+  simulate();
   draw(now);
   requestAnimationFrame(loop);
-})(last);
+})(performance.now());
+try {
+  const w = new Worker(URL.createObjectURL(new Blob(["setInterval(()=>postMessage(0),250)"], { type: "text/javascript" })));
+  w.onmessage = simulate;
+} catch { setInterval(simulate, 1000); }
+document.addEventListener("visibilitychange", () => { if (!document.hidden) simulate(); });
+window.__officePeople = people;   // só para teste automatizado
