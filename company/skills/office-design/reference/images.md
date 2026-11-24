@@ -13,6 +13,9 @@ Try it **once per project, on the first raster you need** (or a test hero), even
 
 It failed ("no access to the built-in image tool", usage limit, not logged in, not installed): write `GPT: unavailable (<reason>)` in `.empresa/assets.md` and go to path 3. **Never** fall back to path 2 on your own.
 
+### 1b. ChatGPT by hand (free, the user pastes; the method of the walkthrough, and the default when path 1 is unavailable and the site needs realistic images)
+Write `.empresa/image-prompts.md`: one block per image with the **exact file name**, the prompt (template below, in English), the ratio, and whether it needs a transparent background (cut-out subjects: ask for "transparent background, PNG"). Ask the Lead to tell the user: "paste each prompt in ChatGPT, save each image with the file name given into `public/assets/` (or a folder you name), then tell me". Build the page with placeholders meanwhile (the 3D or SVG stand-in), and swap in the real files when they arrive: check size, weight and alt text, convert to WebP, never block the delivery on the images. Product photos of a real client beat invented ones: ask the user for them first and improve those.
+
 ### 2. GPT through the OpenAI API (costs money: needs the user's approval)
 Only when `OPENAI_API_KEY` is set **and** the Lead relays the user's approval with a budget (for example "up to US$ 2"). Count images, stop at the budget, log the cost. No approval: skip. The Office rule is that nothing is spent beyond the user's plans.
 

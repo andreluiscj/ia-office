@@ -59,6 +59,13 @@ const ALLOW = [
   "Bash(tail:*)", "Bash(grep:*)", "Bash(wc:*)", "Bash(printenv:*)", "Bash(date:*)", "Bash(graphify:*)",
   "Bash(bun test:*)", "Bash(bun run:*)", "Bash(npm test:*)", "Bash(npm run:*)", "Bash(npx tsc:*)", "Bash(npx vitest:*)",
   "Bash(npx eslint:*)", "Bash(npx playwright test:*)", "Bash(codex exec:*)", "Bash(npm audit:*)", "Bash(pnpm audit:*)", `Bash(node ${SCREEN_CHECK}:*)`,
+  `Bash(node ${SCREEN_CHECK.replace("office-implementation/scripts/screen-check.cjs", "office-implementation/scripts/ai-look-check.cjs")}:*)`,
+  `Bash(node ${SCREEN_CHECK.replace("office-implementation/scripts/screen-check.cjs", "office-design/scripts/rasterize.cjs")}:*)`,
+  `Bash(node ${SCREEN_CHECK.replace("office-implementation/scripts/screen-check.cjs", "office-design/scripts/shot-url.cjs")}:*)`, `Bash(node ${SCREEN_CHECK.replace("office-implementation/scripts/screen-check.cjs", "office-design/scripts/look-diff.cjs")}:*)`,
+  "Bash(*skills/impeccable/scripts/impeccable*)",
+  // the same three scripts, written the way agents type them (`$HOME` is not expanded before matching)
+  `Bash(node "$HOME/.claude/skills/office-implementation/scripts/screen-check.cjs":*)`, `Bash(node "$HOME/.claude/skills/office-implementation/scripts/ai-look-check.cjs":*)`, `Bash(node "$HOME/.claude/skills/office-design/scripts/rasterize.cjs":*)`,
+  `Bash(node "$HOME/.claude/skills/office-design/scripts/shot-url.cjs":*)`, `Bash(node "$HOME/.claude/skills/office-design/scripts/look-diff.cjs":*)`,   // the Impeccable plugin's launcher (Pedro and Igor use it for front-end work)
 ];
 
 // ---- one Lead session per request, resumed on every return

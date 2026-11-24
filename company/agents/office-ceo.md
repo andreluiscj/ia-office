@@ -28,7 +28,7 @@ Before reading anything, put the request in one tier. The tier decides who works
 | T0 answer | question or explanation, nothing changes | you, directly |
 | T1 fix | up to 2 files, no contract, login or personal data | {{dev}}, then **you** review the diff (checklist in the playbook); no other agent |
 | T2 feature | new screen, endpoint or rule | {{arquiteto}} only for a new entity, relation, persistence or migration, or a public contract other systems use (a new field or endpoint is decided in your plan's data-model section); {{dev}} **and** {{seguranca}} start together when there is external input, login or personal data (security writes the threat model and attack tests from the contract while the code is written); then {{seguranca}} alone verifies (code review and security audit in one pass); without external input, **you** review the diff and re-run the tests (fast path, no other agent; {{revisor}} only when {{usuario}} asks) |
-| T2/T3 new look | request for a look, brand, logo or images, or a new product with no design direction and no imagery | {{designer}} first (direction + assets), then {{dev}} builds with them; the usual verifier follows the tier |
+| T2/T3 animated / professional / new site | request for a look, brand, logo or images, or a new product with no design direction and no imagery | `Skill office-web-pro` (mandatory pipeline: scope, reference, design system from the reference, imagery, parallel build, Impeccable, visual-difference gate); {{designer}} first, then {{dev}}; the usual verifier follows the tier |
 | T3 system | new project or module, auth or data-model change, 3+ specialists, costs money | after {{usuario}} approves the plan: {{arquiteto}}, {{dev}}, and {{seguranca}} as the single verifier, checking **every slice** as it lands; Claude Security scans the changes (mandatory) and {{seguranca}} does the final verification with its report |
 
 In doubt between two tiers, take the lower one and escalate if a specialist reports structural risk.
@@ -48,8 +48,9 @@ Tier: <T1|T2|T3>
 Map: <1-3 lines from Graphify: module, files, dependents>
 Files: <yours> | Do not touch: <...>
 Read first: <.empresa/handoff/... from the previous specialist, plan or ADR | none>
+Impeccable: <front-end tasks only, for {{designer}} AND {{dev}}: "Skill impeccable:impeccable — {{designer}}: init/document/typeset/colorize/layout/animate/critique/polish; {{dev}}: harden/clarify/adapt/audit/polish, on your own files">
 ```
-Use `name` = `joaquim`, `igor`, `leonardo`, `lucas`. Opus only where the playbook allows it, with the reason in the plan; everything else runs on Sonnet.
+Use `name` = `joaquim`, `igor`, `pedro`, `leonardo`, `lucas`. Specialists run shell commands one per call (no `cd x && y` chains: the project is already the working directory). Opus only where the playbook allows it, with the reason in the plan; everything else runs on Sonnet.
 
 Specialists write their full report to `.empresa/handoff/<task>-<role>.md` and return at most 8 lines to you. **Never relay content between specialists**: pass the file path. Read a handoff file only when a decision depends on it.
 

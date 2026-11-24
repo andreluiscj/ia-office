@@ -6,9 +6,23 @@ description: The Office designer's playbook for giving a project its visual iden
 # Office design playbook
 
 Read one reference, only if the task touches it:
+- the professional rules (mode, hierarchy, type, color, motion, **ambient effects: when smoke/steam fits and when not**, performance, a11y, the refuse list) → [reference/pro-practices.md](reference/pro-practices.md) (read the sections you need)
 - identity, type, color, layout, illustration style → [reference/craft.md](reference/craft.md)
 - making, prompting, optimizing and placing images → [reference/images.md](reference/images.md)
+- **an animated, professional, new or redesigned site: `Skill office-web-pro` first (mandatory pipeline with gates)**, then:
 - a website, landing page or any animated/3D front-end (reference-first method, Pedro + Igor in parallel, scroll animation, 3D) → [reference/web-experience.md](reference/web-experience.md)
+
+## 0. Impeccable (mandatory for front-end work)
+
+The Impeccable plugin (`Skill impeccable:impeccable`, installed by the user) is the Office's design engine for any web front-end. It costs more tokens and the user accepted that for a better result. Use it **after** this playbook's brief step:
+
+| When | Pedro runs | Igor runs |
+| --- | --- | --- |
+| New site or surface | `init` (PRODUCT.md), then the new-work flow / `shape` to commit the visual world, then `document` (DESIGN.md) | reads PRODUCT.md and DESIGN.md, does not run init |
+| Building | `typeset`, `colorize`, `layout`, `animate` (motion) on his files | `harden` (errors, edge cases), `clarify` (copy), `adapt` (devices) on his files |
+| Before delivery | `critique` of the whole site, then `polish` of his files | `audit` (accessibility, performance, responsive), then `polish` of his files |
+
+Rules: PRODUCT.md and DESIGN.md at the project root become the source of truth; `.empresa/design.md` shrinks to the contract between Pedro and Igor (token file, file ownership, assets map) and points to them. Each agent changes only the files they own; a finding in the other's files goes to the Lead. The plugin's launcher failing or being refused once: say so in the handoff and continue with this playbook, never retry in a loop. Keep the plugin's own detector hook off (`hooks` stays off): `ai-look-check.cjs` is the gate.
 
 ## 1. The cycle
 
@@ -45,6 +59,8 @@ Do not: <the AI-look list below plus product-specific bans>
 7. Pattern or texture only if the direction asks for it.
 
 ## 4. The AI look: never ship
+
+(The full refuse list is `reference/pro-practices.md` section 9; it wins over this summary.)
 
 Gradient fills on backgrounds, buttons, text or illustrations; glossy 3D blobs; glass or neon glow; purple-to-blue default palettes; stock isometric people and robot mascots; emoji used as icons or bullets; sparkles; text drawn inside an image; the same rounded card with an icon repeated six times; colored full-width message banners where a line of text and a small marker would do; faces with uncanny hands; "futuristic" circuit-board backdrops. Prefer: flat or two-tone shapes, real hierarchy, honest empty space, one accent color, imagery drawn from the product's own domain.
 

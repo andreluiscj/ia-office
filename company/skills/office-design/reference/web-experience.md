@@ -5,11 +5,11 @@ Read this for a landing page, marketing site or any site where the first impress
 ## 1. Order of work (the site must not look generated)
 
 1. **Reference.** The user gives 1 to 3 reference screenshots or links (Pinterest, Dribbble, a site they like), or Pedro picks 2 from the web and asks the Lead to confirm. A reference decides layout, rhythm, type and mood; copy structure and feeling, never the brand's assets or text.
-2. **Design system from the reference** → `.empresa/design.md`. Extract the real patterns of the reference, do not invent generic ones. Sections: colors (hex + use), type (families, scale, weights, line height, tracking), CSS tokens (`:root` variables for color, space, radius, shadow, type), layout (grid, container, breakpoints, spacing), components (button, input, card, nav, badge, modal, with states), responsiveness (mobile first), accessibility (contrast, touch target, focus), image direction (style, treatment, ratios), implementation rules and what to avoid. Tables for tokens, code blocks for CSS.
+2. **Design system from the reference** → Impeccable `init` + `document` (PRODUCT.md, DESIGN.md) with `.empresa/design.md` as the Pedro/Igor contract. Extract the real patterns of the reference, do not invent generic ones. Sections: colors (hex + use), type (families, scale, weights, line height, tracking), CSS tokens (`:root` variables for color, space, radius, shadow, type), layout (grid, container, breakpoints, spacing), components (button, input, card, nav, badge, modal, with states), responsiveness (mobile first), accessibility (contrast, touch target, focus), image direction (style, treatment, ratios), implementation rules and what to avoid. Tables for tokens, code blocks for CSS.
 3. **Image list.** Pedro writes one prompt per needed image (hero subject, section images, textures), each with: subject, style, palette, composition, ratio, file name. Real products need faithful subjects: when the client has real photos of their product, improve those instead of inventing look-alike images.
-4. **Make the images** (`images.md` pipeline: GPT through Codex first, then SVG/3D). Cut-out subjects (a product in the hero) must be PNG or WebP with transparent background. File names descriptive (`hero-burger-cutout.webp`), kept in `public/assets/` so the developer finds them.
+4. **Make the images** (`images.md` pipeline: GPT through Codex, else the user pastes the prompts in ChatGPT (1b), else SVG/3D). Cut-out subjects (a product in the hero) must be PNG or WebP with transparent background. File names descriptive (`hero-burger-cutout.webp`), kept in `public/assets/` so the developer finds them.
 5. **Build** (Pedro and the developer in parallel, section 2).
-6. **Polish pass.** Run `ai-look-check.cjs`, then check mobile, speed and consistency; remove anything that reads as generated (see `SKILL.md` section 4).
+6. **Polish pass.** Impeccable `critique` + `polish` (Pedro) and `audit` + `polish` (Igor), then `ai-look-check.cjs`, then check mobile, speed and consistency; remove anything that reads as generated (see `SKILL.md` section 4).
 7. **Hand over** a build that runs locally, plus a static export folder when the user wants to host it.
 
 ## 2. Pedro and Igor work together (parallel, with file ownership)
@@ -26,7 +26,7 @@ Rules: one owner per file; shared contract = the CSS variables and the component
 ## 3. Motion
 
 - **Scroll-driven hero animation** (an object that opens, rotates, assembles as the user scrolls): either a short generated video turned into an image sequence drawn on a `<canvas>` and scrubbed by scroll, or a 3D scene (section 4). Library: GSAP + ScrollTrigger (permissive license) or the native CSS `animation-timeline: scroll()` where enough.
-- Subtle ambient effects only (soft smoke, grain, parallax of 2 layers); one hero effect per page, not five.
+- One ambient effect at most, and only when the product's world contains the phenomenon (smoke for a grill, steam for coffee, none for a law firm): decide with the table in `pro-practices.md` section 5; otherwise use a typographic or composition moment, or nothing.
 - Micro-interactions: 150 to 250 ms ease-out on hover and focus, 300 to 500 ms for section reveals; animate `transform` and `opacity` only.
 - **Always**: respect `prefers-reduced-motion` (static first frame), keep content readable without animation, no animation blocking the first paint, hero image or poster loads first (LCP <= 2.5 s on mobile), pause off-screen canvases.
 - Video/sequence frames: at most ~60 to 90 frames at the displayed size, WebP, lazy preloaded; total hero weight under 1.5 MB on mobile or fall back to a still image.

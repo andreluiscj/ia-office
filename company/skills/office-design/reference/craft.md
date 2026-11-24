@@ -25,7 +25,7 @@ Read this when defining or extending a direction. Rules a professional graphic d
 - 12-column grid desktop, 4 columns phone, one max content width (about 1120 px, text 65ch). Align to a baseline and to each other: ragged alignment is the first thing people feel as "cheap".
 - One radius value across the product (0, 4 or 8 px; not 24). Borders 1 px, hairline color; shadows rare and soft (one level).
 - Whitespace is content. Remove a box before adding a color. A list or a table beats six cards.
-- Message and status UI: text with a small marker (dot, icon, left rule) on a neutral surface; no full-width saturated banners.
+- Message and status UI: text with a small marker (dot or icon; never a one-sided stripe on a rounded box) on a neutral surface; no full-width saturated banners.
 
 ## Imagery and illustration
 - Pick one style per product and write it down: flat two-tone shapes, monoline (2 px) drawings, or photo-like with one color grade. Mixing styles is the loudest sign of generated imagery.
