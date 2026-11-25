@@ -1,21 +1,23 @@
-// Fila de trabalho do Office: pedidos e tarefas que o Líder registra no cofre do Obsidian (somente leitura).
+// Fila de trabalho do Office: pedidos e tarefas que o Líder registra no cofre do Obsidian.
+// Ações: recomeçar (abre o claude --office numa janela do PowerShell) e cancelar (marca no cofre). Concluídas ficam recolhidas.
 import { ago, esc, live, mountUsage, t } from "./common.js";
 import { md } from "./markdown.js";
 mountUsage();
 
 const $ = id => document.getElementById(id);
-let data = { inbox: [], requests: [] }, current = null;
+let data = { inbox: [], requests: [] }, current = null, pending = null;
 
 // Status words come from the notes (Portuguese); group them so the colors and counters work in any language.
 const KIND = {
   concluido: "done", concluida: "done",
+  cancelado: "cancel", cancelada: "cancel",
   "em andamento": "run", revisao: "run", pronto: "run", aprovado: "run",
   perguntas: "wait", "aguardando aprovacao": "wait", pendente: "wait", novo: "wait", pausado: "wait",
   bloqueado: "block", bloqueada: "block",
 };
 const kind = s => KIND[String(s ?? "").toLowerCase()] ?? "wait";
 const pill = s => s ? `<span class="tk-pill s-${kind(s)}">${esc(s)}</span>` : "";
-const isOpen = r => kind(r.meta.status) !== "done" || r.tasks.some(x => kind(x.meta.status) !== "done");
+const finished = r => ["done", "cancel"].includes(kind(r.meta.status));   // concluído ou cancelado: vai para a área recolhida
 const when = ms => ms ? t("updated {t}", { t: ago(ms) }) : "";
 
 // Inbox notes that already have a 10-Tarefas folder are shown there; the rest appear as requests without tasks.
@@ -27,33 +29,36 @@ function merged() {
 }
 
 function filtered() {
-  const q = $("q").value.trim().toLowerCase(), onlyOpen = $("open").checked;
-  return merged().filter(r => (!onlyOpen || isOpen(r)) &&
-    (!q || [r.title, r.meta.projeto, r.request, ...r.tasks.map(x => `${x.title} ${x.meta.dono ?? ""} ${x.brief}`)].join(" ").toLowerCase().includes(q)));
+  const q = $("q").value.trim().toLowerCase();
+  return merged().filter(r => !q || [r.title, r.meta.projeto, r.request, ...r.tasks.map(x => `${x.title} ${x.meta.dono ?? ""} ${x.brief}`)].join(" ").toLowerCase().includes(q));
 }
 
 function renderCards() {
-  const all = merged(), tasks = all.flatMap(r => r.tasks);
+  const all = merged().filter(r => kind(r.meta.status) !== "cancel"), tasks = all.flatMap(r => r.tasks).filter(x => kind(x.meta.status) !== "cancel");
   const n = k => tasks.filter(x => kind(x.meta.status) === k).length;
   $("cards").innerHTML = [
     [t("Requests"), all.length], [t("Open tasks"), tasks.length - n("done")], [t("Finished"), n("done")], [t("Blocked"), n("block")],
   ].map(([l, v]) => `<div class="stat"><div class="l">${esc(l)}</div><div class="n">${v}</div></div>`).join("");
 }
 
-function renderList() {
-  const rows = filtered();
-  $("vault").textContent = data.vault ?? "";
-  if (!data.vault) { $("list").innerHTML = `<p class="muted">${t("No Obsidian vault is set. Fill the cofre field in company/empresa.json.")}</p>`; return; }
-  if (!rows.length) { $("list").innerHTML = `<p class="muted">${t("No requests yet. Write one in the vault's 00-Pedidos folder.")}</p>`; return; }
-  $("list").innerHTML = rows.map(r => {
-    const done = r.tasks.filter(x => kind(x.meta.status) === "done").length;
-    const pct = r.tasks.length ? Math.round(done / r.tasks.length * 100) : (kind(r.meta.status) === "done" ? 100 : 0);
-    return `<button type="button" class="tk-req${r.slug === current ? " on" : ""}" data-slug="${esc(r.slug)}" aria-pressed="${r.slug === current}">
+const row = r => {
+  const done = r.tasks.filter(x => kind(x.meta.status) === "done").length;
+  const pct = r.tasks.length ? Math.round(done / r.tasks.length * 100) : (kind(r.meta.status) === "done" ? 100 : 0);
+  return `<button type="button" class="tk-req${r.slug === current ? " on" : ""}" data-slug="${esc(r.slug)}" aria-pressed="${r.slug === current}">
       <span class="t">${esc(r.title)}</span>
       <span class="tk-meta">${pill(r.meta.status)}${r.meta.faixa ? `<span class="tk-pill">${esc(r.meta.faixa)}</span>` : ""}
         ${r.meta.projeto ? `<span>${esc(r.meta.projeto)}</span>` : ""}<span>${t("{n} tasks", { n: r.tasks.length })}</span><span>${esc(when(r.updated))}</span></span>
       <span class="tk-progress" aria-hidden="true"><i style="width:${pct}%"></i></span></button>`;
-  }).join("");
+};
+
+function renderList() {
+  const rows = filtered(), active = rows.filter(r => !finished(r)), done = rows.filter(finished);
+  const wasOpen = $("doneBox")?.open;
+  $("vault").textContent = data.vault ?? "";
+  if (!data.vault) { $("list").innerHTML = `<p class="muted">${t("No Obsidian vault is set. Fill the cofre field in company/empresa.json.")}</p>`; return; }
+  const hidden = done.length ? `<details class="gf-hidden" id="doneBox"${wasOpen ? " open" : ""}><summary>${t("View finished tasks ({n})", { n: done.length })}</summary><div class="tk-list tk-done">${done.map(row).join("")}</div></details>` : "";
+  if (!active.length) { $("list").innerHTML = `<p class="muted">${merged().length ? t("Nothing in progress.") : t("No requests yet. Write one in the vault's 00-Pedidos folder.")}</p>${hidden}`; return; }
+  $("list").innerHTML = active.map(row).join("") + hidden;
 }
 
 function renderDetail() {
@@ -63,6 +68,10 @@ function renderDetail() {
   $("detail").innerHTML = `<h2>${esc(r.title)}</h2>
     <div class="tk-meta">${pill(r.meta.status)}${r.meta.faixa ? `<span class="tk-pill">${esc(r.meta.faixa)}</span>` : ""}
       ${r.meta.projeto ? `<span>${t("Project")}: ${esc(r.meta.projeto)}</span>` : ""}<span>${esc(when(r.updated))}</span></div>
+    <div class="tk-actions">
+      <button type="button" class="btn" data-act="resume">${t("Restart task")}</button>
+      ${finished(r) ? "" : `<button type="button" class="btn ghost" data-act="cancel">${t("Cancel task")}</button>`}
+    </div>
     ${r.request ? `<div class="tk-section"><h3>${t("Request")}</h3><div class="md">${md(r.request)}</div></div>` : ""}
     ${r.decisions ? `<div class="tk-section"><h3>${t("Decisions")}</h3><div class="md">${md(r.decisions)}</div></div>` : ""}
     <div class="tk-section"><h3>${t("Tasks")} (${r.tasks.length})</h3>
@@ -84,16 +93,51 @@ async function load() {
     const r = await fetch("/api/tasks", { cache: "no-store" });
     if (!r.ok) throw new Error(String(r.status));
     data = await r.json();
-    if (!current) current = merged()[0]?.slug ?? null;
+    if (!current) current = (merged().find(x => !finished(x)) ?? merged()[0])?.slug ?? null;
     render();
   } catch (err) {
     $("list").innerHTML = `<p>${t("Could not fetch the tasks ({e}).", { e: esc(err.message) })}</p>`;
   }
 }
 
+// ---- confirmation dialog (native <dialog>: focus trap, Esc to close)
+const dlg = $("dlg");
+function ask(act, r) {
+  pending = { act, slug: r.slug };
+  $("dlgTitle").textContent = act === "resume" ? t("Restart this task?") : t("Cancel this task?");
+  $("dlgText").textContent = act === "resume"
+    ? t("A PowerShell window opens in the project folder with claude --office and continues \"{x}\" from where it stopped.", { x: r.title })
+    : t("\"{x}\" is marked as cancelled in the vault. A session already running is not interrupted.", { x: r.title });
+  $("dlgErr").textContent = "";
+  $("dlgOk").textContent = act === "resume" ? t("Open Office") : t("Cancel task");
+  $("dlgOk").className = act === "resume" ? "btn" : "btn danger";
+  dlg.showModal();
+  $("dlgNo").focus();
+}
+async function confirm() {
+  const { act, slug } = pending;
+  $("dlgOk").disabled = true;
+  try {
+    const r = await fetch(`/api/tasks/${act}`, { method: "POST", headers: { "content-type": "application/json", "x-office": "1" }, body: JSON.stringify({ slug }) });
+    const j = await r.json().catch(() => ({}));
+    if (!r.ok) throw new Error(j.error ?? String(r.status));
+    dlg.close();
+    $("msg").textContent = act === "resume" ? t("Opening the Office in {x}…", { x: j.dir }) : t("Task cancelled.");
+    await load();
+  } catch (err) {
+    $("dlgErr").textContent = t(act === "resume" ? "Could not open the Office ({e})." : "Could not cancel the task ({e}).", { e: err.message });
+  } finally { $("dlgOk").disabled = false; }
+}
+$("dlgOk").addEventListener("click", confirm);
+$("dlgNo").addEventListener("click", () => dlg.close());
+dlg.addEventListener("click", e => { if (e.target === dlg) dlg.close(); });   // click on the backdrop
+
 $("list").addEventListener("click", e => { const b = e.target.closest("[data-slug]"); if (!b) return; current = b.dataset.slug; renderList(); renderDetail(); });
+$("detail").addEventListener("click", e => {
+  const b = e.target.closest("[data-act]"); if (!b) return;
+  const r = merged().find(x => x.slug === current); if (r) ask(b.dataset.act, r);
+});
 $("q").addEventListener("input", renderList);
-$("open").addEventListener("change", renderList);
 
 // The vault changes while agents work: reload on every live update (live() also ticks every 10 s).
 live(load, on => { const c = $("conn"); c.className = `conn ${on ? "on" : "off"}`; c.textContent = t(on ? "live" : "reconnecting"); });

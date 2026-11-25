@@ -16,7 +16,7 @@ import { empresa, prepareVault, writeOfficeMcp, writeOfficeSettings } from "../s
 
 const e = empresa();
 export const VAULT = (process.env.OFFICE_VAULT || e.cofre || "").replace(/\\/g, "/");
-const PROJECTS = (process.env.OFFICE_PROJECTS || (e as any).projetos || "C:/Projetos").replace(/\\/g, "/");
+export const PROJECTS = (process.env.OFFICE_PROJECTS || (e as any).projetos || "C:/Projetos").replace(/\\/g, "/");
 const MAX_PARALLEL = 2;
 const LOG = join(homedir(), ".escritorio-virtual", "executor.log");
 
@@ -32,7 +32,7 @@ export function readNote(path: string): Note | null {
   for (const line of m[1].split(/\r?\n/)) { const kv = line.match(/^([\w-]+):\s*(.*)$/); if (kv) meta[kv[1]] = kv[2].trim(); }
   return { path, meta, body: m[2], raw };
 }
-function setMeta(path: string, changes: Record<string, string>) {
+export function setMeta(path: string, changes: Record<string, string>) {
   const raw = readFileSync(path, "utf8");
   const m = raw.match(/^---\r?\n([\s\S]*?)\r?\n---/);
   if (!m) return;
@@ -43,7 +43,7 @@ function setMeta(path: string, changes: Record<string, string>) {
   }
   writeFileSync(path, raw.replace(m[0], `---\n${fm}\n---`));
 }
-const now = () => { const d = new Date(), p = (n: number) => String(n).padStart(2, "0"); return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`; };
+export const now = () => { const d = new Date(), p = (n: number) => String(n).padStart(2, "0"); return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`; };
 
 function projectDir(name: string) {
   const n = name.replace(/\\/g, "/").replace(/^\[\[|\]\]$/g, "").trim();

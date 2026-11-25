@@ -9,7 +9,7 @@
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;500;600&family=Silkscreen&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=12">
+  <link rel="stylesheet" href="style.css?v=13">
 </head>
 <body>
   <header class="topbar three">
@@ -25,7 +25,6 @@
   <main class="dash">
     <div class="filters">
       <input id="q" class="search" type="search" placeholder="Search tasks" data-i18n-placeholder autocomplete="off" aria-label="Search tasks" data-i18n-title>
-      <label class="check"><input type="checkbox" id="open"> <span data-i18n>only open work</span></label>
     </div>
     <section class="cards" id="cards"></section>
     <div class="tk-layout">
@@ -38,7 +37,14 @@
         <p class="muted" data-i18n>Click a request to see its tasks.</p>
       </section>
     </div>
+    <p class="muted" id="msg" role="status" aria-live="polite"></p>
   </main>
-  <script type="module" src="tarefas.js?v=1"></script>
+  <dialog id="dlg" aria-labelledby="dlgTitle" class="tk-dlg">
+    <h2 id="dlgTitle"></h2>
+    <p id="dlgText"></p>
+    <p class="tk-err" id="dlgErr" role="alert"></p>
+    <div class="tk-actions"><button type="button" class="btn" id="dlgOk"></button><button type="button" class="btn ghost" id="dlgNo" data-i18n>Back</button></div>
+  </dialog>
+  <script type="module" src="tarefas.js?v=2"></script>
 </body>
 </html>

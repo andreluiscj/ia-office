@@ -6,7 +6,7 @@ import { listSkills, skillDetail, skillRoots } from "./skills";
 import * as graphify from "./graphify";
 import { startExecutor } from "../scripts/office-runner";
 import { codexUsage } from "./codex-usage";
-import { tasks } from "./tarefas";
+import { cancelTask, resumeTask, tasks } from "./tarefas";
 
 const PORT = Number(process.env.PORT ?? 7777);
 const PUBLIC = join(import.meta.dir, "..", "public");
@@ -189,6 +189,13 @@ const server = Bun.serve({
     if (path === "/api/roster") return json(roster());
     if (path === "/api/usage") { const u = getMeta("usage"); return json({ now: Date.now(), usage: u ? JSON.parse(u) : null, codex: codexUsage() }); }
     if (path === "/api/tasks") return json(tasks());
+    if (path === "/api/tasks/resume" || path === "/api/tasks/cancel") {   // same guard as Graphify: a page from another site cannot send this header
+      if (req.method !== "POST" || req.headers.get("x-office") !== "1") return json({ error: "forbidden" }, 403);
+      const b: any = await req.json().catch(() => ({}));
+      const r = typeof b.slug === "string" ? (path.endsWith("resume") ? resumeTask(b.slug) : cancelTask(b.slug)) : { error: "slug required" };
+      if ("ok" in r) notify();
+      return json(r, "error" in r ? 400 : 200);
+    }
     if (path === "/api/skills") { const list = listSkills().map(({ path: _p, ...s }) => s); return json({ skills: list, roots: skillRoots() }); }
     if (path.startsWith("/api/skills/")) {
       const d = skillDetail(path.slice("/api/skills/".length));
