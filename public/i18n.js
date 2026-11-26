@@ -15,6 +15,23 @@ export const LANGS = [
 ];
 const ORDER = ["pt", "es", "it", "de", "fr", "zh", "ja", "hi"];
 
+// ---------- font choice (globe button): the default keeps the pixel look; the others replace every UI text, canvas labels included
+export const FONTS = [
+  { id: "default", name: "Pixelify Sans", css: null },
+  { id: "arial", name: "Arial", css: "Arial, 'Helvetica Neue', Helvetica, sans-serif" },
+  { id: "times", name: "Times New Roman", css: "'Times New Roman', Times, serif" },
+  { id: "calibri", name: "Calibri", css: "Calibri, Carlito, 'Segoe UI', sans-serif" },
+];
+let fontId = "default";
+try { const f = localStorage.getItem("office-font"); if (FONTS.some(x => x.id === f)) fontId = f; } catch {}
+function applyFont(id) {
+  const f = FONTS.find(x => x.id === id) ?? FONTS[0], root = document.documentElement;
+  if (f.css) { root.style.setProperty("--body", f.css); root.style.setProperty("--pixel", f.css); }
+  else { root.style.removeProperty("--body"); root.style.removeProperty("--pixel"); }
+  window.OFFICE_FONT = f.css ? f.name : null;   // the Office map draws its labels on a canvas and reads this
+}
+applyFont(fontId);
+
 let saved = null;
 try { saved = localStorage.getItem("office-lang"); } catch {}
 export const LANG = LANGS.some(l => l.code === saved) ? saved : "en";
@@ -58,6 +75,8 @@ const D = {
   "Progress": ["Progresso", "Progreso", "Avanzamento", "Fortschritt", "Progression", "进度", "進捗", "प्रगति"],
   "Estimated from the status of each task": ["Estimado pelo status de cada tarefa", "Estimado por el estado de cada tarea", "Stimato dallo stato di ogni attività", "Geschätzt aus dem Status jeder Aufgabe", "Estimé d'après le statut de chaque tâche", "根据每个任务的状态估算", "各タスクの状態から推定", "प्रत्येक कार्य की स्थिति से अनुमानित"],
   "Nothing in progress.": ["Nada em andamento.", "Nada en curso.", "Niente in corso.", "Nichts in Arbeit.", "Rien en cours.", "没有进行中的任务。", "進行中のものはありません。", "कुछ भी जारी नहीं है।"],
+  "Font": ["Fonte", "Fuente", "Carattere", "Schriftart", "Police", "字体", "フォント", "फ़ॉन्ट"],
+  "(default)": ["(padrão)", "(predeterminada)", "(predefinito)", "(Standard)", "(par défaut)", "（默认）", "（既定）", "(डिफ़ॉल्ट)"],
   "Tasks": ["Tarefas", "Tareas", "Attività", "Aufgaben", "Tâches", "任务", "タスク", "कार्य"],
   "Used up": ["Esgotado", "Agotado", "Esaurito", "Aufgebraucht", "Épuisé", "已用完", "上限到達", "समाप्त"],
   "Back {t}": ["Volta {t}", "Vuelve {t}", "Torna {t}", "Zurück {t}", "Retour {t}", "恢复于 {t}", "{t} に復帰", "{t} को वापस"],
@@ -342,6 +361,40 @@ function mount() {
   box.innerHTML = `<button type="button" class="lang-btn" aria-haspopup="listbox" aria-expanded="false" title="${t("Language")}">${flag(cur.flag)}<span class="lang-code">${cur.code.toUpperCase()}</span></button>
     <ul class="lang-menu" role="listbox" aria-label="${t("Language")}" hidden>${LANGS.map(l => `<li role="option" aria-selected="${l.code === LANG}" tabindex="0" data-lang="${l.code}">${flag(l.flag)}<span>${l.name}</span></li>`).join("")}</ul>`;
   right.appendChild(box);
+
+  // font picker: white globe button; each option is written in its own font
+  const fbox = document.createElement("div");
+  fbox.className = "lang fontpick";
+  fbox.innerHTML = `<button type="button" class="lang-btn font-btn" aria-haspopup="listbox" aria-expanded="false" title="${t("Font")}" aria-label="${t("Font")}">
+      <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><ellipse cx="12" cy="12" rx="4.2" ry="10"/><path d="M12 2v20M3 8h18M2 12h20M3 16h18"/></svg></button>
+    <ul class="lang-menu font-menu" role="listbox" aria-label="${t("Font")}" hidden>${FONTS.map(f => `<li role="option" tabindex="0" data-font="${f.id}" aria-selected="${f.id === fontId}" style="font-family:${f.css ?? "'Pixelify Sans'"}">${f.name}${f.id === "default" ? ` <span class="dim">${t("(default)")}</span>` : ""}</li>`).join("")}</ul>`;
+  right.insertBefore(fbox, box);
+  const fbtn = fbox.querySelector(".font-btn"), fmenu = fbox.querySelector(".font-menu");
+  const ftoggle = open => {
+    fmenu.hidden = !open; fbtn.setAttribute("aria-expanded", String(open));
+    if (open) {
+      fmenu.style.left = ""; fmenu.style.right = "";
+      if (fmenu.getBoundingClientRect().left < 8) { fmenu.style.left = "0"; fmenu.style.right = "auto"; }   // header wrapped: open to the right
+      fmenu.querySelector('[aria-selected="true"]')?.focus();
+    }
+  };
+  const fpick = id => {
+    fontId = id; try { localStorage.setItem("office-font", id); } catch {}
+    applyFont(id);
+    for (const li of fmenu.children) li.setAttribute("aria-selected", String(li.dataset.font === id));
+    ftoggle(false); fbtn.focus();
+  };
+  fbtn.addEventListener("click", e => { e.stopPropagation(); if (fmenu.hidden) toggle(false); ftoggle(fmenu.hidden); });
+  fmenu.addEventListener("click", e => { const li = e.target.closest("[data-font]"); if (li) fpick(li.dataset.font); });
+  fmenu.addEventListener("keydown", e => {
+    const li = e.target.closest("[data-font]"); if (!li) return;
+    if (e.key === "Enter" || e.key === " ") { e.preventDefault(); fpick(li.dataset.font); }
+    else if (e.key === "Escape") { ftoggle(false); fbtn.focus(); }
+    else if (e.key === "ArrowDown") { e.preventDefault(); (li.nextElementSibling ?? fmenu.firstElementChild).focus(); }
+    else if (e.key === "ArrowUp") { e.preventDefault(); (li.previousElementSibling ?? fmenu.lastElementChild).focus(); }
+  });
+  document.addEventListener("click", () => ftoggle(false));
+  box.addEventListener("click", () => ftoggle(false));
   const btn = box.querySelector(".lang-btn"), menu = box.querySelector(".lang-menu");
   const toggle = open => { menu.hidden = !open; btn.setAttribute("aria-expanded", String(open)); if (open) {
     menu.style.left = ""; menu.style.right = "";

@@ -306,3 +306,11 @@ td .dot { vertical-align: middle; }
 .tk-group { font-family: var(--pixel); font-size: 13px; color: var(--accent); margin: 4px 0 8px; }
 .tk-list { display: grid; gap: 8px; }
 .gf-hidden + .gf-hidden { margin-top: 6px; }
+
+/* Seletor de fonte (globo) */
+.fontpick { margin-right: 8px; }
+.font-btn { padding: 5px 7px; }
+.font-menu { min-width: 220px; }
+.font-menu li { white-space: nowrap; }
+.font-menu li .dim { color: var(--muted); opacity: .8; font-size: .85em; }
+.font-menu li:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }

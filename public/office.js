@@ -599,7 +599,7 @@ const toScreen = (wx, wy) => ({ x: wx * view.scale + view.ox, y: wy * view.scale
 // ---------------------------------------------------------------- textos e balões (em pixels de tela)
 function label(str, sx, sy, { size = 15, color = "#f2eee3", bg = null, font = "Pixelify Sans", align = "center" } = {}) {
   ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0);
-  ctx.font = `${size * dpr}px "${font}", monospace`; ctx.textAlign = align; ctx.textBaseline = "bottom";
+  ctx.font = `${size * dpr}px "${window.OFFICE_FONT ?? font}", monospace`; ctx.textAlign = align; ctx.textBaseline = "bottom";
   const w = ctx.measureText(str).width;
   if (bg) {
     const bx = align === "center" ? sx * dpr - w / 2 : sx * dpr;
@@ -610,7 +610,7 @@ function label(str, sx, sy, { size = 15, color = "#f2eee3", bg = null, font = "P
   ctx.restore();
   return w / dpr;
 }
-const textW = (str, size) => { ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.font = `${size * dpr}px "Pixelify Sans", monospace`; const w = ctx.measureText(str).width / dpr; ctx.restore(); return w; };
+const textW = (str, size) => { ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.font = `${size * dpr}px "${window.OFFICE_FONT ?? "Pixelify Sans"}", monospace`; const w = ctx.measureText(str).width / dpr; ctx.restore(); return w; };
 
 function bubbleFor(p, t) {
   if (p.kind === "diretor" && p.d?.sessions.some(s => s.status === "waiting")) return { text: "!", bg: "#ffcc4d", color: "#1b1a26" };
