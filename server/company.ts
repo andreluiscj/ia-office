@@ -31,7 +31,8 @@ function isLive(a: Agent, now: number) {
   if (a.status === "ended" || a.status === "done") return false;
   const age = now - a.last_seen;
   if (age > 3 * HOUR) return false;
-  if (a.status === "working" && age > 15 * MIN) return false;
+  // a subagent can think or write a long file for many minutes without a tool call; the Lead's own session is quieter
+  if (a.status === "working" && age > (a.kind === "subagent" ? 40 : 15) * MIN) return false;
   return true;
 }
 

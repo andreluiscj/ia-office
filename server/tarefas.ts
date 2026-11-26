@@ -2,7 +2,7 @@
 //   00-Pedidos/*.md            requests you wrote (the executor's inbox)
 //   10-Tarefas/<slug>/_Pedido.md + T<n> - <title>.md   each request and its delegations
 // Reading is free. Writing is limited to cancelTask (status of one request and its open tasks); resumeTask opens a terminal.
-import { existsSync, readdirSync, statSync } from "node:fs";
+import { existsSync, readdirSync, statSync, watch, writeFileSync } from "node:fs";
 import { dirname, isAbsolute, join } from "node:path";
 import { now, PROJECTS, readNote, setMeta, VAULT } from "../scripts/office-runner";
 
@@ -54,12 +54,17 @@ function find(slug: string): Found | null {
 }
 
 /** Marks a request cancelled in the vault. A session that is already running is not interrupted. */
+const read = (file: string) => existsSync(file) ? readNote(file) : null;
+
 export function cancelTask(slug: string): { ok: true } | { error: string } {
   const f = find(slug);
   if (!f) return { error: "task not found" };
   for (const [i, file] of f.files.entries()) {
-    const n = readNote(file); if (!n) continue;
-    const isRequest = i === 0;
+    const isRequest = i === 0, n = read(file);
+    if (!n) {   // a folder of tasks with no _Pedido.md: write a minimal one so the request itself shows as cancelled
+      if (isRequest && !f.inbox) writeFileSync(file, `---\n` + `tipo: pedido\n` + `status: cancelado\n` + `atualizado: ${now()}\n---\n# ${f.title}\n`, "utf8");
+      continue;
+    }
     if (!isRequest && DONE.has(n.meta.status ?? "")) continue;   // finished tasks keep their result
     setMeta(file, { status: isRequest ? "cancelado" : "cancelada", atualizado: now() });
   }
@@ -85,7 +90,8 @@ export function resumeScript(slug: string): { dir: string; script: string } | { 
   if (!f) return { error: "task not found" };
   const dir = projectDir(f.meta.projeto ?? "");
   if (!dir) return { error: `project folder not found: ${f.meta.projeto || "(none)"}` };
-  const note = (f.inbox ? join(VAULT, f.slug) : join(VAULT, "10-Tarefas", f.slug, "_Pedido.md")).replace(/\\/g, "/");
+  const pedido = f.inbox ? join(VAULT, f.slug) : join(VAULT, "10-Tarefas", f.slug, "_Pedido.md");
+  const note = (f.inbox || existsSync(pedido) ? pedido : join(VAULT, "10-Tarefas", f.slug)).replace(/\\/g, "/");
   const prompt = `Retome o pedido "${f.title}" do cofre do Obsidian: leia ${note}${f.inbox ? "" : " e as notas T* da mesma pasta"}, veja o que já está concluído e continue de onde parou, atualizando as notas. Não refaça o que já está concluído.`;
   const q = (v: string) => `'${v.replace(/'/g, "''")}'`;
   const sess = /^[0-9a-f-]{36}$/.test(f.meta.sessao ?? "") ? ` --resume ${f.meta.sessao}` : "";
@@ -98,7 +104,7 @@ export function resumeTask(slug: string): { ok: true; dir: string; dry?: string 
   if ("error" in r) return r;
   const f = find(slug)!;
   if (/^cancelad[oa]$/.test(f.meta.status ?? "")) {   // restarting a cancelled request reopens it, so the Lead does not read "cancelado" in its notes
-    for (const [i, file] of f.files.entries()) { const n = readNote(file); if (n && /^cancelad[oa]$/.test(n.meta.status ?? "")) setMeta(file, { status: i === 0 ? "em andamento" : "pendente", atualizado: now() }); }
+    for (const [i, file] of f.files.entries()) { const n = read(file); if (n && /^cancelad[oa]$/.test(n.meta.status ?? "")) setMeta(file, { status: i === 0 ? "em andamento" : "pendente", atualizado: now() }); }
   }
   if (process.env.OFFICE_DRY_LAUNCH) return { ok: true, dir: r.dir, dry: r.script };   // tests: show the command, open nothing
   if (process.platform !== "win32") return { error: "opening a terminal is only implemented for Windows" };
@@ -106,6 +112,13 @@ export function resumeTask(slug: string): { ok: true; dir: string; dry?: string 
   // Start-Process opens a real window (cmd /c start mis-reads the title argument); no -NoProfile, so the profile's `claude --office` function exists
   Bun.spawn(["powershell.exe", "-NoProfile", "-Command", `Start-Process powershell.exe -ArgumentList "-NoExit","-NoLogo","-EncodedCommand","${enc}"`], { stdin: "ignore", stdout: "ignore", stderr: "ignore" }).unref();
   return { ok: true, dir: r.dir };
+}
+
+/** Calls cb (debounced) whenever something changes in the vault, so open pages refresh at once instead of on the next tick. */
+export function watchVault(cb: () => void) {
+  if (!VAULT || !existsSync(VAULT)) return;
+  let t: ReturnType<typeof setTimeout> | undefined;
+  try { watch(VAULT, { recursive: true }, () => { clearTimeout(t); t = setTimeout(cb, 300); }); } catch {}   // shortcut: recursive watch is Windows/macOS; on Linux the page's 5 s poll covers it
 }
 
 if (import.meta.main) {

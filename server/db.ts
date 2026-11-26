@@ -271,6 +271,9 @@ export function ingestHook(p: any): { changed: boolean } {
         const to = input.to ?? input.recipient ?? input.target ?? input.agent ?? "";
         const text = typeof input.summary === "string" ? input.summary : typeof input.message === "string" ? input.message : typeof input.content === "string" ? input.content : "";
         addEvent({ uid, ts, agent_id: owner, session_id: sessionId, type: "message", tool, skill: String(to), detail: text });
+        // The recipient starts working now, but its first tool call may be minutes away: without this it shows idle while the Lead says it works.
+        const dest = to ? q.byAlias.get(String(to)) : null;
+        if (dest && dest.id !== owner) upsertAgent({ id: dest.id, session_id: dest.session_id, ts, status: "working", ended_at: null });
       } else {
         addEvent({ uid, ts, agent_id: owner, session_id: sessionId, type: "tool", tool });
       }

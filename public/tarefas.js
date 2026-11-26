@@ -18,6 +18,15 @@ const KIND = {
 const kind = s => KIND[String(s ?? "").toLowerCase()] ?? "wait";
 const pill = s => s ? `<span class="tk-pill s-${kind(s)}">${esc(s)}</span>` : "";
 const finished = r => ["done", "cancel"].includes(kind(r.meta.status));   // concluído ou cancelado: vai para a área recolhida
+// Progress of a request: average of its tasks' status weights (an estimate from the vault notes, not a measurement).
+const WEIGHT = { concluida: 1, concluido: 1, revisao: .75, "em andamento": .4 };
+function progress(r) {
+  if (kind(r.meta.status) === "done") return 100;
+  const ts = r.tasks.filter(x => kind(x.meta.status) !== "cancel");
+  if (!ts.length) return 0;
+  return Math.round(ts.reduce((a, x) => a + (WEIGHT[String(x.meta.status ?? "").toLowerCase()] ?? 0), 0) / ts.length * 100);
+}
+const bar = r => { const p = progress(r); return `<span class="tk-progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${p}" aria-label="${esc(t("Progress"))}" title="${esc(t("Estimated from the status of each task"))}"><i style="width:${p}%"></i><b>${p}%</b></span>`; };
 const when = ms => ms ? t("updated {t}", { t: ago(ms) }) : "";
 
 // Inbox notes that already have a 10-Tarefas folder are shown there; the rest appear as requests without tasks.
@@ -42,23 +51,24 @@ function renderCards() {
 }
 
 const row = r => {
-  const done = r.tasks.filter(x => kind(x.meta.status) === "done").length;
-  const pct = r.tasks.length ? Math.round(done / r.tasks.length * 100) : (kind(r.meta.status) === "done" ? 100 : 0);
   return `<button type="button" class="tk-req${r.slug === current ? " on" : ""}" data-slug="${esc(r.slug)}" aria-pressed="${r.slug === current}">
       <span class="t">${esc(r.title)}</span>
       <span class="tk-meta">${pill(r.meta.status)}${r.meta.faixa ? `<span class="tk-pill">${esc(r.meta.faixa)}</span>` : ""}
         ${r.meta.projeto ? `<span>${esc(r.meta.projeto)}</span>` : ""}<span>${t("{n} tasks", { n: r.tasks.length })}</span><span>${esc(when(r.updated))}</span></span>
-      <span class="tk-progress" aria-hidden="true"><i style="width:${pct}%"></i></span></button>`;
+      ${bar(r)}</button>`;
 };
 
 function renderList() {
-  const rows = filtered(), active = rows.filter(r => !finished(r)), done = rows.filter(finished);
-  const wasOpen = $("doneBox")?.open;
+  const rows = filtered(), active = rows.filter(r => !finished(r));
+  const done = rows.filter(r => kind(r.meta.status) === "done"), cancelled = rows.filter(r => kind(r.meta.status) === "cancel");
+  const was = id => $(id)?.open;
   $("vault").textContent = data.vault ?? "";
   if (!data.vault) { $("list").innerHTML = `<p class="muted">${t("No Obsidian vault is set. Fill the cofre field in company/empresa.json.")}</p>`; return; }
-  const hidden = done.length ? `<details class="gf-hidden" id="doneBox"${wasOpen ? " open" : ""}><summary>${t("View finished tasks ({n})", { n: done.length })}</summary><div class="tk-list tk-done">${done.map(row).join("")}</div></details>` : "";
-  if (!active.length) { $("list").innerHTML = `<p class="muted">${merged().length ? t("Nothing in progress.") : t("No requests yet. Write one in the vault's 00-Pedidos folder.")}</p>${hidden}`; return; }
-  $("list").innerHTML = active.map(row).join("") + hidden;
+  const group = (id, label, list) => list.length ? `<details class="gf-hidden" id="${id}"${was(id) ? " open" : ""}><summary>${label}</summary><div class="tk-list tk-done">${list.map(row).join("")}</div></details>` : "";
+  const hidden = group("doneBox", t("View finished tasks ({n})", { n: done.length }), done) + group("cancelBox", t("View cancelled tasks ({n})", { n: cancelled.length }), cancelled);
+  const head = `<h3 class="tk-group">${t("In progress ({n})", { n: active.length })}</h3>`;
+  if (!active.length) { $("list").innerHTML = `${head}<p class="muted">${merged().length ? t("Nothing in progress.") : t("No requests yet. Write one in the vault's 00-Pedidos folder.")}</p>${hidden}`; return; }
+  $("list").innerHTML = head + `<div class="tk-list">${active.map(row).join("")}</div>` + hidden;
 }
 
 function renderDetail() {
@@ -68,6 +78,7 @@ function renderDetail() {
   $("detail").innerHTML = `<h2>${esc(r.title)}</h2>
     <div class="tk-meta">${pill(r.meta.status)}${r.meta.faixa ? `<span class="tk-pill">${esc(r.meta.faixa)}</span>` : ""}
       ${r.meta.projeto ? `<span>${t("Project")}: ${esc(r.meta.projeto)}</span>` : ""}<span>${esc(when(r.updated))}</span></div>
+    ${bar(r)}
     <div class="tk-actions">
       <button type="button" class="btn" data-act="resume">${t("Restart task")}</button>
       ${finished(r) ? "" : `<button type="button" class="btn ghost" data-act="cancel">${t("Cancel task")}</button>`}
@@ -140,4 +151,5 @@ $("detail").addEventListener("click", e => {
 $("q").addEventListener("input", renderList);
 
 // The vault changes while agents work: reload on every live update (live() also ticks every 10 s).
+setInterval(load, 5000);   // the vault changes while agents work; the server also pushes on every change
 live(load, on => { const c = $("conn"); c.className = `conn ${on ? "on" : "off"}`; c.textContent = t(on ? "live" : "reconnecting"); });
