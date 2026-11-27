@@ -301,6 +301,42 @@ const D = {
   "Vaults Obsidian already knows:": ["Cofres que o Obsidian já conhece:"],
   "If Obsidian does not open it": ["Se o Obsidian não abrir"],
   "Saved. Now register this folder in Obsidian (steps below), then click Obsidian again.": ["Salvo. Agora cadastre esta pasta no Obsidian (passos abaixo) e clique em Obsidian de novo."],
+  "Settings": ["Configurações", "Ajustes"],
+  "General": ["Geral", "General"],
+  "Agents": ["Agentes", "Agentes"],
+  "More": ["Mais", "Más"],
+  "Do not use": ["Não usar"],
+  "Use a little: supervise": ["Usar pouco: supervisionar"],
+  "Use normally": ["Usar normalmente"],
+  "Only Claude Code. Agents never call Codex and images are drawn by hand (SVG).": ["Só o Claude Code. Os agentes nunca chamam o Codex e as imagens são desenhadas à mão (SVG)."],
+  "Codex gives a second opinion on big changes and makes design images.": ["O Codex dá uma segunda opinião nas mudanças grandes e cria as imagens do design."],
+  "Codex works like a second Claude Code: it takes whole slices of work, so you can keep going when one of the plans runs out.": ["O Codex funciona como um segundo Claude Code: assume partes inteiras do trabalho, para você continuar quando um dos planos acabar."],
+  "Company name": ["Nome da empresa"],
+  "Your name": ["Seu nome"],
+  "Save": ["Salvar"],
+  "Saved.": ["Salvo."],
+  "Names appear in the agents' instructions, so saving reinstalls the agents in Claude Code.": ["Os nomes aparecem nas instruções dos agentes, então salvar reinstala os agentes no Claude Code."],
+  "Obsidian vault": ["Cofre do Obsidian"],
+  "Vault opened by the Obsidian button": ["Cofre aberto pelo botão Obsidian"],
+  "Database": ["Banco de dados"],
+  "What each agent knows": ["O que cada agente sabe"],
+  "Agent instructions": ["Instruções do agente"],
+  "This is the agent's full instruction file (header + knowledge). Saving rewrites it and reinstalls the agents in Claude Code. Only change the header lines if you know what they do.": ["Este é o arquivo completo de instruções do agente (cabeçalho + conhecimento). Salvar reescreve o arquivo e reinstala os agentes no Claude Code. Só mude as linhas do cabeçalho se souber o que elas fazem."],
+  "Discard changes": ["Descartar alterações"],
+  "Saved. The agents were reinstalled in Claude Code.": ["Salvo. Os agentes foram reinstalados no Claude Code."],
+  "Agent not found.": ["Agente não encontrado."],
+  "The file must start with the --- header block.": ["O arquivo precisa começar com o bloco de cabeçalho ---."],
+  "Invalid mode.": ["Modo inválido."],
+  "How to use Codex": ["Como usar o Codex"],
+  "default": ["padrão"],
+  "You can use Codex and Claude Code together, so work does not stop when one plan runs out. Changing this updates every agent's instructions in Claude Code.": ["Você pode usar o Codex e o Claude Code juntos, para o trabalho não parar quando um plano acabar. Mudar isso atualiza as instruções de todos os agentes no Claude Code."],
+  "Reinstall agents and skills": ["Reinstalar agentes e skills"],
+  "Copies the agents and playbooks into Claude Code again. Use it if something looks outdated.": ["Copia os agentes e os playbooks para o Claude Code de novo. Use se algo parecer desatualizado."],
+  "Reinstall now": ["Reinstalar agora"],
+  "Obsidian": ["Obsidian"],
+  "Open the Graphify page and click Obsidian to open, install or change the vault.": ["Abra a página do Graphify e clique em Obsidian para abrir, instalar ou trocar o cofre."],
+  "Go to Graphify": ["Ir para o Graphify"],
+  "Done.": ["Pronto."],
   "hide": ["ocultar", "ocultar", "nascondi", "ausblenden", "masquer", "隐藏", "隠す", "छिपाएँ"],
   "Building...": ["Gerando...", "Generando...", "Generazione...", "Wird erstellt...", "Génération...", "生成中...", "生成中...", "बन रहा है..."],
   "Update graph": ["Atualizar grafo", "Actualizar grafo", "Aggiorna grafo", "Graph aktualisieren", "Mettre à jour le graphe", "更新图谱", "グラフを更新", "ग्राफ़ अपडेट करें"],
@@ -376,6 +412,14 @@ function mount() {
   for (const el of document.querySelectorAll("[data-i18n-title]")) el.title = t(el.title);
   for (const el of document.querySelectorAll("[data-i18n-placeholder]")) el.placeholder = t(el.placeholder);
 
+  const nav = document.querySelector(".nav");
+  if (nav && !document.getElementById("obsidianBtn")) {
+    const ob = document.createElement("a");
+    ob.id = "obsidianBtn"; ob.href = "obsidian://"; ob.title = t("Opens the Obsidian vault");
+    ob.innerHTML = `Obsidian <svg class="ext" viewBox="0 0 12 12" width="11" height="11" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square"><path d="M3 9l6-6M4 3h5v5"/></svg>`;
+    ob.addEventListener("click", e => { e.preventDefault(); import("./obsidian.js").then(m => m.openObsidian()); });
+    nav.appendChild(ob);
+  }
   const right = document.querySelector(".tb-right");
   if (!right) return;
   const cur = LANGS.find(l => l.code === LANG);
@@ -392,6 +436,10 @@ function mount() {
       <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><ellipse cx="12" cy="12" rx="4.2" ry="10"/><path d="M12 2v20M3 8h18M2 12h20M3 16h18"/></svg></button>
     <ul class="lang-menu font-menu" role="listbox" aria-label="${t("Font")}" hidden>${FONTS.map(f => `<li role="option" tabindex="0" data-font="${f.id}" aria-selected="${f.id === fontId}" style="font-family:${f.css ?? "'Pixelify Sans'"}">${f.name}${f.id === "default" ? ` <span class="dim">${t("(default)")}</span>` : ""}</li>`).join("")}</ul>`;
   right.appendChild(fbox);
+  const gear = document.createElement("a");
+  gear.className = "lang-btn gear-btn"; gear.href = "/configuracoes"; gear.title = t("Settings"); gear.setAttribute("aria-label", t("Settings"));
+  gear.innerHTML = `<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="square"><circle cx="12" cy="12" r="3"/><circle cx="12" cy="12" r="7"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M5 19l2-2M17 7l2-2"/></svg>`;
+  right.appendChild(gear);
   const fbtn = fbox.querySelector(".font-btn"), fmenu = fbox.querySelector(".font-menu");
   const ftoggle = open => {
     fmenu.hidden = !open; fbtn.setAttribute("aria-expanded", String(open));

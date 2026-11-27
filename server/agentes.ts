@@ -6,6 +6,7 @@
 import { cpSync, existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { join } from "node:path";
+import { getMeta, setMeta } from "./db";
 
 export const COMPANY_DIR = join(import.meta.dir, "..", "company");
 export const AGENTS_SRC = join(COMPANY_DIR, "agents");
@@ -82,16 +83,35 @@ export function fill(text: string, vars: Record<string, string>) {
   return text.replace(/\{\{\s*([a-z_-]+)\s*\}\}/gi, (all, k) => vars[k.toLowerCase()] ?? all);
 }
 
+/** Como a equipe usa o Codex. "light" (padrão: supervisiona e gera imagens) não acrescenta nada: já é o que os playbooks dizem. */
+export type CodexMode = "off" | "light" | "normal";
+export const codexMode = (): CodexMode => { const m = getMeta("codex_mode"); return m === "off" || m === "normal" ? m : "light"; };
+export const setCodexMode = (m: CodexMode) => setMeta("codex_mode", m);
+const CODEX_POLICY: Record<CodexMode, string> = {
+  light: "",
+  off: `
+
+## Codex policy (set in Settings)
+Do not use Codex in this project: no \`codex exec\`, no second-opinion review and no GPT/Codex image generation. This overrides any playbook that mentions Codex. Write "Codex: off" where a report would show its result, and use hand-made SVG for images.
+`,
+  normal: `
+
+## Codex policy (set in Settings)
+Codex is a full second engine, as capable as Claude Code. Delegate self-contained slices (implementation, tests, reviews) with \`codex exec --sandbox workspace-write --skip-git-repo-check "<task>"\`, and switch to it when Claude's usage limit is close. Ask Codex for the adversarial review on T2 as well as T3. You still own the result: read the diff and run the checks before you accept anything it did. If Codex is unavailable, continue with Claude and say so in the report.
+`,
+};
+
 /** Arquivo do agente no formato do Claude Code: sem os campos do Office e com os nomes preenchidos. */
 export function renderForClaude(doc: AgentDoc, vars: Record<string, string>) {
+  const policy = CODEX_POLICY[codexMode()];
   const m = doc.text.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n?/);
-  if (!m) return fill(doc.text, vars);
+  if (!m) return fill(doc.text + policy, vars);
   const fm = m[1].split(/\r?\n/).filter(l => {
     if (/^\s*#/.test(l)) return false;
     const k = l.match(/^([A-Za-z_-]+):/)?.[1];
     return !k || !OFFICE_KEYS.includes(k);
   }).join("\n");
-  return fill(`---\n${fm}\n---\n${doc.text.slice(m[0].length)}`, vars);
+  return fill(`---\n${fm}\n---\n${doc.text.slice(m[0].length)}${policy}`, vars);
 }
 
 /** Copia os agentes (já preenchidos) para ~/.claude/agents. Devolve os ids instalados. */
@@ -165,7 +185,7 @@ export function writeOfficeVault() {
 
 /** Plugins desligados só nas sessões do Office: o ponytail injeta "faça o mínimo, pule o que der" em todo agente,
  *  e nos testes isso fez agentes pularem a checagem de tela. As outras sessões do Claude continuam com ele. */
-export const OFFICE_DISABLED_PLUGINS = ["ponytail@ponytail"];
+export const OFFICE_DISABLED_PLUGINS = ["ponytail@ponytail"];   // impeccable stays ON: Pedro and Igor use it for front-end work
 export const OFFICE_SETTINGS_FILE = join(homedir(), ".escritorio-virtual", "office-settings.json");
 export function writeOfficeSettings() {
   mkdirSync(join(homedir(), ".escritorio-virtual"), { recursive: true });
@@ -182,4 +202,24 @@ export function syncSkills() {
     cpSync(join(SKILLS_SRC, n), join(SKILLS_DEST, n), { recursive: true });
   }
   return names;
+}
+
+/** Tela de configurações: grava o conhecimento de um agente (company/agents/<id>.md) e reinstala no Claude Code. */
+export function saveAgent(id: string, text: string) {
+  const d = agentDocs().find(x => x.id === id);
+  if (!d) return { error: "Agent not found." };
+  if (typeof text !== "string" || !/^---\r?\n[\s\S]*?\r?\n---/.test(text)) return { error: "The file must start with the --- header block." };
+  writeFileSync(d.file, text);
+  syncAgents();
+  return { ok: true };
+}
+
+export function saveEmpresa(b: { empresa?: string; usuario?: string }) {
+  const f = join(COMPANY_DIR, "empresa.json");
+  let j: any = {}; try { j = JSON.parse(readFileSync(f, "utf8")); } catch {}
+  if (typeof b.empresa === "string") j.empresa = b.empresa.trim().slice(0, 60) || "Office";
+  if (typeof b.usuario === "string") j.usuario = b.usuario.trim().slice(0, 60);
+  writeFileSync(f, JSON.stringify(j, null, 2) + "\n");
+  syncAgents();   // os nomes entram nos textos dos agentes
+  return { ok: true };
 }

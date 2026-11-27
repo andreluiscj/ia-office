@@ -5,6 +5,7 @@ import { company, roster } from "./company";
 import { listSkills, skillDetail, skillRoots } from "./skills";
 import * as graphify from "./graphify";
 import { obsidianStatus, setObsidianVault } from "./obsidian";
+import { agentDocs, codexMode, empresa, saveAgent, saveEmpresa, setCodexMode, syncAgents } from "./agentes";
 import { startExecutor } from "../scripts/office-runner";
 import { codexUsage } from "./codex-usage";
 import { cancelTask, resumeTask, tasks, watchVault } from "./tarefas";
@@ -202,6 +203,26 @@ const server = Bun.serve({
       const d = skillDetail(path.slice("/api/skills/".length));
       return d ? json(d) : json({ error: "skill not found" }, 404);
     }
+    if (path === "/api/settings") return json({ empresa: empresa(), codex: codexMode(), db: DB_PATH, skills: listSkills().length,
+      agents: agentDocs().map(d => ({ id: d.id, nome: d.meta.nome ?? d.id, cargo: d.meta.cargo ?? "", bytes: d.text.length })) });
+    if (path.startsWith("/api/settings/agent/") && req.method === "GET") {
+      const d = agentDocs().find(x => x.id === path.slice(20));
+      return d ? json({ id: d.id, text: d.text }) : json({ error: "not found" }, 404);
+    }
+    if (path.startsWith("/api/settings/") && req.method === "POST") {   // same x-office guard as the other actions
+      if (req.headers.get("x-office") !== "1") return json({ error: "forbidden" }, 403);
+      const b: any = await req.json().catch(() => ({}));
+      const sub = path.slice(14);
+      let r: any = { error: "not found" };
+      try {
+        if (sub === "codex") { if (["off", "light", "normal"].includes(b.mode)) { setCodexMode(b.mode); syncAgents(); r = { ok: true }; } else r = { error: "Invalid mode." }; }
+        else if (sub === "empresa") r = saveEmpresa(b);
+        else if (sub === "agent") r = saveAgent(String(b.id ?? ""), b.text);
+        else if (sub === "sync") { syncAgents(); r = { ok: true }; }
+      } catch (err) { r = { error: String((err as Error).message ?? err) }; }
+      if (r.ok) notify();
+      return json(r, r.error ? 400 : 200);
+    }
     if (path === "/api/obsidian") return json(obsidianStatus());
     if (path === "/api/obsidian/vault") {
       if (req.method !== "POST" || req.headers.get("x-office") !== "1") return json({ error: "forbidden" }, 403);
@@ -241,7 +262,7 @@ const server = Bun.serve({
     }
 
     // Arquivos estáticos
-    const file = path === "/" ? "index.html" : path === "/dashboard" ? "dashboard.html" : path === "/skills" ? "skills.html" : path === "/graphify" ? "graphify.html" : path === "/tarefas" ? "tarefas.html" : path.slice(1);
+    const file = path === "/" ? "index.html" : path === "/dashboard" ? "dashboard.html" : path === "/skills" ? "skills.html" : path === "/graphify" ? "graphify.html" : path === "/tarefas" ? "tarefas.html" : path === "/configuracoes" ? "settings.html" : path.slice(1);
     const full = normalize(join(PUBLIC, file));
     if (!full.startsWith(PUBLIC)) return new Response("not found", { status: 404 });
     const f = Bun.file(full);

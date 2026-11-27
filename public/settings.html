@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Office · Settings</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="favicon.png" sizes="32x32">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;500;600&family=Silkscreen&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css?v=21">
+</head>
+<body>
+  <header class="topbar three">
+    <div class="tb-left">
+      <div class="brand">OFFICE</div>
+      <nav class="nav"><a href="/" data-i18n>Office</a><a href="/tarefas" data-i18n>Tasks</a><a href="/dashboard">Dashboard</a><a href="/skills">Skills</a><a href="/graphify">Graphify</a></nav>
+    </div>
+    <div class="usage" id="usage"></div>
+    <div class="tb-right">
+      <div class="conn off" id="conn" data-i18n>connecting</div>
+    </div>
+  </header>
+  <main class="dash set-page">
+    <h1 class="set-title" data-i18n>Settings</h1>
+    <div class="seg set-tabs" id="tabs" role="tablist">
+      <button data-t="general" class="on" data-i18n>General</button>
+      <button data-t="agents" data-i18n>Agents</button>
+      <button data-t="codex" data-i18n>Codex</button>
+      <button data-t="more" data-i18n>More</button>
+    </div>
+    <section class="box" id="panel" aria-live="polite"></section>
+    <p class="muted" id="msg" role="status" aria-live="polite"></p>
+  </main>
+  <script type="module" src="settings.js?v=1"></script>
+</body>
+</html>

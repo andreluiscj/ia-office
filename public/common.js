@@ -65,7 +65,9 @@ function resetText(epochSec, skew) {
   return t("Resets {t}", { t: `${d.toLocaleDateString(LOCALE, day)} ${d.toLocaleTimeString(LOCALE, { hour: "2-digit", minute: "2-digit" })}` });
 }
 function usageRow(label, w, skew) {
-  const pct = Math.max(0, Math.min(100, Math.round(w.used_percentage ?? 0)));
+  // the saved value belongs to a window that already ended (Claude only reports while it runs): that window is empty now
+  const ended = w.resets_at && w.resets_at * 1000 <= Date.now() - skew;
+  const pct = ended ? 0 : Math.max(0, Math.min(100, Math.round(w.used_percentage ?? 0)));
   const cls = pct >= 90 ? "hot" : pct >= 75 ? "warn" : "";
   return `<div class="row"><span class="lbl">${label}</span><span class="bar"><i class="${cls}" style="width:${pct}%"></i></span>
     <span class="pct">${pct}%</span><span class="rst">${esc(resetText(w.resets_at, skew))}</span></div>`;
