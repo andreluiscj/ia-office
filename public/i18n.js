@@ -278,6 +278,29 @@ const D = {
   "updated {t} ago": ["atualizado há {t}", "actualizado hace {t}", "aggiornato {t} fa", "vor {t} aktualisiert", "mis à jour il y a {t}", "{t} 前更新", "{t}前に更新", "{t} पहले अपडेट"],
   "Hide this project from the list (deletes nothing)": ["Ocultar este projeto da lista (não apaga nada)", "Ocultar este proyecto de la lista (no borra nada)", "Nascondi questo progetto dall'elenco (non cancella nulla)", "Projekt aus der Liste ausblenden (löscht nichts)", "Masquer ce projet de la liste (ne supprime rien)", "从列表中隐藏此项目（不删除任何内容）", "このプロジェクトをリストから隠す（何も削除しません）", "इस प्रोजेक्ट को सूची से छिपाएँ (कुछ नहीं मिटता)"],
   "Hide {x}": ["Ocultar {x}", "Ocultar {x}", "Nascondi {x}", "{x} ausblenden", "Masquer {x}", "隐藏 {x}", "{x} を隠す", "{x} छिपाएँ"],
+  "delete": ["excluir", "eliminar", "elimina", "löschen", "supprimer", "删除", "削除", "हटाएँ"],
+  "Delete {x}": ["Excluir {x}", "Eliminar {x}", "Elimina {x}", "{x} löschen", "Supprimer {x}", "删除 {x}", "{x} を削除", "{x} हटाएँ"],
+  "Delete this project from the list (deletes no files)": ["Excluir este projeto da lista (não apaga arquivos)", "Eliminar este proyecto de la lista (no borra archivos)", "Elimina questo progetto dall'elenco (non cancella file)", "Projekt aus der Liste löschen (keine Dateien werden gelöscht)", "Supprimer ce projet de la liste (aucun fichier supprimé)", "从列表中删除此项目（不删除文件）", "このプロジェクトを一覧から削除（ファイルは削除しません）", "इस प्रोजेक्ट को सूची से हटाएँ (कोई फ़ाइल नहीं हटती)"],
+  "Delete \"{x}\" from the list? No files are deleted. To bring it back, add the folder again.": ["Excluir \"{x}\" da lista? Nenhum arquivo é apagado. Para voltar, adicione a pasta de novo.", "¿Eliminar \"{x}\" de la lista? No se borra ningún archivo. Para recuperarlo, añade la carpeta de nuevo.", "Eliminare \"{x}\" dall'elenco? Nessun file viene cancellato. Per riaverlo, aggiungi di nuovo la cartella.", "\"{x}\" aus der Liste löschen? Es werden keine Dateien gelöscht. Zum Zurückholen den Ordner erneut hinzufügen.", "Supprimer \"{x}\" de la liste ? Aucun fichier n'est supprimé. Pour le récupérer, ajoutez de nouveau le dossier.", "从列表中删除“{x}”？不会删除任何文件。要恢复，请重新添加该文件夹。", "「{x}」を一覧から削除しますか？ファイルは削除されません。戻すにはフォルダを再追加してください。", "\"{x}\" को सूची से हटाएँ? कोई फ़ाइल नहीं हटेगी। वापस लाने के लिए फ़ोल्डर फिर जोड़ें।"],
+  "Could not delete it.": ["Não foi possível excluir.", "No se pudo eliminar.", "Impossibile eliminare.", "Löschen nicht möglich.", "Suppression impossible.", "无法删除。", "削除できませんでした。", "हटाया नहीं जा सका।"],
+  "Opens the Obsidian vault": ["Abre o cofre do Obsidian", "Abre la bóveda de Obsidian", "Apre il vault di Obsidian", "Öffnet den Obsidian-Vault", "Ouvre le coffre Obsidian", "打开 Obsidian 库", "Obsidian の保管庫を開く", "Obsidian वॉल्ट खोलता है"],
+  "Open the Obsidian window.": ["Abra a janela do Obsidian."],
+  "Click <b>Open folder as vault</b> and pick your vault folder (the one that holds your notes).": ["Clique em <b>Abrir pasta como cofre</b> e escolha a pasta do seu cofre (a que guarda suas notas)."],
+  "Come back here and click Obsidian again.": ["Volte aqui e clique em Obsidian de novo."],
+  "Obsidian is not installed": ["O Obsidian não está instalado"],
+  "Obsidian is a free notes app. The Office uses a vault (a folder of notes) to receive your requests.": ["O Obsidian é um app de notas gratuito. O Office usa um cofre (uma pasta de notas) para receber seus pedidos."],
+  "Download and install Obsidian from <a href=\\\"https://obsidian.md/download\\\" target=\\\"_blank\\\" rel=\\\"noopener\\\">obsidian.md/download</a>.": ["Baixe e instale o Obsidian em <a href=\\\"https://obsidian.md/download\\\" target=\\\"_blank\\\" rel=\\\"noopener\\\">obsidian.md/download</a>."],
+  "Open it once and choose <b>Create new vault</b> or <b>Open folder as vault</b>.": ["Abra uma vez e escolha <b>Criar novo cofre</b> ou <b>Abrir pasta como cofre</b>."],
+  "Come back here and click Obsidian again to register the vault.": ["Volte aqui e clique em Obsidian de novo para cadastrar o cofre."],
+  "Download Obsidian": ["Baixar o Obsidian"],
+  "Register your vault": ["Cadastre seu cofre"],
+  "Obsidian does not know this folder as a vault yet:": ["O Obsidian ainda não conhece esta pasta como cofre:"],
+  "No vault is registered yet. Type the folder of your vault.": ["Nenhum cofre cadastrado ainda. Digite a pasta do seu cofre."],
+  "Save and open": ["Salvar e abrir"],
+  "Could not save it.": ["Não foi possível salvar."],
+  "Vaults Obsidian already knows:": ["Cofres que o Obsidian já conhece:"],
+  "If Obsidian does not open it": ["Se o Obsidian não abrir"],
+  "Saved. Now register this folder in Obsidian (steps below), then click Obsidian again.": ["Salvo. Agora cadastre esta pasta no Obsidian (passos abaixo) e clique em Obsidian de novo."],
   "hide": ["ocultar", "ocultar", "nascondi", "ausblenden", "masquer", "隐藏", "隠す", "छिपाएँ"],
   "Building...": ["Gerando...", "Generando...", "Generazione...", "Wird erstellt...", "Génération...", "生成中...", "生成中...", "बन रहा है..."],
   "Update graph": ["Atualizar grafo", "Actualizar grafo", "Aggiorna grafo", "Graph aktualisieren", "Mettre à jour le graphe", "更新图谱", "グラフを更新", "ग्राफ़ अपडेट करें"],
@@ -368,7 +391,7 @@ function mount() {
   fbox.innerHTML = `<button type="button" class="lang-btn font-btn" aria-haspopup="listbox" aria-expanded="false" title="${t("Font")}" aria-label="${t("Font")}">
       <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><ellipse cx="12" cy="12" rx="4.2" ry="10"/><path d="M12 2v20M3 8h18M2 12h20M3 16h18"/></svg></button>
     <ul class="lang-menu font-menu" role="listbox" aria-label="${t("Font")}" hidden>${FONTS.map(f => `<li role="option" tabindex="0" data-font="${f.id}" aria-selected="${f.id === fontId}" style="font-family:${f.css ?? "'Pixelify Sans'"}">${f.name}${f.id === "default" ? ` <span class="dim">${t("(default)")}</span>` : ""}</li>`).join("")}</ul>`;
-  right.insertBefore(fbox, box);
+  right.appendChild(fbox);
   const fbtn = fbox.querySelector(".font-btn"), fmenu = fbox.querySelector(".font-menu");
   const ftoggle = open => {
     fmenu.hidden = !open; fbtn.setAttribute("aria-expanded", String(open));

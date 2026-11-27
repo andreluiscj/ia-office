@@ -46,16 +46,19 @@ function renderStatus() {
 }
 
 function renderList() {
+  const del = (path, name) => `<button class="gf-del" data-del="${esc(path)}" data-name="${esc(name)}" title="${t("Delete this project from the list (deletes no files)")}" aria-label="${t("Delete {x}", { x: esc(name) })}">${t("delete")}</button>`;
   const open = $("hiddenBox")?.open;
-  const hiddenHtml = hiddenList.length ? `<details class="gf-hidden" id="hiddenBox" ${open ? "open" : ""}><summary>${t("Hidden projects ({n})", { n: hiddenList.length })}</summary>
-    ${hiddenList.map(h => `<div class="gf-hidden-row"><span title="${esc(h.path)}">${esc(h.name)} <span class="muted">${esc(h.path)}</span></span>
-      <button class="btn ghost small" data-show="${esc(h.path)}">${t("Show")}</button></div>`).join("")}</details>` : "";
+  const hiddenHtml = hiddenList.length ? `<details class="gf-hidden" id="hiddenBox" ${open ? "open" : ""}><summary class="skill-group">${t("Hidden projects ({n})", { n: hiddenList.length })}</summary>
+    ${hiddenList.map(h => `<div class="skill-item gf-item gf-off" title="${esc(h.path)}">
+      <span class="skill-name">${esc(h.name)}</span>
+      <span class="skill-desc">${esc(h.path)}</span>
+      <span class="gf-btns"><button class="gf-hide" data-show="${esc(h.path)}">${t("Show")}</button>${del(h.path, h.name)}</span></div>`).join("")}</details>` : "";
   if (!list.length) { $("projects").innerHTML = `<p class="muted">${t("No project in the list. Add a folder above.")}</p>${hiddenHtml}`; return; }
   $("projects").innerHTML = list.map(p => `<div class="skill-item gf-item ${current === p.id ? "on" : ""}" data-id="${p.id}" role="button" tabindex="0">
     <span class="skill-name">${esc(p.name)}</span>
     <span class="skill-uses">${p.building ? `<span class="warn">${t("building...")}</span>` : p.graph ? t("{n} nodes", { n: p.graph.nodes }) : `<span class="muted">${t("no graph")}</span>`}</span>
     <span class="skill-desc">${esc(p.path)}${p.graph ? " · " + t("updated {t} ago", { t: ago(p.graph.builtAt) }) : ""}</span>
-    <button class="gf-hide" data-hide="${p.id}" title="${t("Hide this project from the list (deletes nothing)")}" aria-label="${t("Hide {x}", { x: esc(p.name) })}">${t("hide")}</button>
+    <span class="gf-btns"><button class="gf-hide" data-hide="${p.id}" title="${t("Hide this project from the list (deletes nothing)")}" aria-label="${t("Hide {x}", { x: esc(p.name) })}">${t("hide")}</button>${del(p.path, p.name)}</span>
   </div>`).join("") + hiddenHtml;
 }
 
@@ -134,9 +137,19 @@ async function hide(id) {
 $("projects").addEventListener("keydown", e => { if (e.key === "Enter" && e.target.classList.contains("gf-item")) e.target.click(); });
 $("projects").addEventListener("click", async e => {
   const h = e.target.closest("[data-hide]"); if (h) { e.stopPropagation(); hide(h.dataset.hide); return; }
+  const d = e.target.closest("[data-del]");
+  if (d) {
+    e.stopPropagation();
+    const name = d.dataset.name;
+    if (!confirm(t("Delete \"{x}\" from the list? No files are deleted. To bring it back, add the folder again.", { x: name }))) return;
+    const r = await post("/api/graphify/excluir", { path: d.dataset.del });
+    if (!r.ok) { alert((r.data.error && t(r.data.error)) ?? t("Could not delete it.")); return; }
+    if (list.some(p => p.path === d.dataset.del && p.id === current)) { current = null; history.replaceState(null, "", "#"); $("detail").dataset.sig = ""; $("detail").innerHTML = `<p class="muted">${t("Pick a project to see the graph.")}</p>`; }
+    refresh(); return;
+  }
   const s = e.target.closest("[data-show]");
   if (s) { const r = await post("/api/graphify/mostrar", { path: s.dataset.show }); current = r.data.id; history.replaceState(null, "", `#${current}`); $("detail").dataset.sig = ""; refresh(); return; }
-  const b = e.target.closest(".skill-item"); if (!b) return;
+  const b = e.target.closest(".skill-item"); if (!b || !b.dataset.id) return;
   current = b.dataset.id; tab = "grafo"; history.replaceState(null, "", `#${current}`);
   renderList(); renderDetail();
   if (window.innerWidth < 900) $("detail").scrollIntoView({ behavior: "smooth" });
@@ -152,3 +165,45 @@ const connEl = $("conn");
 live(refresh, ok => { connEl.className = `conn ${ok ? "on" : "off"}`; connEl.textContent = ok ? t("live") : t("reconnecting"); });
 // enquanto algo roda, atualiza a cada 1,5 s
 setInterval(() => { if (st?.jobs.some(j => !j.ended) || list.some(p => p.building)) refresh(); }, 1500);
+
+// ---- Obsidian: abre o cofre; se faltar o app ou o cofre, mostra como resolver
+const OBS_URL = vault => `obsidian://open?path=${encodeURIComponent(vault)}`;
+function obsDialog(html) {
+  let d = $("obsDlg");
+  if (!d) { d = document.createElement("dialog"); d.id = "obsDlg"; d.className = "obs-dlg"; document.body.appendChild(d); d.addEventListener("click", e => { if (e.target === d || e.target.closest("[data-close]")) d.close(); }); }
+  d.innerHTML = html; if (!d.open) d.showModal(); return d;
+}
+const obsSteps = () => `<ol class="obs-steps">
+  <li>${t("Open the Obsidian window.")}</li>
+  <li>${t("Click <b>Open folder as vault</b> and pick your vault folder (the one that holds your notes).")}</li>
+  <li>${t("Come back here and click Obsidian again.")}</li></ol>`;
+async function openObsidian() {
+  let o; try { o = await fetch("/api/obsidian").then(r => r.json()); } catch { alert(t("Could not reach the Office server.")); return; }
+  if (!o.installed) {
+    obsDialog(`<h2>${t("Obsidian is not installed")}</h2>
+      <p>${t("Obsidian is a free notes app. The Office uses a vault (a folder of notes) to receive your requests.")}</p>
+      <ol class="obs-steps"><li>${t("Download and install Obsidian from <a href=\"https://obsidian.md/download\" target=\"_blank\" rel=\"noopener\">obsidian.md/download</a>.")}</li>
+      <li>${t("Open it once and choose <b>Create new vault</b> or <b>Open folder as vault</b>.")}</li>
+      <li>${t("Come back here and click Obsidian again to register the vault.")}</li></ol>
+      <div class="gf-actions"><a class="btn" href="https://obsidian.md/download" target="_blank" rel="noopener">${t("Download Obsidian")}</a><button class="btn ghost" data-close>${t("Close")}</button></div>`);
+    return;
+  }
+  if (o.vault && o.known) { location.href = OBS_URL(o.vault); return; }
+  const d = obsDialog(`<h2>${t("Register your vault")}</h2>
+    <p>${o.vault ? t("Obsidian does not know this folder as a vault yet:") + ` <code>${esc(o.vault)}</code>` : t("No vault is registered yet. Type the folder of your vault.")}</p>
+    <form id="obsForm" class="gf-ask"><input class="search" id="obsPath" name="p" value="${esc(o.vault ?? "")}" placeholder="C:\Obsidian - Vault" autocomplete="off" required>
+      <button class="btn" type="submit">${t("Save and open")}</button></form>
+    <p class="muted" id="obsMsg"></p>
+    ${o.vaults.length ? `<p class="muted">${t("Vaults Obsidian already knows:")}</p><div class="gf-actions">${o.vaults.map(v => `<button class="btn ghost small" data-pick="${esc(v)}">${esc(v)}</button>`).join("")}</div>` : ""}
+    <h3>${t("If Obsidian does not open it")}</h3>${obsSteps()}
+    <div class="gf-actions"><button class="btn ghost" data-close>${t("Close")}</button></div>`);
+  d.querySelectorAll("[data-pick]").forEach(b => b.addEventListener("click", () => { $("obsPath").value = b.dataset.pick; }));
+  $("obsForm").addEventListener("submit", async e => {
+    e.preventDefault();
+    const r = await post("/api/obsidian/vault", { path: $("obsPath").value });
+    if (!r.ok) { $("obsMsg").textContent = (r.data.error && t(r.data.error)) ?? t("Could not save it."); return; }
+    if (r.data.known) { d.close(); location.href = OBS_URL(r.data.vault); }
+    else $("obsMsg").textContent = t("Saved. Now register this folder in Obsidian (steps below), then click Obsidian again.");
+  });
+}
+$("obsidianBtn").addEventListener("click", e => { e.preventDefault(); openObsidian(); });

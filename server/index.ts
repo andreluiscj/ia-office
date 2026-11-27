@@ -4,6 +4,7 @@ import { db, DB_PATH, ingestHook, getMeta, setMeta, type Agent } from "./db";
 import { company, roster } from "./company";
 import { listSkills, skillDetail, skillRoots } from "./skills";
 import * as graphify from "./graphify";
+import { obsidianStatus, setObsidianVault } from "./obsidian";
 import { startExecutor } from "../scripts/office-runner";
 import { codexUsage } from "./codex-usage";
 import { cancelTask, resumeTask, tasks, watchVault } from "./tarefas";
@@ -201,6 +202,13 @@ const server = Bun.serve({
       const d = skillDetail(path.slice("/api/skills/".length));
       return d ? json(d) : json({ error: "skill not found" }, 404);
     }
+    if (path === "/api/obsidian") return json(obsidianStatus());
+    if (path === "/api/obsidian/vault") {
+      if (req.method !== "POST" || req.headers.get("x-office") !== "1") return json({ error: "forbidden" }, 403);
+      const b: any = await req.json().catch(() => ({}));
+      const r = setObsidianVault(b.path);
+      return json(r, "error" in r ? 400 : 200);
+    }
     // Graphify (grafo de conhecimento dos projetos). As ações exigem o cabeçalho x-office,
     // que uma página de outro site não consegue mandar: só a tela do Office dispara comandos.
     if (path.startsWith("/api/graphify")) {
@@ -212,6 +220,7 @@ const server = Bun.serve({
         if (sub === "/skill") { const j = graphify.installClaudeSkill(); return j ? json(j) : json({ error: "Install Graphify first" }, 400); }
         if (sub === "/projetos") { const r = graphify.addProject(b.path); return json(r, r.error ? 400 : 200); }
         if (sub === "/ocultar") { const r = graphify.hideProject(b.id); return json(r, r.error ? 400 : 200); }
+        if (sub === "/excluir") { const r = graphify.deleteProject(b.path); return json(r, r.error ? 400 : 200); }
         if (sub === "/mostrar") return json(graphify.showProject(b.path));
         if (sub === "/gerar") { const j = graphify.build(b.id, !!b.force); return j ? json(j) : json({ error: "Project not found or Graphify not installed" }, 400); }
         if (sub === "/perguntar") { const r = graphify.ask(b.id, b.kind, b.args); return json(r, (r as any).error ? 400 : 200); }

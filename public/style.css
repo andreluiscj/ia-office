@@ -53,10 +53,12 @@ a { color: var(--accent); }
 .usage .uempty { color: var(--muted); font-size: 12px; max-width: 260px; }
 .hint-row { display: flex; align-items: center; margin-top: 10px; gap: 16px; flex-wrap: wrap; }
 .hint-row .legend { font-size: 13px; }
+@media (min-width: 1681px) { .topbar.three.gf-top { grid-template-columns: auto 1fr auto; } }
 @media (max-width: 1680px) {
   .topbar.three { grid-template-columns: 1fr; }
   .usage { justify-self: center; }
   .tb-right { justify-content: flex-start; }
+  .topbar.three.gf-top .tb-right { justify-content: flex-end; }
 }
 
 /* ---------- Escritório ---------- */
@@ -232,17 +234,21 @@ td .dot { vertical-align: middle; }
 .gf-detail { position: static; max-height: none; }
 .gf-report table, .md table { border-collapse: collapse; margin: 8px 0; font-size: 14px; }
 .md th, .md td { border: 2px solid var(--line); padding: 4px 8px; }
-.gf-item { position: relative; padding-right: 76px; }
-.gf-item .skill-uses { position: absolute; right: 10px; top: 8px; }
-.gf-hide {
-  position: absolute; right: 8px; bottom: 6px; font: 13px var(--body); color: var(--muted); background: none;
+#projects.skill-list { max-height: none; overflow: visible; padding-right: 0; }
+.gf-hidden > summary { cursor: pointer; list-style: revert; }
+.gf-hidden[open] > summary { margin-bottom: 6px; }
+.gf-hidden .gf-item { margin-bottom: 6px; }
+.gf-item { position: relative; min-width: 0; }
+.gf-item .skill-desc { word-break: break-all; }
+.gf-btns { grid-column: 1 / -1; display: flex; gap: 6px; justify-content: flex-end; margin-top: 2px; }
+.gf-hide, .gf-del {
+  font: 13px var(--body); color: var(--muted); background: none;
   border: 2px solid var(--line); padding: 0 6px; cursor: pointer;
 }
 .gf-hide:hover { color: var(--ink); border-color: var(--accent); }
-.gf-hidden { margin-top: 12px; }
-.gf-hidden summary { cursor: pointer; color: var(--muted); }
-.gf-hidden-row { display: flex; gap: 8px; align-items: center; justify-content: space-between; padding: 6px 0; border-bottom: 2px solid var(--line); font-size: 14px; }
-.gf-hidden-row > span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.gf-del:hover { color: #e8664a; border-color: #e8664a; }
+.gf-off { opacity: .85; cursor: default; }
+.skill-group { overflow-wrap: anywhere; }
 .btn.small { font-size: 13px; padding: 2px 8px; box-shadow: 2px 2px 0 #000; }
 
 /* telas estreitas: menu quebra linha e a barra de uso encolhe */
@@ -260,6 +266,7 @@ td .dot { vertical-align: middle; }
   border: 3px solid #000; box-shadow: 3px 3px 0 #000; font-family: var(--pixel); font-size: 12px; cursor: pointer; }
 .lang-btn:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 #000; }
 .lang-btn:focus-visible, .lang-menu li:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.lang-btn { box-sizing: border-box; width: 66px; height: 32px; justify-content: center; }
 .flag { display: block; border: 1px solid #000; flex: none; }
 .lang-menu { position: absolute; right: 0; top: calc(100% + 8px); z-index: 30; list-style: none; margin: 0; padding: 4px;
   min-width: 170px; background: var(--panel); border: 3px solid #000; box-shadow: 4px 4px 0 #000; }
@@ -308,9 +315,18 @@ td .dot { vertical-align: middle; }
 .gf-hidden + .gf-hidden { margin-top: 6px; }
 
 /* Seletor de fonte (globo) */
-.fontpick { margin-right: 8px; }
+.fontpick { margin-left: 0; }
 .font-btn { padding: 5px 7px; }
 .font-menu { min-width: 220px; }
 .font-menu li { white-space: nowrap; }
 .font-menu li .dim { color: var(--muted); opacity: .8; font-size: .85em; }
 .font-menu li:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+
+/* Obsidian: seta de app externo e janelas de instalação / cofre */
+.nav a .ext { margin-left: 3px; vertical-align: -1px; }
+.obs-dlg { max-width: min(560px, 92vw); background: var(--panel); color: var(--ink); border: 4px solid #000; box-shadow: 6px 6px 0 #000; padding: 18px 20px; }
+.obs-dlg::backdrop { background: rgba(0,0,0,.6); }
+.obs-dlg h2 { font-size: 16px; margin: 0 0 8px; }
+.obs-dlg h3 { font-size: 14px; margin: 14px 0 4px; }
+.obs-dlg p { margin: 6px 0; overflow-wrap: anywhere; }
+.obs-steps { padding-left: 22px; margin: 8px 0 12px; line-height: 1.5; }

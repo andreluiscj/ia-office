@@ -103,6 +103,7 @@ export function installClaudeSkill() {
 const idOf = (p: string) => createHash("sha1").update(p.toLowerCase()).digest("hex").slice(0, 12);
 const extra = (): string[] => { try { return JSON.parse(getMeta("graphify_projects") ?? "[]"); } catch { return []; } };
 const hidden = (): string[] => { try { return JSON.parse(getMeta("graphify_hidden") ?? "[]"); } catch { return []; } };
+const deleted = (): string[] => { try { return JSON.parse(getMeta("graphify_deleted") ?? "[]"); } catch { return []; } };
 
 const countCache = new Map<string, { mtime: number; nodes: number; edges: number; communities: number }>();
 function graphInfo(dir: string) {
@@ -123,7 +124,7 @@ function graphInfo(dir: string) {
 
 export function projects() {
   const seen = new Map<string, any>();
-  const hide = new Set(hidden().map(p => p.toLowerCase()));
+  const hide = new Set([...hidden(), ...deleted()].map(p => p.toLowerCase()));
   const add = (path: string, source: string, lastUsed: number | null) => {
     const key = path.toLowerCase();
     if (seen.has(key) || hide.has(key)) return;
@@ -147,6 +148,7 @@ export function addProject(path: string) {
   list.unshift(p);
   setMeta("graphify_projects", JSON.stringify(list.slice(0, 100)));
   setMeta("graphify_hidden", JSON.stringify(hidden().filter(x => x.toLowerCase() !== p.toLowerCase())));
+  setMeta("graphify_deleted", JSON.stringify(deleted().filter(x => x.toLowerCase() !== p.toLowerCase())));
   return { ok: true, id: idOf(p) };
 }
 
@@ -162,6 +164,17 @@ export function showProject(path: string) {
   const key = String(path ?? "").toLowerCase();
   setMeta("graphify_hidden", JSON.stringify(hidden().filter(x => x.toLowerCase() !== key)));
   return { ok: true, id: idOf(String(path)) };
+}
+
+/** Exclui o projeto da lista de vez (ativo ou oculto). Não apaga nada em disco; só Adicionar a pasta de novo o traz de volta. */
+export function deleteProject(path: string) {
+  const p = String(path ?? "").trim(), key = p.toLowerCase();
+  if (!p) return { error: "Project not found." };
+  const keep = (l: string[]) => l.filter(x => x.toLowerCase() !== key);
+  setMeta("graphify_projects", JSON.stringify(keep(extra())));
+  setMeta("graphify_hidden", JSON.stringify(keep(hidden())));
+  setMeta("graphify_deleted", JSON.stringify([...keep(deleted()), p]));
+  return { ok: true };
 }
 
 export const hiddenProjects = () => hidden().map(path => ({ path, name: basename(path.replace(/[\\/]+$/, "")) || path }));
