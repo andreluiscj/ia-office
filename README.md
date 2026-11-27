@@ -1,6 +1,6 @@
 # IA Office
 
-**A pixel-art virtual office that shows your Claude Code agents at work, live, with a five-agent team that uses skills on its own.**
+**A pixel-art virtual office that shows your Claude Code agents at work, live, with a six-agent team that uses skills on its own, a task queue in Obsidian and optional Codex support.**
 
 Every [Claude Code](https://docs.claude.com/en/docs/claude-code/overview) session and subagent becomes a person in the office. Whoever gets a task stands up, walks to a desk and starts working. A speech bubble shows the tool they are using, and lines connect whoever hands work to whom. It also ships a dashboard, a catalog of your skills, a [Graphify](https://github.com/Graphify-Labs/graphify) integration and a ready-to-use team: a Lead plus an architect, a developer, a security and testing engineer and a reviewer, opened with `claude --office`.
 
@@ -23,7 +23,9 @@ Everything runs on your machine: the server only accepts local connections and n
 - [Benchmarks](#benchmarks)
 - [Customizing the agents](#customizing-the-agents)
 - [Reading the office](#reading-the-office)
-- [Dashboard, Skills and Graphify](#dashboard-skills-and-graphify)
+- [Screens](#screens)
+- [Obsidian vault and Tasks](#obsidian-vault-and-tasks)
+- [Settings and Codex](#settings-and-codex)
 - [Demo mode](#demo-mode)
 - [Commands](#commands)
 - [Troubleshooting](#troubleshooting)
@@ -39,16 +41,20 @@ Everything runs on your machine: the server only accepts local connections and n
 | | |
 |---|---|
 | **Office** | Pixel-art floor with rooms, desks, kitchen and lounge. Agents walk, sit, show what they are doing and go back to the lounge when done. |
-| **Agent team** | A Lead and four specialists: architecture and engineering, full-stack development, security and testing, and code review. Opens with `claude --office`. |
+| **Agent team** | A Lead and five specialists: architecture and engineering, full-stack development, graphic design, security and testing, and code review. Opens with `claude --office`. |
 | **Playbook skills** | Every agent starts each task by calling its own short Office playbook (`office-*` skill), which loads detailed references and third-party skills only when the task needs them. A hook blocks an agent that finishes without calling its playbook. |
 | **Graphify first** | Agents read the project's knowledge graph before opening code, so they understand how a project works quickly and with few tokens. |
 | **Skills that learn you** | When you ask for the same thing the same way twice, the team writes a project skill so the next one is faster and closer to how you work. |
 | **Claude Security audit** | At the end of a project, an audit or attack-attempt request runs the whole [Claude Security](https://code.claude.com/docs/en/claude-security) plugin. |
 | **Dashboard** | Who is active, on which project, how many tasks each one did, models used (Opus, Sonnet, Haiku) and the most used skills and tools. |
 | **Skills** | Lists the skills installed in your Claude Code, grouped by plugin or theme, with search, usage count and the full text of each one. |
-| **Graphify tab** | Builds the knowledge graph of your projects' code and lets you ask questions about it, right from the browser. |
-| **9 languages** | Flag picker at the top right: English by default, plus Portuguese, Spanish, Italian, German, French, Chinese, Japanese and Hindi. |
-| **Plan usage** | A top bar with session usage (5-hour limit) and weekly usage, with reset time (Pro and Max plans). |
+| **Graphify tab** | Builds the knowledge graph of your projects' code and lets you ask questions about it, right from the browser. Hide or delete projects from the list. |
+| **Tasks** | The work queue kept in your Obsidian vault: requests, their tasks and progress, with restart and cancel buttons. |
+| **Obsidian button** | In the menu of every screen (with an arrow, because it opens another app). Opens your vault, or guides you through installing Obsidian and registering the vault. |
+| **Settings** | The gear at the top right: general data, the instructions of each agent, how the team uses Codex, and maintenance. |
+| **Codex** | Optional second engine. Three modes: do not use, use a little (supervise and make design images, the default) or use normally, like a second Claude Code. |
+| **9 languages and 4 fonts** | Flag picker at the top right: English by default, plus Portuguese, Spanish, Italian, German, French, Chinese, Japanese and Hindi. The globe button next to it switches the font (the pixel font by default, Arial, Times New Roman or Calibri). |
+| **Plan usage** | A top bar, centered on every screen, with Claude session usage (5-hour limit) and weekly usage, plus Codex limits, each with its reset time. A window that already reset shows 0% until Claude Code reports again. |
 
 ---
 
@@ -118,7 +124,7 @@ It backs up your `~/.claude/settings.json` before touching it, then:
 
 1. installs the hooks that send Claude Code events to the Office and the one that stops agents from finishing without a skill;
 2. installs the status line that reports plan usage (if you already have one, it keeps showing);
-3. installs the five team agents in `~/.claude/agents/`;
+3. installs the six team agents in `~/.claude/agents/`;
 4. creates the `claude --office` command in your terminal (PowerShell, Bash and Zsh).
 
 The section [What the install changes](#what-the-install-changes-in-claude-code) details each item.
@@ -199,7 +205,7 @@ Everything stays in Claude Code's config folder (`~/.claude`, or the `CLAUDE_CON
 | `settings.json` → `permissions` | `defaultMode: "acceptEdits"` and an allowlist of read and test commands (`git status`, `git diff`, `npm test`, `bun test`, `pytest`...) | Fewer confirmation prompts. To keep confirmations, use `bun scripts/install-company.ts install --com-confirmacoes`. |
 | `settings.json` → `permissions.deny` | `git commit`, `git push`, `git merge`, `git rebase` and `git tag` blocked for Claude | Only you commit and push. The team hands you ready commands. |
 | `hooks/` | `escritorio-virtual-send.ts`, `escritorio-virtual-statusline.ts`, `escritorio-virtual-send-guarda-lider.ts` and `escritorio-virtual-send-exigir-skill.ts` | Scripts called by the hooks. The "guard" stops the Lead from editing files (except its own memory): it coordinates, the specialists code. The skill gate blocks an `office-*` agent that tries to finish without calling its playbook skill. |
-| `agents/` | `office-ceo.md`, `office-architect.md`, `office-dev.md`, `office-security.md` and `office-reviewer.md` | The team. Old `empresa-*` and `office-*` agent files that no longer exist in `company/agents` are removed. |
+| `agents/` | `office-ceo.md`, `office-architect.md`, `office-dev.md`, `office-designer.md`, `office-security.md` and `office-reviewer.md` | The team. Old `empresa-*` and `office-*` agent files that no longer exist in `company/agents` are removed. |
 | Terminal profile | A `claude` function between the `# >>> Office (claude --office) >>>` and `# <<< Office (claude --office) <<<` markers in the PowerShell profile, `~/.bashrc` and `~/.zshrc` | Creates `claude --office`. Without `--office`, `claude` works exactly as before. |
 
 Outside `~/.claude`, the Office only uses `~/.escritorio-virtual/` (SQLite database and log).
@@ -236,6 +242,7 @@ Example request: *"build the change-password screen with validation and tests"*.
 | Lead (you) | `office-ceo` | Classifies the request, reads the graph, plans, delegates, validates and delivers. Never edits files. | Your choice |
 | Joaquim | `office-architect` | Engineering and architecture: specs, contracts, ADRs, owner of the Graphify graph, writer of the team's skills. | Sonnet |
 | Igor | `office-dev` | Full-stack: APIs, business rules, local-database migrations, screens, components and unit tests, with 21st.dev components for visual work. | Sonnet |
+| Pedro | `office-designer` | Graphic and brand design: visual identity from a reference, logo, icons, illustrations and animated sections. Works in parallel with Igor on sites and landing pages (the `office-web-pro` pipeline). Never calls a paid API without your approval. | Sonnet |
 | Leonardo | `office-security` | Security audit (read-only) and integration, E2E and regression tests. Routes every finding to its owner and confirms the fix. | Sonnet |
 | Lucas | `office-reviewer` | Last gate before your commit: five-axis review, skills gate, commit commands and the end-of-project Claude Security audit. | Sonnet |
 
@@ -319,6 +326,8 @@ These runs were made with the previous seven-agent team and skill set; they have
 
 **Each agent is a single file** in `company/agents/`. It holds the name, role, look in the office and all the knowledge (the instructions the agent follows).
 
+You can edit the same file from the browser: gear, **Agents** tab (see [Settings and Codex](#settings-and-codex)).
+
 ```markdown
 ---
 # --- How the agent shows up in the Office (edit freely) ---
@@ -366,7 +375,9 @@ Drag to move, use the mouse wheel to zoom and ⤢ to see the whole floor. Hover 
 
 ---
 
-## Dashboard, Skills and Graphify
+## Screens
+
+Every screen shares the same top bar: the menu (Office, Tasks, Dashboard, Skills, Graphify and the Obsidian button), the plan usage of Claude and Codex in the middle, and on the right the connection status, the language flag, the font globe and the settings gear.
 
 ### Dashboard (`/dashboard`)
 
@@ -378,7 +389,7 @@ Active agents, projects, tasks per employee, model split and ranking of skills a
 
 The skills that Claude Code actually has: `~/.claude/skills`, the plugins that are installed and enabled, commands (`~/.claude/commands`) and the `.claude/` folders of projects where Claude Code has run. Marketplace clones and old plugin versions are not counted.
 
-The list is grouped by category: **one group per plugin that has several skills** (for example *Agent Skills* or *Engineering*, where Matt Pocock's skills are merged), and **themes** (Design, Security, Documents, Tools) for skills that come alone. A skill that two plugins both provide is shown once. Search, filter by category and open the full instructions of each one. Each `Skill` tool call and each typed slash command counts as a use (built-ins like `/model` do not).
+The list is grouped by category: **one group per plugin that has several skills** (for example *Agent Skills* or *Engineering*, where Matt Pocock's skills are merged), and **themes** (Design, Security, Documents, Tools) for skills that come alone. A skill that two plugins both provide is shown once. Search, filter by category and open the full instructions of each one. Each `Skill` tool call and each slash command counts as a use.
 
 ![Skills](docs/skills.png)
 
@@ -386,13 +397,73 @@ The list is grouped by category: **one group per plugin that has several skills*
 
 Runs [Graphify](https://github.com/Graphify-Labs/graphify) on your projects.
 
-- Projects where Claude Code has worked show up automatically; you can add other folders and **hide** the ones you do not care about.
+- Projects where Claude Code has worked show up automatically; you can add other folders.
+- **Hide** takes a project out of the way and **Delete** removes it from the list for good (with a confirmation, active or hidden). Neither touches any file on disk. To bring a deleted project back, add its folder again.
+- **Hidden projects** stay collapsed under the list and only open when you click them. They use the same cards as the active ones, with **Show** and **Delete**.
 - **Build graph** runs `graphify update` and creates `graphify-out/` in the project (interactive graph, report and `graph.json`).
 - **Ask** uses Graphify commands (`query`, `explain`, `path`, `affected`, `god-nodes`).
 - **Enable /graphify in Claude Code** installs the Graphify skill in `~/.claude/skills/graphify` and adds a section to your `~/.claude/CLAUDE.md`, so the agents use the graph too.
 - Tip: add `graphify-out/` to your projects' `.gitignore`.
 
 ![Graphify](docs/graphify.png)
+
+### Tasks (`/tarefas`)
+
+The requests in your Obsidian vault and the tasks the Lead created for each one, with a progress bar that follows the vault live. Open a request to see its tasks, **restart** one in a terminal or **cancel** it. Finished requests stay collapsed. See [Obsidian vault and Tasks](#obsidian-vault-and-tasks).
+
+---
+
+## Obsidian vault and Tasks
+
+The Office can use an [Obsidian](https://obsidian.md) vault as its front door and its task board. Set the vault folder in `company/empresa.json` (`cofre`). The Office creates these folders in it:
+
+| Folder | What it holds |
+|---|---|
+| `00-Pedidos/` | Requests you write. A note with `status: pronto` and `projeto: <folder>` makes the Office open the Lead in that project, with no terminal. |
+| `10-Tarefas/` | One folder per request, with the tasks the Lead delegated and their status. |
+| `20-Mapas/`, `90-Relatorios/` | Maps and final reports. |
+| `Quadro.base` | A ready-made board (table and cards) of all tasks. |
+
+Only notes in `00-Pedidos` with `status: pronto` or `aprovado` start work, and only notes you wrote: notes written by agents never trigger anything. The same session is resumed when you answer a question, approve a plan, or when the usage limit comes back.
+
+### The Obsidian button
+
+The **Obsidian** button, with an arrow that shows it opens another app, is in the menu of every screen.
+
+![Obsidian dialog](docs/obsidian.png)
+
+- If the vault is registered in Obsidian, the button opens it.
+- If **Obsidian is not installed**, a dialog explains how to download and install it and register a vault.
+- If **no vault is registered**, or Obsidian does not know the folder as a vault, a dialog lets you type the vault folder and click **Save and open**. It also lists the vaults Obsidian already knows and the steps to use *Open folder as vault*.
+
+Obsidian only opens folders it already knows as vaults, so register the folder once in Obsidian itself. The folder you choose is saved in the Office database and is used only by this button.
+
+---
+
+## Settings and Codex
+
+Click the **gear** at the top right (`/configuracoes`). It has four tabs.
+
+![Settings](docs/settings.png)
+
+| Tab | What you can do |
+|---|---|
+| **General** | See the number of agents and skills, the vault and the database. Change the company name and your name; saving reinstalls the agents, because the names are written into their instructions. |
+| **Agents** | Pick an agent and edit its whole instruction file (`company/agents/<id>.md`): the header and everything the agent knows. Saving rewrites the file and reinstalls the agents in Claude Code. |
+| **Codex** | Choose how the team uses Codex (below). |
+| **More** | Reinstall the agents and skills in Claude Code, and a shortcut to the Obsidian vault. |
+
+### How to use Codex
+
+You can use Codex together with Claude Code, so work does not stop when one plan runs out. Pick one of three modes; the Office then rewrites the instructions of every agent installed in Claude Code (your files in `company/` stay untouched).
+
+| Mode | What happens |
+|---|---|
+| **Do not use** | Agents never call Codex. No second opinion and no Codex images; images are drawn by hand (SVG). |
+| **Use a little: supervise** (default) | Codex gives a second opinion on big changes and creates the images for the design. |
+| **Use normally** | Codex works like a second Claude Code. Agents delegate whole slices of work to it (`codex exec`) and switch to it when the Claude limit is close, and ask it for the adversarial review on medium changes too. The agent still reads the diff and runs the checks before accepting anything. |
+
+Codex has to be installed and signed in on your machine. If it is not available, the team continues with Claude Code and says so in the report. Codex usage limits show in the top bar next to Claude's.
 
 ---
 
@@ -441,6 +512,9 @@ The old `skills:install` script is disabled on purpose: skills now come from the
 
 **`claude --office` says "unknown option"**
 The terminal did not load the function. Open a new terminal. On Windows, check `Get-ExecutionPolicy` (must be `RemoteSigned`) and run `bun run office:comando` again.
+
+**A new button or page shows "Could not reach the Office server"**
+The browser loaded the new screens, but the server that is running is the old one. Run `bun run office:parar` and `bun run office:ligar`, then reload with Ctrl+F5.
 
 **The agents still have the old names or instructions**
 Run `bun run agentes:aplicar` and open a new session. Claude Code reads agents when a session starts.
@@ -508,11 +582,14 @@ server/company.ts      company view (Lead, employees, contractors)
 server/agentes.ts      reads company/ and generates the Claude Code agents
 server/skills.ts       lists installed skills and plugins
 server/graphify.ts     Graphify integration
+server/obsidian.ts     Obsidian detection and the vault used by the Obsidian button
+server/tarefas.ts      Tasks page data (the vault queue)
+server/codex-usage.ts  Codex usage limits read from its session logs
 hooks/                 event hook, status line, Lead guard and skill gate
 scripts/               setup, diagnostics, demo, autostart and utilities
 company/empresa.json   company name, your name and departments
 company/agents/        one file per agent
-public/                screens (office, dashboard, skills, graphify)
+public/                screens (office, tasks, dashboard, skills, graphify, settings)
 docs/                  screenshots, team diagram and benchmarks
 ```
 

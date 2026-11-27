@@ -27,7 +27,7 @@ export async function openObsidian() {
   if (o.vault && o.known) { location.href = OBS_URL(o.vault); return; }
   const d = obsDialog(`<h2>${t("Register your vault")}</h2>
     <p>${o.vault ? t("Obsidian does not know this folder as a vault yet:") + ` <code>${esc(o.vault)}</code>` : t("No vault is registered yet. Type the folder of your vault.")}</p>
-    <form id="obsForm" class="gf-ask"><input class="search" id="obsPath" name="p" value="${esc(o.vault ?? "")}" placeholder="C:\Obsidian - Vault" autocomplete="off" required>
+    <form id="obsForm" class="gf-ask"><input class="search" id="obsPath" name="p" value="${esc(o.vault ?? "")}" placeholder="C:/Notes/My vault" autocomplete="off" required>
       <button class="btn" type="submit">${t("Save and open")}</button></form>
     <p class="muted" id="obsMsg"></p>
     ${o.vaults.length ? `<p class="muted">${t("Vaults Obsidian already knows:")}</p><div class="gf-actions">${o.vaults.map(v => `<button class="btn ghost small" data-pick="${esc(v)}">${esc(v)}</button>`).join("")}</div>` : ""}

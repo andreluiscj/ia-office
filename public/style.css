@@ -42,7 +42,7 @@ a { color: var(--accent); }
 .ugroup { display: flex; align-items: center; gap: 8px; }
 .uicon { display: grid; place-items: center; flex: none; }
 .urows { display: grid; gap: 3px; }
-.usage .row { display: grid; grid-template-columns: 78px 120px 34px 128px; align-items: center; gap: 8px; font-size: 12px; line-height: 14px; }
+.usage .row { display: grid; grid-template-columns: 100px 80px 34px 118px; align-items: center; gap: 8px; font-size: 12px; line-height: 14px; }
 .usage .lbl { color: var(--ink); white-space: nowrap; }
 .usage .rst { color: var(--muted); font-size: 11px; white-space: nowrap; }
 .usage .bar { height: 8px; background: #0d0c14; border: 2px solid #000; position: relative; }
@@ -256,7 +256,7 @@ td .dot { vertical-align: middle; }
   .tb-left { flex-wrap: wrap; }
   .nav { flex-wrap: wrap; }
   .usage { justify-self: stretch; }
-  .usage .row { grid-template-columns: 78px minmax(40px, 1fr) 34px auto; }
+  .usage .row { grid-template-columns: 100px minmax(40px, 1fr) 34px auto; }
   .ugroup, .urows { width: 100%; }
 }
 
